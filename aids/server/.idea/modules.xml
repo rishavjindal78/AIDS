@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../Punter-standalone/Punter.iml" filepath="$PROJECT_DIR$/../Punter-standalone/Punter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../SpringMVCApp-master/SpringMVCApp.iml" filepath="$PROJECT_DIR$/../SpringMVCApp-master/SpringMVCApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../agent/agent.iml" filepath="$PROJECT_DIR$/../agent/agent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../spring-mvc-test-examples-master/controllers-unittest/controllers-unittest.iml" filepath="$PROJECT_DIR$/../spring-mvc-test-examples-master/controllers-unittest/controllers-unittest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../hibernate/hibernate.iml" filepath="$PROJECT_DIR$/../hibernate/hibernate.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../installValidator/installValidator.iml" filepath="$PROJECT_DIR$/../installValidator/installValidator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../spring-mvc-test-examples-master/rest-unittest/rest-unittest.iml" filepath="$PROJECT_DIR$/../spring-mvc-test-examples-master/rest-unittest/rest-unittest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/server.iml" filepath="$PROJECT_DIR$/server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../shared/shared.iml" filepath="$PROJECT_DIR$/../shared/shared.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../shared-common/shared-common.iml" filepath="$PROJECT_DIR$/../shared-common/shared-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../smoke-test-testM/smoke-test-testM.iml" filepath="$PROJECT_DIR$/../smoke-test-testM/smoke-test-testM.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../spring-mvc-showcase-master/spring-mvc-showcase.iml" filepath="$PROJECT_DIR$/../spring-mvc-showcase-master/spring-mvc-showcase.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../spring-mvc-test-examples-master/controllers/spring-test-mvc-controllers.iml" filepath="$PROJECT_DIR$/../spring-mvc-test-examples-master/controllers/spring-test-mvc-controllers.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../spring-mvc-test-examples-master/rest/spring-test-mvc-rest.iml" filepath="$PROJECT_DIR$/../spring-mvc-test-examples-master/rest/spring-test-mvc-rest.iml" />
+    </modules>
+  </component>
+</project>
+

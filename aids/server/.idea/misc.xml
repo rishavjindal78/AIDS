@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="EntryPointsManager">
+    <entry_points version="2.0" />
+  </component>
+  <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$PROJECT_DIR$" />
+    <file type="web" url="file://$PROJECT_DIR$/../spring-mvc-showcase-master" />
+    <file type="web" url="file://$PROJECT_DIR$/../spring-mvc-test-examples-master/controllers" />
+    <file type="web" url="file://$PROJECT_DIR$/../spring-mvc-test-examples-master/controllers-unittest" />
+    <file type="web" url="file://$PROJECT_DIR$/../spring-mvc-test-examples-master/rest" />
+    <file type="web" url="file://$PROJECT_DIR$/../spring-mvc-test-examples-master/rest-unittest" />
+    <file type="web" url="file://$PROJECT_DIR$/../SpringMVCApp-master" />
+  </component>
+  <component name="IdProvider" IDEtalkID="AD5CFBBD47D4A336D720F706130E31BC" />
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/../agent/pom.xml" />
+        <option value="$PROJECT_DIR$/../spring-mvc-showcase-master/pom.xml" />
+        <option value="$PROJECT_DIR$/../SpringMVCApp-master/pom.xml" />
+        <option value="$PROJECT_DIR$/../shared-common/pom.xml" />
+        <option value="$PROJECT_DIR$/../smoke-test-testM/pom.xml" />
+        <option value="$PROJECT_DIR$/../hibernate/pom.xml" />
+        <option value="$PROJECT_DIR$/../spring-mvc-test-examples-master/rest-unittest/pom.xml" />
+        <option value="$PROJECT_DIR$/../spring-mvc-test-examples-master/controllers-unittest/pom.xml" />
+        <option value="$PROJECT_DIR$/../spring-mvc-test-examples-master/controllers/pom.xml" />
+        <option value="$PROJECT_DIR$/../spring-mvc-test-examples-master/rest/pom.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/classes" />
+  </component>
+  <component name="SvnBranchConfigurationManager">
+    <option name="myConfigurationMap">
+      <map>
+        <entry key="$PROJECT_DIR$/../agent">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="trunkUrl" value="" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="trunkUrl" value="" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="mySupportsUserInfoFilter" value="true" />
+  </component>
+</project>
+

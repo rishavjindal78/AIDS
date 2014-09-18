@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="2417451119">
+    <data-source source="LOCAL" name="dataSource" uuid="173c63c4-760d-4102-ac2e-948174b8fb96">
+      <driver-ref>h2.embedded</driver-ref>
+      <jdbc-driver>org.h2.Driver</jdbc-driver>
+      <jdbc-url>jdbc:h2:~/agentDB</jdbc-url>
+      <user-name>sa</user-name>
+      <libraries>
+        <library>
+          <url>file://$MAVEN_REPOSITORY$/com/h2database/h2/1.4.181/h2-1.4.181.jar</url>
+        </library>
+      </libraries>
+    </data-source>
+  </component>
+</project>
+

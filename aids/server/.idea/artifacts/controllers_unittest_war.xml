@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="controllers-unittest:war">
+    <output-path>$PROJECT_DIR$/../spring-mvc-test-examples-master/controllers-unittest/target</output-path>
+    <root id="archive" name="spring-test-mvc-configuration.war">
+      <element id="artifact" artifact-name="controllers-unittest:war exploded" />
+    </root>
+  </artifact>
+</component>
