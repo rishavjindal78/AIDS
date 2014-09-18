@@ -18,7 +18,7 @@ public class AgentController {
     @RequestMapping(value = "submitTaskStep", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     @ResponseBody
     public void submitTaskStep(@RequestBody TaskContext taskContext) throws InterruptedException, ExecutionException {
-        System.out.println("taskStep received = " + taskContext);
+        System.out.println("taskStep received for execution = " + taskContext);
         taskProcessor.executeTask(taskContext);
     }
 
