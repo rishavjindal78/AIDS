@@ -11,6 +11,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PreDestroy;
+import java.net.ConnectException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -121,7 +122,11 @@ public class TaskService {
                 logger.log(Level.SEVERE, "Task Submission Failed", e);
                 taskExecutionPlanMap.get(taskRun).setTaskStatus(false);
                 executionContext.getTaskStepRun().setStatus(false);
-                executionContext.getTaskStepRun().setLogs("Task Submission Failed - " + Utils.getStackTrace(e));
+                if (e.getCause() != null && e.getCause() instanceof ConnectException) {
+                    executionContext.getTaskStepRun().setLogs("Task Submission Failed, Agent not reachable - " + executionContext.getTaskStepRun().getAgent().getName() + "\r\n" + e);
+                } else {
+                    executionContext.getTaskStepRun().setLogs("Task Submission Failed - " + Utils.getStackTrace(e));
+                }
                 executionContext.getTaskStepRun().setFinishTime(new Date());
                 executionContext.getTaskStepRun().setRunStatus(RunStatus.FAILURE);
                 executionContext.getTaskStepRun().setRunState(RunState.COMPLETED);
