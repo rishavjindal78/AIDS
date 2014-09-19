@@ -66,6 +66,7 @@
                 <th>Id</th>
                 <th>Seq</th>
                 <th>Title</th>
+                <th>Agent</th>
                 <th>Updated</th>
                 <th>Status</th>
                 <th>Operation</th>
@@ -80,6 +81,7 @@
                 <td>${taskStepHistory.id?string}</td>
                 <td>${taskStepHistory.sequence?string}</td>
                 <td>${taskStepHistory.taskStepData.description!?string}</td>
+                <td>${taskStepHistory.agent.name!?string}</td>
                 <td><#if taskStepHistory.startTime??>${taskStepHistory.startTime?datetime?string("dd MMM, yyyy hh.mm aa")}</#if></td>
                 <#if taskStepHistory.runStatus?string == 'FAILURE'>
                 <td class="text-danger"><#else >

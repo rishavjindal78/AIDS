@@ -255,14 +255,14 @@ public class ServerController {
         List<TaskRun> all = agentService.findTaskHistoryForTaskId(taskId);
         model.addAttribute("taskHistoryList", all);
         model.addAttribute("taskId", taskId);
-        return "taskHistory";
+        return "taskRun";
     }
 
     @RequestMapping(value = "/taskStepHistory/{taskHistoryId}", method = RequestMethod.GET)
     public String viewTaskStepHistory(@ModelAttribute("model") ModelMap model, @PathVariable("taskHistoryId") long taskHistoryId) {
         TaskRun taskHistory = agentService.getTaskRun(taskHistoryId);
         model.addAttribute("taskHistory", taskHistory);
-        return "taskStepHistory";
+        return "taskStepRun";
     }
 
     @RequestMapping(value = "run/{taskId}", method = RequestMethod.POST)
