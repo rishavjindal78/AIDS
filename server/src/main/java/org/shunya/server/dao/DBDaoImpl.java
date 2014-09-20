@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class AgentDaoImpl implements AgentDao {
+public class DBDaoImpl implements DBDao {
     @Autowired
     private SessionFactory sessionFactory;
 

@@ -4,9 +4,10 @@ import org.shunya.shared.model.*;
 
 import java.util.List;
 
-public interface AgentService {
+public interface DBService {
     public List<Agent> list();
     public List<TaskData> listTasks();
+    public List<TaskMetadata> lisTaskMetadata();
     public void deleteTaskStep(long id);
     public void save(Agent agent);
     public void save(TaskData taskData);
@@ -18,6 +19,6 @@ public interface AgentService {
     public TaskData getTaskData(long id);
     public Agent getAgent(long id);
     public TaskStepData getTaskStepData(long id);
-
+    public TaskMetadata getTaskMetadata(long id);
     List<TaskRun> findTaskHistoryForTaskId(long taskId);
 }

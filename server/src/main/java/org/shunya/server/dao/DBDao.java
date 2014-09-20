@@ -5,7 +5,7 @@ import org.shunya.shared.model.*;
 
 import java.util.List;
 
-public interface AgentDao {
+public interface DBDao {
     public List<Agent> list();
     public void saveOrUpdate(Agent agent);
     public void saveOrUpdate(TaskRun taskRun);

@@ -1,6 +1,6 @@
 package org.shunya.server;
 
-import org.shunya.server.services.AgentService;
+import org.shunya.server.services.DBService;
 import org.shunya.server.services.AgentWorker;
 import org.shunya.shared.TaskContext;
 import org.shunya.shared.model.*;
@@ -29,7 +29,7 @@ public class TaskService {
     private AgentWorker agentWorker;
 
     @Autowired
-    private AgentService agentService;
+    private DBService DBService;
 
     @Autowired
     @Qualifier("myExecutor")
@@ -39,7 +39,7 @@ public class TaskService {
     // if task has start but not completed - then execute rest of steps
     // if all task steps has completed, then do the cleanup
     public void createTaskRun(TaskRun taskRun) {
-        agentService.save(taskRun);
+        DBService.save(taskRun);
         TaskExecutionPlan executionPlan = taskExecutionPlanMap.computeIfAbsent(taskRun, k -> new TaskExecutionPlan(taskRun.getTaskData()));
         Map.Entry<Integer, List<TaskStepData>> next = executionPlan.next();
         if (next != null) {
@@ -48,7 +48,7 @@ public class TaskService {
             taskRun.setRunState(RunState.COMPLETED);
             taskRun.setFinishTime(new Date());
             taskRun.setRunStatus(RunStatus.NOT_RUN);
-            agentService.save(taskRun);
+            DBService.save(taskRun);
             logger.info(() -> "Task has no steps, completing it now");
         }
     }
@@ -57,7 +57,7 @@ public class TaskService {
         executor.execute(() -> {
             TaskStepRun taskStepRun = taskContext.getTaskStepRun();
             taskStepRun.setTaskRun(taskRun);
-            agentService.save(taskStepRun);
+            DBService.save(taskStepRun);
             currentlyRunningTaskSteps.get(taskRun).remove(taskStepRun);
             TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);
             taskExecutionPlan.getSessionMap().putAll(taskContext.getSessionMap());
@@ -88,7 +88,7 @@ public class TaskService {
             taskRun.setFinishTime(new Date());
             taskRun.setStatus(taskExecutionPlan.isTaskStatus());
             taskRun.setRunStatus(success);
-            agentService.save(taskRun);
+            DBService.save(taskRun);
         }
     }
 
@@ -106,7 +106,7 @@ public class TaskService {
                 taskStepRun.setTaskStepData(stepData);
                 taskStepRun.setTaskRun(taskRun);
                 taskStepRun.setAgent(agent);
-                agentService.save(taskStepRun);
+                DBService.save(taskStepRun);
                 currentlyRunningTaskSteps.computeIfAbsent(taskRun, tsr -> new Vector<>()).add(taskStepRun);
             });
         });
