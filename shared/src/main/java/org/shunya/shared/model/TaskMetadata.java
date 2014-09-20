@@ -14,7 +14,6 @@ public class TaskMetadata {
     private String className;
     private String description;
     private String author;
-    @Lob
     private String help;
 
     public TaskMetadata() {}

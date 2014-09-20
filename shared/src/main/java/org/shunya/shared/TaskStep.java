@@ -91,7 +91,7 @@ public abstract class TaskStep {
 
     public static TaskStep getTask(TaskStepData stepData) {
         try {
-            Class<?> clz = Class.forName(stepData.getClassName());
+            Class<?> clz = Class.forName(stepData.getTaskMetadata().getClassName());
             TaskStep task = (TaskStep) clz.newInstance();
             task.setOutputParams(FieldPropertiesMap.convertXmlToObject(stepData.getOutputParams()));
             task.setInputParams(FieldPropertiesMap.convertXmlToObject(stepData.getInputParams()));

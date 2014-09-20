@@ -1,17 +1,20 @@
 package org.shunya.shared.model;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.swing.text.Document;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static org.hibernate.annotations.CascadeType.DELETE;
+import static org.hibernate.annotations.CascadeType.SAVE_UPDATE;
 
 @Entity
 @Table(name = "TASK_RUN")
@@ -27,7 +30,8 @@ public class TaskRun implements Serializable {
     private Date startTime;
     @Temporal(TemporalType.TIMESTAMP)
     private Date finishTime;
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, mappedBy = "taskRun", fetch = FetchType.LAZY)
+    @Cascade({SAVE_UPDATE, DELETE})
+    @OneToMany(mappedBy = "taskRun")
 //    @Fetch(FetchMode.SELECT)
     @LazyCollection(LazyCollectionOption.TRUE)
     private List<TaskStepRun> taskStepRuns = new ArrayList<>();

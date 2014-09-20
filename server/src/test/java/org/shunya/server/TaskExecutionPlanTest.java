@@ -38,7 +38,7 @@ public class TaskExecutionPlanTest {
         TaskStepData stepData = new TaskStepData();
         stepData.setId(10);
         stepData.setSequence(sequence);
-        stepData.setClassName("org.shunya.shared.taskSteps.EchoTaskStep");
+//        stepData.setClassName("org.shunya.shared.taskSteps.EchoTaskStep");
         stepData.setName("Echo Munish Chandel");
         stepData.setInputParams(convertObjectToXml(parseStringMap(inMap)));
         Map<String, String> outMap = new HashMap<>();

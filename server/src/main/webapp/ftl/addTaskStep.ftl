@@ -32,8 +32,8 @@
                     <div class="col-lg-3">
                         <select id="taskClassSelect" class="form-control" name="classNameId">
                             <#list model["taskClasses"] as taskClass>
-                                <option value="${taskClass_index}"
-                                        <#if taskClass_index == model.selectedClassId >selected="selected"</#if>>${taskClass}</option>
+                                <option value="${taskClass.id}"
+                                        <#if taskClass.id == model.selectedClassId >selected="selected"</#if>>${taskClass.name}</option>
                             </#list>
                         </select>
                     </div>

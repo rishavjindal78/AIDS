@@ -7,10 +7,7 @@ import org.shunya.shared.FieldPropertiesMap;
 import org.shunya.shared.TaskContext;
 import org.shunya.shared.TaskStep;
 import org.shunya.shared.TaskStepDTO;
-import org.shunya.shared.model.Agent;
-import org.shunya.shared.model.TaskData;
-import org.shunya.shared.model.TaskRun;
-import org.shunya.shared.model.TaskStepData;
+import org.shunya.shared.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +21,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
 
+import static java.util.stream.Collectors.toList;
 import static org.shunya.shared.FieldPropertiesMap.convertObjectToXml;
 
 @Controller
@@ -43,7 +41,7 @@ public class ServerController {
     @Autowired
     private MyJobScheduler myJobScheduler;
 
-    final String[] taskClasses = {"EchoTaskStep", "DiscSpaceTaskStep", "SystemCommandTask"};
+//    final String[] taskClasses = {"EchoTaskStep", "DiscSpaceTaskStep", "SystemCommandTask"};
 
     @RequestMapping(value = "agents", method = RequestMethod.GET)
     public String agents(@ModelAttribute("model") ModelMap model) {
@@ -193,6 +191,7 @@ public class ServerController {
     public String editTaskStep(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id) throws Exception {
         TaskStepData stepData = DBService.getTaskStepData(id);
         model.addAttribute("stepData", stepData);
+        List<String> taskClasses = DBService.lisTaskMetadata().stream().map(TaskMetadata::getName).collect(toList());
         model.addAttribute("taskClasses", taskClasses);
 //        FieldPropertiesMap inPropertiesMap = TaskStep.listInputParams(Class.forName(stepData.getClassName()), parseStringMap(stepData.getInputParams()));
         FieldPropertiesMap inPropertiesMap = FieldPropertiesMap.convertXmlToObject(stepData.getInputParams());
@@ -203,12 +202,15 @@ public class ServerController {
     }
 
     @RequestMapping(value = "/addTaskStep/{taskId}", method = RequestMethod.GET)
-    public String viewTaskSteps(@ModelAttribute("model") ModelMap model, @PathVariable("taskId") long taskId, @RequestParam(value = "taskClassId", required = false, defaultValue = "0") int taskClassId) throws Exception {
+    public String viewTaskSteps(@ModelAttribute("model") ModelMap model, @PathVariable("taskId") long taskId, @RequestParam(value = "taskClassId", required = false, defaultValue = "0") long taskClassId) throws Exception {
+        List<TaskMetadata> taskMetadatas = DBService.lisTaskMetadata();
+        long firstId = taskMetadatas.stream().findFirst().get().getId();
+        taskClassId = (taskClassId==0?firstId:taskClassId);
         model.addAttribute("taskId", taskId);
-        FieldPropertiesMap inPropertiesMap = TaskStep.listInputParams(Class.forName("org.shunya.shared.taskSteps." + taskClasses[taskClassId]), Collections.<String, String>emptyMap());
-        FieldPropertiesMap outPropertiesMap = TaskStep.listOutputParams(Class.forName("org.shunya.shared.taskSteps." + taskClasses[taskClassId]), Collections.<String, String>emptyMap());
+        FieldPropertiesMap inPropertiesMap = TaskStep.listInputParams(Class.forName(DBService.getTaskMetadata(taskClassId).getClassName()), Collections.<String, String>emptyMap());
+        FieldPropertiesMap outPropertiesMap = TaskStep.listOutputParams(Class.forName(DBService.getTaskMetadata(taskClassId).getClassName()), Collections.<String, String>emptyMap());
         model.addAttribute("selectedClassId", taskClassId);
-        model.addAttribute("taskClasses", taskClasses);
+        model.addAttribute("taskClasses", taskMetadatas);
         model.addAttribute("inputParams", inPropertiesMap.values());
         model.addAttribute("outputParams", outPropertiesMap.values());
         model.addAttribute("referer", request.getHeader("referer"));
@@ -222,16 +224,16 @@ public class ServerController {
             taskStepData.setId(id);
             taskStepData.setSequence(taskStepDTO.getSequence());
             taskStepData.setDescription(taskStepDTO.getDescription());
-            taskStepData.setInputParams(convertObjectToXml(TaskStep.listInputParams(Class.forName(taskStepData.getClassName()),taskStepDTO.getInputParamsMap())));
-            taskStepData.setOutputParams(convertObjectToXml(TaskStep.listOutputParams(Class.forName(taskStepData.getClassName()), taskStepDTO.getOutputParamsMap())));
+            taskStepData.setInputParams(convertObjectToXml(TaskStep.listInputParams(Class.forName(taskStepData.getTaskMetadata().getClassName()),taskStepDTO.getInputParamsMap())));
+            taskStepData.setOutputParams(convertObjectToXml(TaskStep.listOutputParams(Class.forName(taskStepData.getTaskMetadata().getClassName()), taskStepDTO.getOutputParamsMap())));
             DBService.save(taskStepData);
         } else {
             TaskStepData taskStepData = new TaskStepData();
             taskStepData.setSequence(taskStepDTO.getSequence());
             taskStepData.setDescription(taskStepDTO.getDescription());
-            taskStepData.setClassName("org.shunya.shared.taskSteps." + taskClasses[taskStepDTO.getClassNameId()]);
-            taskStepData.setInputParams(convertObjectToXml(TaskStep.listInputParams(Class.forName(taskStepData.getClassName()),taskStepDTO.getInputParamsMap())));
-            taskStepData.setOutputParams(convertObjectToXml(TaskStep.listOutputParams(Class.forName(taskStepData.getClassName()), taskStepDTO.getOutputParamsMap())));
+            taskStepData.setTaskMetadata(DBService.getTaskMetadata(taskStepDTO.getClassNameId()));
+            taskStepData.setInputParams(convertObjectToXml(TaskStep.listInputParams(Class.forName(taskStepData.getTaskMetadata().getClassName()),taskStepDTO.getInputParamsMap())));
+            taskStepData.setOutputParams(convertObjectToXml(TaskStep.listOutputParams(Class.forName(taskStepData.getTaskMetadata().getClassName()), taskStepDTO.getOutputParamsMap())));
             taskStepData.setTaskData(taskStepDTO.getTaskData());
             DBService.save(taskStepData);
         }
@@ -242,6 +244,16 @@ public class ServerController {
     public String deleteStep(@PathVariable("id") long id, @ModelAttribute("stepData") TaskStepData stepData) throws IOException {
         if (id != 0) {
             DBService.deleteTaskStep(id);
+        }
+        final String referer = request.getHeader("referer");
+        System.out.println("referer = " + referer);
+        return "redirect:" + referer;
+    }
+
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
+    public String deleteTask(@PathVariable("id") long id, @ModelAttribute("taskData") TaskData taskData) throws IOException {
+        if (id != 0) {
+            DBService.deleteTask(id);
         }
         final String referer = request.getHeader("referer");
         System.out.println("referer = " + referer);

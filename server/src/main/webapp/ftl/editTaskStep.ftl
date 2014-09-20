@@ -28,7 +28,7 @@
 
                 <div class="col-lg-10">
                     <input id="classNameId" type="text" readonly="true" class="form-control" name="className"
-                           value="${model.stepData.className}">
+                           value="${model.stepData.taskMetadata.name}">
                 </div>
             </div>
 

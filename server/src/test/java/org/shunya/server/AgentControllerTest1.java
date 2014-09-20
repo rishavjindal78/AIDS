@@ -22,7 +22,7 @@ public class AgentControllerTest1 {
     public void testExecute() throws Exception {
         TaskStepData stepData = new TaskStepData();
         stepData.setId(10);
-        stepData.setClassName("org.shunya.shared.taskSteps.EchoTaskStep");
+//        stepData.setClassName("org.shunya.shared.taskSteps.EchoTaskStep");
         stepData.setName("Echo Munish Chandel");
         Map<String, String> inMap = new HashMap<>();
         inMap.put("name", "Munish Chandel");
@@ -50,7 +50,7 @@ public class AgentControllerTest1 {
     public void testDiscSpaceExecute() throws Exception {
         TaskStepData stepData = new TaskStepData();
         stepData.setId(10);
-        stepData.setClassName("org.shunya.shared.taskSteps.DiscSpaceTaskStep");
+//        stepData.setClassName("org.shunya.shared.taskSteps.DiscSpaceTaskStep");
         stepData.setName("Get Disc Space");
         Map<String, String> inMap = new HashMap<>();
         inMap.put("drive", "c:/");

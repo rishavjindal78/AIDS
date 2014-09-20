@@ -92,7 +92,7 @@
         <#list model.taskData.stepDataList as taskStepData>
             <tr>
                 <td>${taskStepData.sequence?string}</td>
-                <td>${taskStepData.className?string}</td>
+                <td>${taskStepData.taskMetadata.name?string}</td>
                 <td>${taskStepData.description!?string}</td>
                 <td><input type="checkbox" id="${taskStepData.id}"
                            <#if taskStepData.active?? && taskStepData.active?string=="true">checked="true"</#if></td>

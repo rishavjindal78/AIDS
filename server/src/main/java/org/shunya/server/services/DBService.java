@@ -9,6 +9,7 @@ public interface DBService {
     public List<TaskData> listTasks();
     public List<TaskMetadata> lisTaskMetadata();
     public void deleteTaskStep(long id);
+    public void deleteTask(long id);
     public void save(Agent agent);
     public void save(TaskData taskData);
     public void save(TaskStepData taskStepData);

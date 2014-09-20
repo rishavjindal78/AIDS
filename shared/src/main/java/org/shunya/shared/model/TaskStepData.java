@@ -19,7 +19,7 @@ import java.util.Set;
 @XmlType(name = "", propOrder = {
         "sequence",
         "name",
-        "className",
+        "taskMetadata",
         "description",
         "author",
         "active",
@@ -36,7 +36,9 @@ public class TaskStepData implements Serializable {
     private long id;
     private int sequence;
     private String name;
-    private String className;
+    @OneToOne
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private TaskMetadata taskMetadata;
     @Column(length = 500)
     private String description;
     private String author;
@@ -83,14 +85,6 @@ public class TaskStepData implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
     }
 
     public String getDescription() {
@@ -185,5 +179,13 @@ public class TaskStepData implements Serializable {
 
     public void setAgentList(List<Agent> agentList) {
         this.agentList = agentList;
+    }
+
+    public TaskMetadata getTaskMetadata() {
+        return taskMetadata;
+    }
+
+    public void setTaskMetadata(TaskMetadata taskMetadata) {
+        this.taskMetadata = taskMetadata;
     }
 }

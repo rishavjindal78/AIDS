@@ -50,6 +50,7 @@ public class TaskData implements Serializable {
     @OneToMany(mappedBy = "taskData", fetch = FetchType.LAZY)
     @XmlTransient
     @LazyCollection(LazyCollectionOption.TRUE)
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE})
     private List<TaskRun> taskRuns;
     @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
