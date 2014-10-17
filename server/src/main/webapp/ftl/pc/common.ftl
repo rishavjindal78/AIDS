@@ -23,11 +23,9 @@
             padding-top: 10px;
             padding-bottom: 20px;
         }
-
         .container {
             width: 90%;
         }
-
         .container-narrow > hr {
             margin: 30px 0;
         }
