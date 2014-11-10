@@ -43,6 +43,11 @@ public class ServerController {
 
 //    final String[] taskClasses = {"EchoTaskStep", "DiscSpaceTaskStep", "SystemCommandTask"};
 
+    @RequestMapping(value = "test", method = RequestMethod.GET)
+    public String test(@ModelAttribute("model") ModelMap model) {
+        return "test";
+    }
+
     @RequestMapping(value = "agents", method = RequestMethod.GET)
     public String agents(@ModelAttribute("model") ModelMap model) {
         model.addAttribute("message", "Hello world!");
@@ -100,6 +105,13 @@ public class ServerController {
         TaskData taskData = DBService.getTaskData(id);
         model.addAttribute("task", taskData);
         return "editTask";
+    }
+
+    @RequestMapping(value = "/viewLogs/{taskStepId}", method = RequestMethod.GET)
+    @ResponseBody
+    public String viewTaskStepLogs(@ModelAttribute("model") ModelMap model, @PathVariable("taskStepId") long taskStepId) throws Exception {
+        TaskStepRun taskStepRun = DBService.getTaskStepRun(taskStepId);
+        return taskStepRun.getLogs();
     }
 
     @RequestMapping(value = "addAgent/{id}", method = RequestMethod.GET)

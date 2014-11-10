@@ -22,7 +22,7 @@ public class DynamicJobScheduler implements MyJobScheduler{
 
     public void schedule(String cronExpression) {
         ScheduledFuture<?> scheduledFuture = scheduler.schedule(new MyTask(), new CronTrigger(cronExpression));
-        scheduledFuture.cancel(true);
+//        scheduledFuture.cancel(true);
     }
 
     public void unSchedule(){

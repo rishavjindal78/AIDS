@@ -26,20 +26,17 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            /*    $( ".taskStepEdit" ).click(function() {
-                    $.get('../viewLogs/'+this.id, function(data) {
-                        $(this).next(".content").html(data);
-                    });
-                });*/
-
             $('.content').hide();
-
             $('.heading').click(function () {
+                var targetSpan = '#span_'+this.id;
+                $.get('../viewLogs/'+this.id, function(data) {
+                    $(targetSpan).html(data);
+                });
                 $('#content_' + this.id).slideToggle(300);
 //                $(this).next('.content').slideToggle(300);
             })
 
-            prettyPrint();
+//            prettyPrint();
 
         });
     </script>
@@ -93,7 +90,7 @@
                 </td>
                 </tr>
                 <tr class="content" id='content_${taskStepHistory.id}'>
-                    <td colspan="6"><pre>${taskStepHistory.logs?string}</pre></td>
+                    <td colspan="7"><pre><span id='span_${taskStepHistory.id}'>test</span></pre></td>
                 </tr>
             </#list>
         </table>

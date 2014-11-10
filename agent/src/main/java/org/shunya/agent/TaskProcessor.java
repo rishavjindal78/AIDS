@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.Date;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -32,6 +29,7 @@ public class TaskProcessor {
     private SystemSupport systemSupport;
     private AtomicBoolean shutdown = new AtomicBoolean(false);
     private AtomicInteger runningJobCount = new AtomicInteger(0);
+    private ConcurrentMap<Long, TaskStep> cache = new ConcurrentHashMap<>();
 
     @Autowired
     private TaskExecutor myExecutor;
@@ -45,6 +43,7 @@ public class TaskProcessor {
                 TaskStep task = TaskStep.getTask(taskStepData);
                 task.setTaskStepData(taskStepData);
                 task.setSessionMap(taskContext.getSessionMap());
+                cache.putIfAbsent(taskContext.getTaskStepRun().getId(), task);
                 try {
                     task.beforeTaskStart();
                     boolean status = task.execute();
@@ -69,7 +68,16 @@ public class TaskProcessor {
             logger.error("Error executing the task - ", t);
         } finally {
             postProcess();
+            cache.remove(taskContext.getTaskStepRun().getId());
         }
+    }
+
+    public String getMemoryLogs(long id, long start){
+        TaskStep taskStep = cache.get(id);
+        if(taskStep !=null){
+            return taskStep.getMemoryLogs().substring((int) Math.min(taskStep.getMemoryLogs().length(), start));
+        }
+        return "";
     }
 
     private void postProcess() {

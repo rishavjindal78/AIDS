@@ -17,6 +17,7 @@ public interface DBService {
     public void save(TaskRun taskRun);
     public TaskRun getTaskRun(TaskStepRun taskStepRun);
     public TaskRun getTaskRun(long id);
+    public TaskStepRun getTaskStepRun(long id);
     public TaskData getTaskData(long id);
     public Agent getAgent(long id);
     public TaskStepData getTaskStepData(long id);

@@ -49,6 +49,7 @@ public class TaskService {
             taskRun.setFinishTime(new Date());
             taskRun.setRunStatus(RunStatus.NOT_RUN);
             DBService.save(taskRun);
+            taskExecutionPlanMap.remove(taskRun);
             logger.info(() -> "Task has no steps, completing it now");
         }
     }

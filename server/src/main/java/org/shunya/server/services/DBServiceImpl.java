@@ -93,6 +93,11 @@ public class DBServiceImpl implements DBService {
         return taskRun;
     }
 
+    @Override
+    public TaskStepRun getTaskStepRun(long id) {
+        return (TaskStepRun) DBDao.getSessionFactory().getCurrentSession().get(TaskStepRun.class, id);
+    }
+
     @Transactional(readOnly = true)
     public TaskData getTaskData(long id) {
 //        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);

@@ -58,7 +58,7 @@ public class SystemCommandTask extends TaskStep {
             captureProcessStreams.join();
 
             if (waitForTerminate) {
-                logger.log(Level.INFO, "Waiting for the process to terminate");
+                logger.log(Level.FINE, "Waiting for the process to terminate");
                 child.waitFor();
             }
         } catch (Exception e) {

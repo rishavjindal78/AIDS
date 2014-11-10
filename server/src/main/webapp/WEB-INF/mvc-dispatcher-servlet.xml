@@ -128,5 +128,11 @@
         <property name="mobilePrefix" value="mobile/" />
         <property name="tabletPrefix" value="tablet/" />
         <property name="normalPrefix" value="pc/" />
+        <property name="enableFallback" value="true"/>
     </bean>
+
+    <mvc:interceptors>
+        <!-- On pre-handle, resolve the device that originated the web request -->
+        <bean class="org.springframework.mobile.device.DeviceResolverHandlerInterceptor" />
+    </mvc:interceptors>
 </beans>
