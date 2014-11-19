@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PreDestroy;
 import java.net.ConnectException;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -114,9 +116,12 @@ public class TaskService {
         logger.info(() -> "execution started for task steps - " + taskStepDataList.get(0).getSequence());
         new CopyOnWriteArrayList<>(currentlyRunningTaskSteps.get(taskRun)).parallelStream().forEach(taskStepRun -> {
             TaskContext executionContext = new TaskContext();
-            executionContext.setSessionMap(taskExecutionPlanMap.get(taskRun).getSessionMap());
-            executionContext.setTaskStepRun(taskStepRun);
             try {
+                String hostAddress = Inet4Address.getLocalHost().getHostAddress();
+                String callbackUrl = "http://" + hostAddress + ":9290/rest/server/submitTaskStepResults";
+                executionContext.setCallbackURL(callbackUrl);
+                executionContext.setSessionMap(taskExecutionPlanMap.get(taskRun).getSessionMap());
+                executionContext.setTaskStepRun(taskStepRun);
                 agentWorker.submitTaskToAgent(executionContext);
                 logger.info(() -> "task submitted - " + taskStepRun.getTaskStepData().getDescription());
             } catch (Exception e) {
