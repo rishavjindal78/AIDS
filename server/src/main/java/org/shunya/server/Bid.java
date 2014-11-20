@@ -1,8 +1,5 @@
 package org.shunya.server;
 
-/**
- * Created by munichan on 3/5/14.
- */
 public class Bid {
     private String auctionId;
 
