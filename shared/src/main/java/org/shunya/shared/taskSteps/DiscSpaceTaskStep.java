@@ -13,13 +13,13 @@ public class DiscSpaceTaskStep extends TaskStep {
     @InputParam(required = true, displayName = "Drive Path", type = "textarea", description = "enter your name here")
     private String drive;
 
-    @OutputParam(displayName = "percentFree")
+    @OutputParam(displayName = "Percent Free")
     private long percentFree = 0;
 
-    @OutputParam(displayName = "totalSpace")
+    @OutputParam(displayName = "Total Space")
     private long totalSpace = 0;
 
-    @OutputParam(displayName = "freeSpace")
+    @OutputParam(displayName = "Free Space")
     private long freeSpace = 0;
 
     @Override

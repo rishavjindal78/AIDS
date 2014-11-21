@@ -9,7 +9,7 @@ import org.shunya.shared.utils.RestClient;
 
 import java.util.logging.Level;
 
-@PunterTask(author = "munishc", name = "FileUploadTask", description = "Plays HTTP GET Request on the given URL.", documentation = "src/main/resources/docs/TextSamplerDemoHelp.html")
+@PunterTask(author = "munishc", name = "FileUploadTask", description = "Transfers file from one agent to another", documentation = "src/main/resources/docs/TextSamplerDemoHelp.html")
 public class FileUploadTaskStep extends TaskStep {
     @InputParam(required = true, displayName = "Server Address", description = "enter your httpUrl here http://localhost:8080/upload/")
     private String server;

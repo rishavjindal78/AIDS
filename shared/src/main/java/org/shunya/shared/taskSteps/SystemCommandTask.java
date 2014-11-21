@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@PunterTask(author = "munishc", name = "SystemCommandTask", documentation = "src/main/resources/docs/SystemCommandTask.html")
+@PunterTask(author = "munishc", name = "SystemCommandTask", description = "Runs System Command on Windows Machine", documentation = "src/main/resources/docs/SystemCommandTask.html")
 public class SystemCommandTask extends TaskStep {
     @InputParam(required = true, displayName = "System Command", type = "textarea", description = "any systemCommand")
     public String systemCommand;
@@ -43,20 +43,15 @@ public class SystemCommandTask extends TaskStep {
                 }
             });
             captureProcessStreams.start();
-
             OutputStream out = child.getOutputStream();
-
             for (String command : commands) {
                 out.write((command + "\r\n").getBytes());
                 out.flush();
             }
-
 //            out.write("exit\r\n".getBytes());
 //            out.flush();
             out.close();
-
             captureProcessStreams.join();
-
             if (waitForTerminate) {
                 logger.log(Level.FINE, "Waiting for the process to terminate");
                 child.waitFor();
