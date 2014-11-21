@@ -11,13 +11,13 @@ import java.util.logging.Level;
 
 @PunterTask(author = "munishc", name = "FileUploadTask", description = "Plays HTTP GET Request on the given URL.", documentation = "src/main/resources/docs/TextSamplerDemoHelp.html")
 public class FileUploadTaskStep extends TaskStep {
-    @InputParam(required = true, description = "enter your httpUrl here http://localhost:8080/upload/")
+    @InputParam(required = true, displayName = "Server Address", description = "enter your httpUrl here http://localhost:8080/upload/")
     private String server;
-    @InputParam(required = false, description = "Path of the file to upload e:/test.mp3")
+    @InputParam(required = false, displayName = "Local File Path", description = "Path of the file to upload e:/test.mp3")
     private String filePath;
-    @InputParam(required = false, description = "Name of the file")
+    @InputParam(required = false, displayName = "Target FIle Name", description = "Name of the file")
     private String name;
-    @InputParam(required = false, description = "Remote Path for the file")
+    @InputParam(required = false, displayName = "Target Folder", description = "Remote Path for the file")
     private String remotePath;
     private RestClient restClient = new RestClient();
 

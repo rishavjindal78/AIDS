@@ -55,12 +55,12 @@
                             <td hidden="true">${fieldProperties.displayName!?string}</td>
                             <td>
                                 <#if fieldProperties.type == 'textarea'>
-                                    <label for="inputParamsMap['${fieldProperties.name?string}']">${fieldProperties.displayName!?string}</label>
+                                    <label for="inputParamsMap['${fieldProperties.name?string}']">${fieldProperties.displayName!fieldProperties.name!?string}</label>
                                     <textarea class="form-control" id="inputParamsMap['${fieldProperties.name?string}']" name="inputParamsMap['${fieldProperties.name?string}']" placeholder="Enter text ..." rows="10">${fieldProperties.value?string}</textarea>
                                 <#elseif fieldProperties.type == 'date'>
 
                                  <#else>
-                                    <label for="inputParamsMap['${fieldProperties.name?string}']">${fieldProperties.displayName!?string}</label>
+                                    <label for="inputParamsMap['${fieldProperties.name?string}']">${fieldProperties.name!?string}</label>
                                     <input type="text" id="inputParamsMap['${fieldProperties.name?string}']" class="form-control" name="inputParamsMap['${fieldProperties.name?string}']" value="${fieldProperties.value?string}"/>
                                 </#if>
                             </td>
@@ -75,7 +75,7 @@
                         <tr>
                             <td hidden="true">${fieldProperties.displayName!?string}</td>
                             <td>
-                                <label for="outputParamsMap['${fieldProperties.name?string}']">${fieldProperties.displayName!?string}</label>
+                                <label for="outputParamsMap['${fieldProperties.name?string}']">${fieldProperties.name!?string}</label>
                                 <input id="outputParamsMap['${fieldProperties.name?string}']" type="text" class="form-control" name="outputParamsMap['${fieldProperties.name?string}']"
                                        value="${fieldProperties.value?string}"/>
                             </td>
