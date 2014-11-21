@@ -15,16 +15,15 @@ public class SystemSupport implements ServerStateListener {
     static final Logger logger = LoggerFactory.getLogger(SystemSupport.class);
 
     private final TrayIcon trayIcon;
-    private AgentState agentCurrentState = AgentState.Disconnect;
+    private AgentState agentCurrentState = AgentState.Idle;
     private BufferedImage currentImage;
-    private final BufferedImage disconnect, idle, busy;
+    private final BufferedImage idle, busy;
 
     public SystemSupport() throws HeadlessException, IOException, AWTException {
-        disconnect = ImageIO.read(SystemSupport.class.getClassLoader().getResourceAsStream("AgentDisconnect.png"));
-        idle = ImageIO.read(SystemSupport.class.getClassLoader().getResourceAsStream("AgentIdle.png"));
+        idle = ImageIO.read(SystemSupport.class.getClassLoader().getResourceAsStream("AgentDisconnect.png"));
         busy = ImageIO.read(SystemSupport.class.getClassLoader().getResourceAsStream("AgentBusy.png"));
-        trayIcon = new TrayIcon(disconnect);
-        trayIcon.setToolTip("Agent ID");
+        trayIcon = new TrayIcon(idle);
+        trayIcon.setToolTip("AIDS Agent Started");
         trayIcon.setImageAutoSize(true);
         startSystemTray();
     }
@@ -56,7 +55,7 @@ public class SystemSupport implements ServerStateListener {
 
     private void startSystemTray() throws AWTException {
         if (SystemTray.isSupported()) {
-            update(AgentState.Disconnect);
+            update(AgentState.Idle);
             Dimension trayIconSize = SystemTray.getSystemTray().getTrayIconSize();
             System.out.println("trayIconSize = " + trayIconSize);
             SystemTray.getSystemTray().add(trayIcon);
@@ -79,9 +78,6 @@ public class SystemSupport implements ServerStateListener {
                 break;
             case Busy:
                 currentImage = busy;
-                break;
-            case Disconnect:
-                currentImage = disconnect;
                 break;
         }
         logger.info("updating state to {} ", state.getDisplayMessage());

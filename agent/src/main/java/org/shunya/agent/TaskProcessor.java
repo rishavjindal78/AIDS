@@ -36,8 +36,8 @@ public class TaskProcessor {
 
     public void executeTask(TaskContext taskContext) throws InterruptedException {
         try {
-            preProcess();
             myExecutor.execute(() -> {
+                preProcess();
                 TaskStepData taskStepData = taskContext.getTaskStepRun().getTaskStepData();
                 taskContext.getTaskStepRun().setStartTime(new Date());
                 TaskStep task = TaskStep.getTask(taskStepData);
@@ -62,19 +62,19 @@ public class TaskProcessor {
                     taskContext.getTaskStepRun().setRunState(RunState.COMPLETED);
                     task.afterTaskFinish();
                     serverWorker.postResultToServer(taskContext.getCallbackURL(), taskContext);
+                    postProcess();
                 }
             });
         } catch (Throwable t) {
             logger.error("Error executing the task - ", t);
         } finally {
-            postProcess();
             cache.remove(taskContext.getTaskStepRun().getId());
         }
     }
 
-    public String getMemoryLogs(long id, long start){
+    public String getMemoryLogs(long id, long start) {
         TaskStep taskStep = cache.get(id);
-        if(taskStep !=null){
+        if (taskStep != null) {
             return taskStep.getMemoryLogs().substring((int) Math.min(taskStep.getMemoryLogs().length(), start));
         }
         return "";

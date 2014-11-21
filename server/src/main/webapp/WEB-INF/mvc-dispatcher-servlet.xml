@@ -46,7 +46,7 @@
                 <prop key="hibernate.max_fetch_depth">3</prop>
                 <prop key="hibernate.jdbc.batch_size">50</prop>
                 <prop key="hibernate.connection.autocommit">false</prop>
-                <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto:create}</prop>
+                <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto:update}</prop>
                 <prop key="javax.persistence.lock.timeout">1000</prop>
                 <!--<prop key="hibernate.search.default.directory_provider">filesystem</prop>-->
                 <!--<prop key="hibernate.search.default.indexBase">${lucene.indexBase}</prop>-->

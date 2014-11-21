@@ -15,8 +15,7 @@ public class DBDaoImpl implements DBDao {
 
     @Override
     public List<Agent> list() {
-        return sessionFactory.getCurrentSession().createCriteria(Agent.class)
-                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
+        return sessionFactory.getCurrentSession().createCriteria(Agent.class).setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).list();
     }
 
     @Override
