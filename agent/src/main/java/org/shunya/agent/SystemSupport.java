@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -14,13 +16,15 @@ import java.io.IOException;
 public class SystemSupport implements ServerStateListener {
     static final Logger logger = LoggerFactory.getLogger(SystemSupport.class);
 
-    private final TrayIcon trayIcon;
+    private TrayIcon trayIcon;
     private AgentState agentCurrentState = AgentState.Idle;
     private BufferedImage currentImage;
-    private final BufferedImage idle, busy;
+    private BufferedImage idle, busy;
 
-    public SystemSupport() throws HeadlessException, IOException, AWTException {
-        idle = ImageIO.read(SystemSupport.class.getClassLoader().getResourceAsStream("AgentDisconnect.png"));
+    @PostConstruct
+    public void init() throws HeadlessException, IOException, AWTException {
+        logger.info("Starting SystemSupport");
+        idle = ImageIO.read(SystemSupport.class.getClassLoader().getResourceAsStream("AgentIdle.png"));
         busy = ImageIO.read(SystemSupport.class.getClassLoader().getResourceAsStream("AgentBusy.png"));
         trayIcon = new TrayIcon(idle);
         trayIcon.setToolTip("AIDS Agent Started");
@@ -55,13 +59,17 @@ public class SystemSupport implements ServerStateListener {
 
     private void startSystemTray() throws AWTException {
         if (SystemTray.isSupported()) {
+            logger.warn("SystemTray is supported in this system");
             update(AgentState.Idle);
             Dimension trayIconSize = SystemTray.getSystemTray().getTrayIconSize();
             System.out.println("trayIconSize = " + trayIconSize);
             SystemTray.getSystemTray().add(trayIcon);
+        } else {
+            logger.warn("SystemTray is not supported in this system");
         }
     }
 
+    @PreDestroy
     public void shutdown() {
         SystemTray.getSystemTray().remove(trayIcon);
         System.exit(0);

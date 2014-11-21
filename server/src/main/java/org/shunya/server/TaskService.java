@@ -45,6 +45,9 @@ public class TaskService {
         TaskExecutionPlan executionPlan = taskExecutionPlanMap.computeIfAbsent(taskRun, k -> new TaskExecutionPlan(taskRun.getTaskData()));
         Map.Entry<Integer, List<TaskStepData>> next = executionPlan.next();
         if (next != null) {
+            taskRun.setRunState(RunState.RUNNING);
+            taskRun.setRunStatus(RunStatus.RUNNING);
+            DBService.save(taskRun);
             delegateTaskSteps(next.getValue(), taskRun);
         } else {
             taskRun.setRunState(RunState.COMPLETED);

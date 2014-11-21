@@ -2,20 +2,17 @@ package org.shunya.agent.services;
 
 import org.shunya.shared.TaskContext;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.logging.Logger;
 
 @Service
-public class ServerWorker {
-    private static final Logger logger = Logger.getLogger(ServerWorker.class.getName());
+public class RestClientService {
+    private static final Logger logger = Logger.getLogger(RestClientService.class.getName());
 
     private RestTemplate restTemplate = new RestTemplate();
 

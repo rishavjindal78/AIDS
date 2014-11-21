@@ -1,6 +1,6 @@
 package org.shunya.agent;
 
-import org.shunya.agent.services.ServerWorker;
+import org.shunya.agent.services.RestClientService;
 import org.shunya.shared.TaskContext;
 import org.shunya.shared.TaskStep;
 import org.shunya.shared.model.RunState;
@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TaskProcessor {
     static final Logger logger = LoggerFactory.getLogger(TaskProcessor.class);
     @Autowired
-    private ServerWorker serverWorker;
+    private RestClientService restClientService;
     @Autowired
     private SystemSupport systemSupport;
     private AtomicBoolean shutdown = new AtomicBoolean(false);
@@ -61,7 +61,7 @@ public class TaskProcessor {
                 } finally {
                     taskContext.getTaskStepRun().setRunState(RunState.COMPLETED);
                     task.afterTaskFinish();
-                    serverWorker.postResultToServer(taskContext.getCallbackURL(), taskContext);
+                    restClientService.postResultToServer(taskContext.getCallbackURL(), taskContext);
                     postProcess();
                 }
             });
@@ -99,7 +99,6 @@ public class TaskProcessor {
 
     @PostConstruct
     public void start() {
-
     }
 
     @PreDestroy
