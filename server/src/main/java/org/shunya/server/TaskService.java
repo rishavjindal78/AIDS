@@ -8,12 +8,12 @@ import org.shunya.shared.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PreDestroy;
 import java.net.ConnectException;
 import java.net.Inet4Address;
-import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -40,6 +40,7 @@ public class TaskService {
     // if task is not started at all - create execution plan and start it
     // if task has start but not completed - then execute rest of steps
     // if all task steps has completed, then do the cleanup
+    @Async
     public void createTaskRun(TaskRun taskRun) {
         DBService.save(taskRun);
         TaskExecutionPlan executionPlan = taskExecutionPlanMap.computeIfAbsent(taskRun, k -> new TaskExecutionPlan(taskRun.getTaskData()));
@@ -48,7 +49,7 @@ public class TaskService {
             taskRun.setRunState(RunState.RUNNING);
             taskRun.setRunStatus(RunStatus.RUNNING);
             DBService.save(taskRun);
-            delegateTaskSteps(next.getValue(), taskRun);
+            delegateTaskStepToAgents(next.getValue(), taskRun);
         } else {
             taskRun.setRunState(RunState.COMPLETED);
             taskRun.setFinishTime(new Date());
@@ -59,9 +60,10 @@ public class TaskService {
         }
     }
 
-    public void processNextSteps(TaskRun taskRun, TaskContext taskContext) {
+    public void consumeTaskStepResults(TaskRun taskRun, TaskContext taskContext) {
         executor.execute(() -> {
             TaskStepRun taskStepRun = taskContext.getTaskStepRun();
+            logger.info(() -> "Execution Completed for Step - " + taskStepRun.getSequence());
             taskStepRun.setTaskRun(taskRun);
             DBService.save(taskStepRun);
             currentlyRunningTaskSteps.get(taskRun).remove(taskStepRun);
@@ -74,18 +76,22 @@ public class TaskService {
                     saveTaskRun(taskRun, taskExecutionPlan, RunStatus.FAILURE);
                     return;
                 }
-                Map.Entry<Integer, List<TaskStepData>> next = taskExecutionPlan.next();
-                if (next != null) {
-                    delegateTaskSteps(next.getValue(), taskRun);
-                } else {
-                    currentlyRunningTaskSteps.remove(taskRun);
-                    saveTaskRun(taskRun, taskExecutionPlan, RunStatus.SUCCESS);
-                    logger.info(() -> "Task has no further steps, completing it now");
-                }
+                processNextStep(taskRun, taskExecutionPlan);
             } else {
                 logger.info(() -> "Waiting for other parallel steps to complete for sequence - " + taskStepRun.getTaskStepData().getSequence());
             }
         });
+    }
+
+    private void processNextStep(TaskRun taskRun, TaskExecutionPlan taskExecutionPlan) {
+        Map.Entry<Integer, List<TaskStepData>> next = taskExecutionPlan.next();
+        if (next != null) {
+            delegateTaskStepToAgents(next.getValue(), taskRun);
+        } else {
+            currentlyRunningTaskSteps.remove(taskRun);
+            saveTaskRun(taskRun, taskExecutionPlan, RunStatus.SUCCESS);
+            logger.info(() -> "Task has no further steps, completing it now");
+        }
     }
 
     private void saveTaskRun(TaskRun taskRun, TaskExecutionPlan taskExecutionPlan, RunStatus success) {
@@ -103,7 +109,7 @@ public class TaskService {
         logger.info(() -> "Destroying the Task Service context");
     }
 
-    private void delegateTaskSteps(List<TaskStepData> taskStepDataList, TaskRun taskRun) {
+    private void delegateTaskStepToAgents(List<TaskStepData> taskStepDataList, TaskRun taskRun) {
         taskStepDataList.parallelStream().forEach(stepData -> {
             List<Agent> agentList = stepData.getAgentList().size() > 0 ? stepData.getAgentList() : taskExecutionPlanMap.get(taskRun).getTaskData().getAgentList();
             agentList.stream().forEach(agent -> {
@@ -116,32 +122,37 @@ public class TaskService {
                 currentlyRunningTaskSteps.computeIfAbsent(taskRun, tsr -> new Vector<>()).add(taskStepRun);
             });
         });
-        logger.info(() -> "execution started for task steps - " + taskStepDataList.get(0).getSequence());
-        new CopyOnWriteArrayList<>(currentlyRunningTaskSteps.get(taskRun)).parallelStream().forEach(taskStepRun -> {
-            TaskContext executionContext = new TaskContext();
-            try {
-                String hostAddress = Inet4Address.getLocalHost().getHostAddress();
-                String callbackUrl = "http://" + hostAddress + ":9290/rest/server/submitTaskStepResults";
-                executionContext.setCallbackURL(callbackUrl);
-                executionContext.setSessionMap(taskExecutionPlanMap.get(taskRun).getSessionMap());
-                executionContext.setTaskStepRun(taskStepRun);
-                agentWorker.submitTaskToAgent(executionContext);
-                logger.info(() -> "task submitted - " + taskStepRun.getTaskStepData().getDescription());
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Task Submission Failed", e);
-                taskExecutionPlanMap.get(taskRun).setTaskStatus(false);
-                executionContext.getTaskStepRun().setStatus(false);
-                if (e.getCause() != null && e.getCause() instanceof ConnectException) {
-                    executionContext.getTaskStepRun().setLogs("Task Submission Failed, Agent not reachable - " + executionContext.getTaskStepRun().getAgent().getName() + "\r\n" + e);
-                } else {
-                    executionContext.getTaskStepRun().setLogs("Task Submission Failed - " + Utils.getStackTrace(e));
+        if (currentlyRunningTaskSteps.get(taskRun).size() > 0) {
+            logger.info(() -> "execution started for task step - " + taskStepDataList.get(0).getSequence());
+            new CopyOnWriteArrayList<>(currentlyRunningTaskSteps.get(taskRun)).parallelStream().forEach(taskStepRun -> {
+                TaskContext executionContext = new TaskContext();
+                try {
+                    String hostAddress = Inet4Address.getLocalHost().getHostAddress();
+                    String callbackUrl = "http://" + hostAddress + ":9290/rest/server/submitTaskStepResults";
+                    executionContext.setCallbackURL(callbackUrl);
+                    executionContext.setSessionMap(taskExecutionPlanMap.get(taskRun).getSessionMap());
+                    executionContext.setTaskStepRun(taskStepRun);
+                    agentWorker.submitTaskToAgent(executionContext);
+                    logger.info(() -> "task submitted - " + taskStepRun.getTaskStepData().getDescription());
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, "Task Submission Failed", e);
+                    taskExecutionPlanMap.get(taskRun).setTaskStatus(false);
+                    executionContext.getTaskStepRun().setStatus(false);
+                    if (e.getCause() != null && e.getCause() instanceof ConnectException) {
+                        executionContext.getTaskStepRun().setLogs("Task Submission Failed, Agent not reachable - " + executionContext.getTaskStepRun().getAgent().getName() + "\r\n" + e);
+                    } else {
+                        executionContext.getTaskStepRun().setLogs("Task Submission Failed - " + Utils.getStackTrace(e));
+                    }
+                    executionContext.getTaskStepRun().setFinishTime(new Date());
+                    executionContext.getTaskStepRun().setRunStatus(RunStatus.FAILURE);
+                    executionContext.getTaskStepRun().setRunState(RunState.COMPLETED);
+                    consumeTaskStepResults(taskRun, executionContext);
                 }
-                executionContext.getTaskStepRun().setFinishTime(new Date());
-                executionContext.getTaskStepRun().setRunStatus(RunStatus.FAILURE);
-                executionContext.getTaskStepRun().setRunState(RunState.COMPLETED);
-                processNextSteps(taskRun, executionContext);
-            }
-        });
-        logger.info(() -> "execution completed for task steps - " + taskStepDataList.get(0).getSequence());
+            });
+            logger.info(() -> "execution command sent for task step - " + taskStepDataList.get(0).getSequence());
+        } else {
+            logger.warning(() -> "execution skipped for task step as there was no agent configured - " + taskStepDataList.get(0).getSequence());
+            processNextStep(taskRun, taskExecutionPlanMap.get(taskRun));
+        }
     }
 }

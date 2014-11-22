@@ -43,16 +43,29 @@
                 <tr class="text-warning">
                 <#else >
                 <tr class="text-success"></#if>
-                    <td>${taskHistory.id?string}</td>
-                    <td><a href="../taskStepHistory/${taskHistory.id}">${taskHistory.name!?string}</a></td>
-                    <td>${taskHistory.comments!?string}</td>
-                    <td><#if taskHistory.startTime??>${taskHistory.startTime?datetime?string("dd MMM, yyyy hh.mm aa")}</#if></td>
-                    <td>${taskHistory.runDuration!?string}</td>
-                    <td>${taskHistory.runStatus!?string}</td>
+                <td>${taskHistory.id?string}</td>
+                <td><a href="../taskStepHistory/${taskHistory.id}">${taskHistory.name!?string}</a></td>
+                <td>${taskHistory.comments!?string}</td>
+                <td><#if taskHistory.startTime??>${taskHistory.startTime?datetime?string("dd MMM, yyyy hh.mm aa")}</#if></td>
+                <td>${taskHistory.runDuration!?string}</td>
+                <#if taskHistory.runStatus?string == 'FAILURE'>
                     <td>
-                        <a href="../deleteTaskHistory/${taskHistory.id}" class="btn btn-small btn-primary">delete</a>
+                        <button type="button" class="btn btn-danger">${taskHistory.runStatus!?string}</button>
                     </td>
-                </tr>
+                <#elseif taskHistory.runStatus?string == 'SUCCESS'>
+                    <td>
+                        <button type="button" class="btn btn-success">${taskHistory.runStatus!?string}</button>
+                    </td>
+                <#else >
+                    <td>
+                        <button type="button" class="btn btn-warning">${taskHistory.runStatus!?string}</button>
+                    </td>
+                </#if>
+
+                <td>
+                    <a href="../deleteTaskHistory/${taskHistory.id}" class="btn btn-small btn-primary">delete</a>
+                </td>
+            </tr>
             </#list>
         </table>
     </div>

@@ -81,9 +81,10 @@
                 <td>${taskStepHistory.agent.name!?string}</td>
                 <td><#if taskStepHistory.startTime??>${taskStepHistory.startTime?datetime?string("dd MMM, yyyy hh.mm aa")}</#if></td>
                 <#if taskStepHistory.runStatus?string == 'FAILURE'>
-                <td class="text-danger"><#else >
-                <td class="text-success"></#if>
-                ${taskStepHistory.runStatus!?string}</td>
+                <td><button type="button" class="btn btn-danger">${taskStepHistory.runStatus!?string}</button></td>
+                <#else >
+                    <td><button type="button" class="btn btn-success">${taskStepHistory.runStatus!?string}</button></td>
+                </#if>
                 <td>
                     <a class="btn btn-small btn-primary viewTaskLogs heading" id="${taskStepHistory.id}" href="#">logs</a>
                     <a class="btn btn-small btn-warning" href="delete/${taskStepHistory.id}">delete</a>

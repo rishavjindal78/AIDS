@@ -24,6 +24,8 @@ public class AgentWorker {
     }
 
     public void submitTaskToAgent(TaskContext taskContext) {
+        if(taskContext.getTaskStepRun().getAgent().getBaseUrl()==null || taskContext.getTaskStepRun().getAgent().getBaseUrl().isEmpty())
+            throw new RuntimeException("No Host Configured for this Agent " + taskContext.getTaskStepRun().getAgent().getName());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Content-Type", "application/json; charset=utf-8");

@@ -290,7 +290,7 @@ public class ServerController {
     @RequestMapping(value = "run/{taskId}", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ResponseBody
-    public void runTaskData(@PathVariable("taskId") Long taskId, @RequestParam String comment, Principal principal) {
+    public TaskRun runTaskData(@PathVariable("taskId") Long taskId, @RequestParam String comment, Principal principal) {
         logger.info("Run request for {}, user comments ", taskId, comment);
         TaskData taskData = DBService.getTaskData(taskId);
         TaskRun taskRun = new TaskRun();
@@ -299,14 +299,15 @@ public class ServerController {
         taskRun.setStartTime(new Date());
         taskRun.setComments(comment);
         taskService.createTaskRun(taskRun);
+        return taskRun;
     }
 
     @RequestMapping(value = "submitTaskStepResults", method = RequestMethod.POST)
     @ResponseBody
     public String submitTaskStepResults(@RequestBody TaskContext taskContext) {
-        logger.info("Successfully received Task results {} ", taskContext);
+        logger.info("Successfully received Task results {} ", taskContext.getTaskStepRun().getSequence());
         TaskRun taskRun = DBService.getTaskRun(taskContext.getTaskStepRun());
-        taskService.processNextSteps(taskRun, taskContext);
+        taskService.consumeTaskStepResults(taskRun, taskContext);
         return "success";
     }
 
