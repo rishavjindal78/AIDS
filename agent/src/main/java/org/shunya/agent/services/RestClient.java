@@ -11,8 +11,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.logging.Logger;
 
 @Service
-public class RestClientService {
-    private static final Logger logger = Logger.getLogger(RestClientService.class.getName());
+public class RestClient {
+    private static final Logger logger = Logger.getLogger(RestClient.class.getName());
 
     private RestTemplate restTemplate = new RestTemplate();
 

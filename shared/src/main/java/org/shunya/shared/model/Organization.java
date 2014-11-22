@@ -1,23 +1,29 @@
 package org.shunya.shared.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
-@Table(name="AGENT")
-@TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "AGENT", allocationSize = 10)
-public class Agent {
+@Table(name="ORGANIZATION")
+@TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "ORG", allocationSize = 1)
+public class Organization {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")
     private long id;
-    @OneToOne
-    private Organization organization;
-    @OneToOne
-    private Team team;
     private String name;
     private String description;
-    private String baseUrl;
+    @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY)
+    @JsonIgnore
+    @LazyCollection(LazyCollectionOption.TRUE)
+    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.DELETE})
+    private List<Team> teamList;
 
-    public Agent() {}
+    public Organization() {}
 
     public long getId() {
         return id;
@@ -43,20 +49,12 @@ public class Agent {
         this.description = description;
     }
 
-    public String getBaseUrl() {
-        return baseUrl;
-    }
-
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Agent agent = (Agent) o;
+        Organization agent = (Organization) o;
 
         if (id != agent.id) return false;
 
@@ -68,19 +66,11 @@ public class Agent {
         return (int) (id ^ (id >>> 32));
     }
 
-    public Organization getOrganization() {
-        return organization;
+    public List<Team> getTeamList() {
+        return teamList;
     }
 
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
-    }
-
-    public Team getTeam() {
-        return team;
-    }
-
-    public void setTeam(Team team) {
-        this.team = team;
+    public void setTeamList(List<Team> teamList) {
+        this.teamList = teamList;
     }
 }

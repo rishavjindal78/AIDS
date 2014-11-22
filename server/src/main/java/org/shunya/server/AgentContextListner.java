@@ -24,16 +24,13 @@ public class AgentContextListner {
 
     public void runTaskOnAgent(TaskContext taskContext, Agent agent) {
         AsyncContext asyncContext = agentAsyncContextMap.get(agent);
-        executorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    asyncContext.getResponse().getWriter().write("New Job Received @ " + new Date());
+        executorService.submit(() -> {
+            try {
+                asyncContext.getResponse().getWriter().write("New Job Received @ " + new Date());
 //                    asyncContext.getResponse().getWriter().flush();
-                    asyncContext.complete();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                asyncContext.complete();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
     }

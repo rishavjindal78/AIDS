@@ -35,6 +35,10 @@ public class TaskData implements Serializable {
     private String name;
     private String description;
     private String tags;
+    @OneToOne
+    private Organization organization;
+    @OneToOne
+    private Team team;
     @Column(length = 500)
     private String comments;
     private boolean abortOnFirstFailure = true;
@@ -164,5 +168,21 @@ public class TaskData implements Serializable {
 
     public void setAbortOnFirstFailure(boolean abortOnFirstFailure) {
         this.abortOnFirstFailure = abortOnFirstFailure;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
     }
 }

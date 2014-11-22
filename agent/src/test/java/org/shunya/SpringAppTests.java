@@ -2,7 +2,7 @@ package org.shunya;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.shunya.agent.services.RestClientService;
+import org.shunya.agent.services.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -11,7 +11,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration("classpath*:mvc-dispatcher-servlet.xml")
 public class SpringAppTests {
     @Autowired
-    private RestClientService restClientService;
+    private RestClient restClient;
 
     @Test
     public void testSayHello() {
