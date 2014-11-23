@@ -1,4 +1,4 @@
-package org.shunya.server;
+package org.shunya.server.poc;
 
 import org.shunya.shared.TaskContext;
 import org.shunya.shared.model.Agent;

@@ -1,10 +1,10 @@
-package org.shunya.server;
+package org.shunya.server.services;
 
-import org.shunya.server.services.AgentWorker;
-import org.shunya.server.services.DBService;
+import org.shunya.server.TaskExecutionPlan;
 import org.shunya.shared.TaskContext;
 import org.shunya.shared.model.*;
 import org.shunya.shared.utils.Utils;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,13 +24,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class TaskService {
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(TaskService.class);
+    private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
 
     Map<TaskRun, TaskExecutionPlan> taskExecutionPlanMap = new ConcurrentHashMap<>(100);
     Map<TaskRun, List<TaskStepRun>> currentlyRunningTaskSteps = new ConcurrentHashMap<>(100);
 
     @Autowired
-    private AgentWorker agentWorker;
+    private RestClient restClient;
 
     @Autowired
     private DBService DBService;
@@ -134,7 +134,7 @@ public class TaskService {
                     executionContext.setCallbackURL(callbackUrl);
                     executionContext.setSessionMap(taskExecutionPlanMap.get(taskRun).getSessionMap());
                     executionContext.setTaskStepRun(taskStepRun);
-                    agentWorker.submitTaskToAgent(executionContext);
+                    restClient.submitTaskToAgent(executionContext);
                     logger.info("task submitted - " + taskStepRun.getTaskStepData().getDescription());
                 } catch (Exception e) {
                     logger.error("Task Submission Failed", e);

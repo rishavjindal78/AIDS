@@ -17,16 +17,16 @@
     </servlet>
 <!--    <servlet>
         <servlet-name>helloServlet</servlet-name>
-        <servlet-class>org.shunya.server.HelloServlet</servlet-class>
+        <servlet-class>org.shunya.server.poc.HelloServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>asyncLongRunningServlet</servlet-name>
-        <servlet-class>org.shunya.server.AsyncLongRunningServlet</servlet-class>
+        <servlet-class>org.shunya.server.poc.AsyncLongRunningServlet</servlet-class>
         <async-supported>true</async-supported>
     </servlet>
     <servlet>
         <servlet-name>MyServlet</servlet-name>
-        <servlet-class>org.shunya.server.MyServlet</servlet-class>
+        <servlet-class>org.shunya.server.poc.MyServlet</servlet-class>
         <async-supported>true</async-supported>
     </servlet>-->
 
@@ -51,13 +51,13 @@
         <listener-class>org.shunya.server.AppContextListener</listener-class>
     </listener>
     <listener>
-        <listener-class>org.shunya.server.AppAsyncListener</listener-class>
+        <listener-class>org.shunya.server.poc.AppAsyncListener</listener-class>
     </listener>
     <listener>
-        <listener-class>org.shunya.server.SlowWebService</listener-class>
+        <listener-class>org.shunya.server.poc.SlowWebService</listener-class>
     </listener>
     <listener>
-        <listener-class>org.shunya.server.Config</listener-class>
+        <listener-class>org.shunya.server.poc.Config</listener-class>
     </listener>-->
 
 </web-app>

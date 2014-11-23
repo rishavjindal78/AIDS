@@ -1,4 +1,4 @@
-package org.shunya.server;
+package org.shunya.server.poc;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletContextEvent;

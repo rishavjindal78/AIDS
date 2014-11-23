@@ -1,4 +1,4 @@
-package org.shunya.server.services;
+package org.shunya.server.poc;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;

@@ -1,9 +1,9 @@
 package config;
 
 import org.mockito.Mockito;
-import org.shunya.server.TaskService;
+import org.shunya.server.services.TaskService;
 import org.shunya.server.services.DBService;
-import org.shunya.server.services.AgentWorker;
+import org.shunya.server.services.RestClient;
 import org.shunya.server.services.MyJobScheduler;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -31,8 +31,8 @@ public class TestContext {
     }
 
     @Bean
-    public AgentWorker agentWorker() {
-        return Mockito.mock(AgentWorker.class);
+    public RestClient agentWorker() {
+        return Mockito.mock(RestClient.class);
     }
 
     @Bean

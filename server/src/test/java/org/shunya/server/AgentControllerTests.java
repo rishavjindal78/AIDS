@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.shunya.server.services.TaskService;
 import org.shunya.shared.TaskContext;
 import org.shunya.shared.TaskState;
 import org.shunya.shared.model.Agent;

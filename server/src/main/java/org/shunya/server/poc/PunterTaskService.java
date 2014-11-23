@@ -1,4 +1,4 @@
-package org.shunya.server.services;
+package org.shunya.server.poc;
 
 import org.reflections.Reflections;
 import org.shunya.shared.annotation.PunterTask;

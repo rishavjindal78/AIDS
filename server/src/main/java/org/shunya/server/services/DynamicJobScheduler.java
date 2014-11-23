@@ -1,5 +1,6 @@
 package org.shunya.server.services;
 
+import org.shunya.server.poc.MyTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;

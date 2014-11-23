@@ -1,4 +1,6 @@
-package org.shunya.server;
+package org.shunya.server.poc;
+
+import org.shunya.server.poc.Bid;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletContext;

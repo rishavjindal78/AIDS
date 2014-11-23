@@ -1,4 +1,4 @@
-package org.shunya.server;
+package org.shunya.server.poc;
  
 import java.io.IOException;
 import java.io.PrintWriter;

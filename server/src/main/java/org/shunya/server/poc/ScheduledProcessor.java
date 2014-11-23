@@ -1,4 +1,4 @@
-package org.shunya.server.services;
+package org.shunya.server.poc;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

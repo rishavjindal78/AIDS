@@ -9,12 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Service
-public class AgentWorker {
-    private static final Logger logger = Logger.getLogger(AgentWorker.class.getName());
+public class RestClient {
+    private static final Logger logger = Logger.getLogger(RestClient.class.getName());
     private RestTemplate restTemplate = new RestTemplate();
 
     public void ping(Agent agent) {

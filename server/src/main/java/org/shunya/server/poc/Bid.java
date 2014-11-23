@@ -1,4 +1,4 @@
-package org.shunya.server;
+package org.shunya.server.poc;
 
 public class Bid {
     private String auctionId;
