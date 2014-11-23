@@ -11,6 +11,7 @@
         <spring.version>4.1.2.RELEASE</spring.version>
         <hibernate.version>4.3.7.Final</hibernate.version>
         <lucene.version>4.10.2</lucene.version>
+        <jetty.version>9.2.2.v20140723</jetty.version>
     </properties>
     <!--<parent>
         <groupId>org.shunya</groupId>
@@ -68,6 +69,25 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
             <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-webapp</artifactId>
+            <version>${jetty.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <version>${jetty.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

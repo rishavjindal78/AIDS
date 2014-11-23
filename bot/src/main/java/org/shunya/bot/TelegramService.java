@@ -1,5 +1,6 @@
 package org.shunya.bot;
 
+import org.springframework.stereotype.Service;
 import org.telegram.api.*;
 import org.telegram.api.auth.TLAuthorization;
 import org.telegram.api.auth.TLSentCode;
@@ -13,6 +14,7 @@ import org.shunya.bot.engine.MemoryApiState;
 import org.telegram.mtproto.log.LogInterface;
 import org.telegram.mtproto.log.Logger;
 
+import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -33,25 +35,26 @@ Todo:
     3.4: Send task execution command to server
     3.5: Track task run status
 */
+@Service
+public class TelegramService {
+    private HashMap<Integer, PeerState> userStates = new HashMap<>();
+    private HashMap<Integer, PeerState> chatStates = new HashMap<>();
+    private MemoryApiState apiState;
+    private TelegramApi api;
+    private Random rnd = new Random();
+    private long lastOnline = System.currentTimeMillis();
+    private Executor mediaSender = Executors.newSingleThreadExecutor();
 
-public class Application {
-    private static HashMap<Integer, PeerState> userStates = new HashMap<Integer, PeerState>();
-    private static HashMap<Integer, PeerState> chatStates = new HashMap<Integer, PeerState>();
-    private static MemoryApiState apiState;
-    private static TelegramApi api;
-    private static Random rnd = new Random();
-    private static long lastOnline = System.currentTimeMillis();
-    private static Executor mediaSender = Executors.newSingleThreadExecutor();
-
-    public static void main(String[] args) throws IOException {
+    @PostConstruct
+    public void start() throws IOException {
         disableLogging();
         apiState = JavaSerializer.load();
         createApi();
         login();
-        workLoop();
+//        workLoop();
     }
 
-    private static synchronized String generateRandomString(int size) {
+    private synchronized String generateRandomString(int size) {
         String res = "";
         for (int i = 0; i < size; i++) {
             res += (char) ('a' + rnd.nextInt('z' - 'a'));
@@ -59,7 +62,7 @@ public class Application {
         return res;
     }
 
-    private static synchronized PeerState[] getAllSpamPeers() {
+    private synchronized PeerState[] getAllSpamPeers() {
         ArrayList<PeerState> peerStates = new ArrayList<PeerState>();
         for (PeerState state : userStates.values()) {
             if (state.isSpamEnabled()) {
@@ -74,7 +77,7 @@ public class Application {
         return peerStates.toArray(new PeerState[0]);
     }
 
-    private static synchronized PeerState getUserPeer(int uid) {
+    private synchronized PeerState getUserPeer(int uid) {
         if (!userStates.containsKey(uid)) {
             userStates.put(uid, new PeerState(uid, true));
         }
@@ -82,7 +85,7 @@ public class Application {
         return userStates.get(uid);
     }
 
-    private static synchronized PeerState getChatPeer(int chatId) {
+    private synchronized PeerState getChatPeer(int chatId) {
         if (!chatStates.containsKey(chatId)) {
             chatStates.put(chatId, new PeerState(chatId, false));
         }
@@ -90,7 +93,7 @@ public class Application {
         return chatStates.get(chatId);
     }
 
-    private static void sendMedia(PeerState peerState, String fileName) {
+    private void sendMedia(PeerState peerState, String fileName) {
         TLAbsInputPeer inputPeer = peerState.isUser() ? new TLInputPeerContact(peerState.getId()) : new TLInputPeerChat(peerState.getId());
 
         int task = api.getUploader().requestTask(fileName, null);
@@ -111,7 +114,7 @@ public class Application {
         }
     }
 
-    private static void sendMessage(PeerState peerState, String message) {
+    private void sendMessage(PeerState peerState, String message) {
         if (peerState.isUser()) {
             sendMessageUser(peerState.getId(), message);
         } else {
@@ -119,7 +122,7 @@ public class Application {
         }
     }
 
-    private static void sendMessageChat(int chatId, String message) {
+    private void sendMessageChat(int chatId, String message) {
         api.doRpcCall(new TLRequestMessagesSendMessage(new TLInputPeerChat(chatId), message, rnd.nextInt()),
                 15 * 60000,
                 new RpcCallbackEx<TLAbsSentMessage>() {
@@ -139,7 +142,7 @@ public class Application {
                 });
     }
 
-    private static void sendMessageUser(int uid, String message) {
+    private void sendMessageUser(int uid, String message) {
         api.doRpcCall(new TLRequestMessagesSendMessage(new TLInputPeerContact(uid), message, rnd.nextInt()),
                 15 * 60000,
                 new RpcCallbackEx<TLAbsSentMessage>() {
@@ -161,7 +164,7 @@ public class Application {
     }
 
     //Chat with User- Peer to Peer
-    private static void onIncomingMessageUser(int uid, String message) {
+    private void onIncomingMessageUser(int uid, String message) {
         //Todo:Enable for individual User
         System.out.println("Incoming message from user #" + uid + ": " + message);
         PeerState peerState = getUserPeer(uid);
@@ -176,7 +179,7 @@ public class Application {
     }
 
     //Chat Channel - Chat
-    private static void onIncomingMessageChat(int chatId, String message) {
+    private void onIncomingMessageChat(int chatId, String message) {
         //Todo: Desing command interceptor-> 1. Identify the team for the chat Id, 2. Provide search/help options specific to team
         System.out.println("Incoming message from in chat #" + chatId + ": " + message);
         PeerState peerState = getChatPeer(chatId);
@@ -189,7 +192,7 @@ public class Application {
         }
     }
 
-    private static String getWalkerString(int len, int position) {
+    private String getWalkerString(int len, int position) {
         int realPosition = position % len * 2;
         if (realPosition > len) {
             realPosition = len - (realPosition - len);
@@ -205,7 +208,7 @@ public class Application {
         return res + "|";
     }
 
-    private static void processCommand(String message, final PeerState peerState) {
+    private void processCommand(String message, final PeerState peerState) {
         String[] args = message.split(" ");
         if (args.length == 0) {
             sendMessage(peerState, "Unknown command");
@@ -274,27 +277,17 @@ public class Application {
                     "bot img50 - sending sample image\n");
 
         } else if (command.equals("img")) {
-            mediaSender.execute(new Runnable() {
-                @Override
-                public void run() {
-                    sendMedia(peerState, "demo.jpg");
-                }
-            });
+            mediaSender.execute(() -> sendMedia(peerState, "demo.jpg"));
         } else if (command.equals("img50")) {
             for (int i = 0; i < 50; i++) {
-                mediaSender.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        sendMedia(peerState, "demo.jpg");
-                    }
-                });
+                mediaSender.execute(() -> sendMedia(peerState, "demo.jpg"));
             }
         } else {
             sendMessage(peerState, "Unknown command '" + args[0] + "'");
         }
     }
 
-    private static void workLoop() {
+    private void workLoop() {
         while (true) {
             try {
                 PeerState[] states = getAllSpamPeers();
@@ -319,7 +312,7 @@ public class Application {
         }
     }
 
-    private static void disableLogging() {
+    private void disableLogging() {
         Logger.registerInterface(new LogInterface() {
             @Override
             public void w(String tag, String message) {
@@ -354,7 +347,7 @@ public class Application {
         });
     }
 
-    private static void createApi() throws IOException {
+    private void createApi() throws IOException {
         System.out.println("Using production servers");
         if (apiState == null)
             apiState = new MemoryApiState(false);
@@ -380,7 +373,7 @@ public class Application {
         });
     }
 
-    private static void login() throws IOException {
+    private void login() throws IOException {
         //Todo: Mobile Phone Registration- Create UI
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         System.out.print("Loading fresh DC list...");
@@ -430,9 +423,9 @@ public class Application {
         TLState state = api.doRpcCall(new TLRequestUpdatesGetState());
         System.out.println("loaded.");
         JavaSerializer.save(apiState);
-        while (true) {
+        /*while (true) {
             String msg = reader.readLine();
             sendMessage(new PeerState(4659270, false), msg);
-        }
+        }*/
     }
 }

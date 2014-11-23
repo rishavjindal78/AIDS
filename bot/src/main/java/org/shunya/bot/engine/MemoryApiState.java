@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 public class MemoryApiState implements AbsApiState, Serializable {
     private transient HashMap<Integer, ConnectionInfo[]> connections = new HashMap<Integer, ConnectionInfo[]>();
-    private HashMap<Integer, byte[]> keys = new HashMap<Integer, byte[]>();
+    private HashMap<Integer, byte[]> keys = new HashMap<>();
     private HashMap<Integer, Boolean> isAuth = new HashMap<Integer, Boolean>();
     private String apiHash;
     private String code;
@@ -25,7 +25,7 @@ public class MemoryApiState implements AbsApiState, Serializable {
     }
 
     public void start(boolean isTest) {
-        connections = new HashMap<Integer, ConnectionInfo[]>();
+        connections = new HashMap<>();
         connections.put(1, new ConnectionInfo[]{
                 new ConnectionInfo(1, 0, isTest ? "173.240.5.253" : "173.240.5.1", 443)
         });
@@ -61,7 +61,7 @@ public class MemoryApiState implements AbsApiState, Serializable {
         int id = 0;
         for (TLDcOption option : config.getDcOptions()) {
             if (!tConnections.containsKey(option.getId())) {
-                tConnections.put(option.getId(), new ArrayList<ConnectionInfo>());
+                tConnections.put(option.getId(), new ArrayList<>());
             }
             tConnections.get(option.getId()).add(new ConnectionInfo(id++, 0, option.getIpAddress(), option.getPort()));
         }
