@@ -298,7 +298,7 @@ public class ServerController {
         taskRun.setName(taskData.getName());
         taskRun.setStartTime(new Date());
         taskRun.setComments(comment);
-        taskService.createTaskRun(taskRun);
+        taskService.execute(taskRun);
         return taskRun;
     }
 
@@ -307,7 +307,7 @@ public class ServerController {
     public String submitTaskStepResults(@RequestBody TaskContext taskContext) {
         logger.info("Successfully received Task results {} ", taskContext.getTaskStepRun().getSequence());
         TaskRun taskRun = DBService.getTaskRun(taskContext.getTaskStepRun());
-        taskService.consumeTaskStepResults(taskRun, taskContext);
+        taskService.consumeStepResult(taskRun, taskContext);
         return "success";
     }
 
