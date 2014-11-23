@@ -1,7 +1,10 @@
 package org.shunya.bot.controller;
 
 import org.shunya.bot.TaskStatusMsg;
+import org.shunya.bot.engine.PeerState;
+import org.shunya.bot.services.TelegramService;
 import org.shunya.shared.TaskContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,13 +20,16 @@ import java.util.concurrent.ExecutionException;
 @Controller
 @RequestMapping("/bot")
 public class BotController {
+    @Autowired
+    private TelegramService telegramService;
+
     @RequestMapping(value = "postTaskMsg", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     @ResponseBody
     public void postTaskMsg(@RequestBody TaskStatusMsg taskStatusMsg) throws InterruptedException, ExecutionException {
         int chatId = taskStatusMsg.getChatId();
         String msg = taskStatusMsg.getMsg();
         System.out.println("TaskMessage Received for chat id =" + chatId + "Message:  " + msg);
-
+        telegramService.sendMessage(new PeerState(chatId, false), msg);
     }
 
 }

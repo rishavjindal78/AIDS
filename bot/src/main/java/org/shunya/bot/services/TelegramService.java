@@ -1,5 +1,7 @@
-package org.shunya.bot;
+package org.shunya.bot.services;
 
+import org.shunya.bot.engine.JavaSerializer;
+import org.shunya.bot.engine.PeerState;
 import org.springframework.stereotype.Service;
 import org.telegram.api.*;
 import org.telegram.api.auth.TLAuthorization;
@@ -114,7 +116,7 @@ public class TelegramService {
         }
     }
 
-    private void sendMessage(PeerState peerState, String message) {
+    public void sendMessage(PeerState peerState, String message) {
         if (peerState.isUser()) {
             sendMessageUser(peerState.getId(), message);
         } else {

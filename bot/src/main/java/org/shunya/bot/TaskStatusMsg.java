@@ -1,8 +1,5 @@
 package org.shunya.bot;
 
-/**
- * Created by Aman Verma on 11/23/2014.
- */
 public class TaskStatusMsg {
     private int chatId;
     private String msg;
@@ -11,7 +8,15 @@ public class TaskStatusMsg {
         return chatId;
     }
 
+    public void setChatId(int chatId) {
+        this.chatId = chatId;
+    }
+
     public String getMsg() {
         return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
     }
 }

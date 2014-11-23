@@ -1,4 +1,4 @@
-package org.shunya.bot;
+package org.shunya.bot.engine;
 
 
 import org.shunya.bot.engine.MemoryApiState;

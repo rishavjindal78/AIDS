@@ -1,4 +1,4 @@
-package org.shunya.bot;
+package org.shunya.bot.engine;
 
 /**
  * Created by ex3ndr on 13.01.14.
