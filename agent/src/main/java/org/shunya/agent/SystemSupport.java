@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 @Service
-public class SystemSupport implements ServerStateListener {
+public class SystemSupport {
     static final Logger logger = LoggerFactory.getLogger(SystemSupport.class);
 
     private TrayIcon trayIcon;
@@ -50,7 +50,6 @@ public class SystemSupport implements ServerStateListener {
         displayMsg(agentState.getDisplayMessage(), TrayIcon.MessageType.INFO);
     }
 
-    @Override
     public void displayMsg(String msg, TrayIcon.MessageType msgType) {
         if (trayIcon != null) {
             trayIcon.displayMessage("Agent", msg, msgType);
@@ -75,7 +74,6 @@ public class SystemSupport implements ServerStateListener {
         System.exit(0);
     }
 
-    @Override
     public synchronized void update(AgentState state) {
         if (agentCurrentState == state)
             return;

@@ -290,7 +290,7 @@ public class ServerController {
     @RequestMapping(value = "run/{taskId}", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ResponseBody
-    public TaskRun runTaskData(@PathVariable("taskId") Long taskId, @RequestParam String comment, Principal principal) {
+    public TaskRun runTask(@PathVariable("taskId") Long taskId, @RequestParam String comment, Principal principal) {
         logger.info("Run request for {}, user comments ", taskId, comment);
         TaskData taskData = DBService.getTaskData(taskId);
         TaskRun taskRun = new TaskRun();
