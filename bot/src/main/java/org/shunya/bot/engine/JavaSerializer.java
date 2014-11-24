@@ -1,15 +1,12 @@
 package org.shunya.bot.engine;
 
-
-import org.shunya.bot.engine.MemoryApiState;
-
 import java.io.*;
 import java.nio.file.FileSystems;
 
 public class JavaSerializer {
     public static void save(MemoryApiState apiState) {
-        FileOutputStream fos = null;
-        ObjectOutputStream out = null;
+        FileOutputStream fos;
+        ObjectOutputStream out;
         try {
             File file = new File(FileSystems.getDefault().getPath(System.getProperty("user.home")).toString(), "telegram.api");
             fos = new FileOutputStream(file);
@@ -23,8 +20,8 @@ public class JavaSerializer {
     }
 
     public static MemoryApiState load() {
-        FileInputStream fis = null;
-        ObjectInputStream in = null;
+        FileInputStream fis;
+        ObjectInputStream in;
         try {
             File file = new File(FileSystems.getDefault().getPath(System.getProperty("user.home")).toString(), "telegram.api");
             fis = new FileInputStream(file);
