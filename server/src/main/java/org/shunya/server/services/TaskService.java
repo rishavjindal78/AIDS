@@ -139,7 +139,7 @@ public class TaskService {
 
     private void delegateStepToAgents(List<TaskStep> taskStepDataList, TaskRun taskRun) {
         taskStepDataList.parallelStream().forEach(stepData -> {
-            List<Agent> agentList = stepData.getAgentList().size() > 0 ? stepData.getAgentList() : taskExecutionPlanMap.get(taskRun).getTaskData().getAgentList();
+            List<Agent> agentList = stepData.getAgentList().size() > 0 ? stepData.getAgentList() : taskExecutionPlanMap.get(taskRun).getTask().getAgentList();
             agentList.stream().forEach(agent -> {
                 TaskStepRun taskStepRun = new TaskStepRun();
                 taskStepRun.setSequence(stepData.getSequence());

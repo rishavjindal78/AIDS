@@ -36,11 +36,11 @@ public class ServerController {
     private TaskService taskService;
 
     @Autowired
-    private DBService DBService;
+    private DBService dbService;
 
     @Autowired
     private MyJobScheduler myJobScheduler;
-    final String[] taskClasses = {"EchoStep", "DiscSpaceStep", "SystemCommandStep"};
+    final String[] taskClasses = {"EchoStep", "DiscSpaceStep", "SystemCommandStep", "FileUploadStep", "HttpDownloadStep"};
 
     @RequestMapping(value = "test", method = RequestMethod.GET)
     public String test(@ModelAttribute("model") ModelMap model) {
@@ -50,21 +50,21 @@ public class ServerController {
     @RequestMapping(value = "agents", method = RequestMethod.GET)
     public String agents(@ModelAttribute("model") ModelMap model) {
         model.addAttribute("message", "Hello world!");
-        model.addAttribute("agents", DBService.list());
+        model.addAttribute("agents", dbService.list());
         return "agents";
     }
 
     @RequestMapping(value = {"index", ""}, method = RequestMethod.GET)
     public String index(@ModelAttribute("model") ModelMap model) {
         model.addAttribute("message", "Hello world!");
-        model.addAttribute("taskDatas", DBService.listTasks());
+        model.addAttribute("taskDatas", dbService.listTasks());
         return "tasks";
     }
 
     @RequestMapping(value = "register", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     public String registerAgent(@ModelAttribute("agent") Agent agent) {
-        DBService.save(agent);
+        dbService.save(agent);
         final String referer = request.getHeader("referer");
         System.out.println("referer = " + referer);
         return "redirect:" + referer;
@@ -79,7 +79,7 @@ public class ServerController {
 
     @RequestMapping(value = "/editAgent/{id}", method = RequestMethod.GET)
     public String editAgent(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id) throws Exception {
-        Agent agent = DBService.getAgent(id);
+        Agent agent = dbService.getAgent(id);
         model.addAttribute("agent", agent);
         return "editAgent";
     }
@@ -88,11 +88,11 @@ public class ServerController {
     public String editAgent(@PathVariable("id") long id, @ModelAttribute("agent") Agent agentDTO, final HttpServletRequest request) {
         logger.info("Message received for update Agent : " + agentDTO);
         if (id != 0) {
-            final Agent dbAgent = DBService.getAgent(id);
+            final Agent dbAgent = dbService.getAgent(id);
             dbAgent.setName(agentDTO.getName());
             dbAgent.setDescription(agentDTO.getDescription());
             dbAgent.setBaseUrl(agentDTO.getBaseUrl());
-            DBService.save(dbAgent);
+            dbService.save(dbAgent);
         }
         final String referer = request.getHeader("referer");
         System.out.println("referer = " + referer);
@@ -101,78 +101,78 @@ public class ServerController {
 
     @RequestMapping(value = "/editTask/{id}", method = RequestMethod.GET)
     public String editTask(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id) throws Exception {
-        Task taskData = DBService.getTaskData(id);
-        model.addAttribute("task", taskData);
+        Task task = dbService.getTask(id);
+        model.addAttribute("task", task);
         return "editTask";
     }
 
     @RequestMapping(value = "/viewLogs/{taskStepId}", method = RequestMethod.GET)
     @ResponseBody
     public String viewTaskStepLogs(@ModelAttribute("model") ModelMap model, @PathVariable("taskStepId") long taskStepId) throws Exception {
-        TaskStepRun taskStepRun = DBService.getTaskStepRun(taskStepId);
+        TaskStepRun taskStepRun = dbService.getTaskStepRun(taskStepId);
         return taskStepRun.getLogs();
     }
 
     @RequestMapping(value = "addAgent/{id}", method = RequestMethod.GET)
     public String addAgent(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id) throws Exception {
-        model.addAttribute("agents", DBService.list());
+        model.addAttribute("agents", dbService.list());
         model.addAttribute("task.id", id);
         return "addAgent";
     }
 
     @RequestMapping(value = "addAgent/{taskId}", method = RequestMethod.POST)
     public String addAgentPOST(@ModelAttribute("agent") Agent agent, @PathVariable("taskId") long taskId) throws Exception {
-        Task taskData = DBService.getTaskData(taskId);
-        taskData.getAgentList().add(DBService.getAgent(agent.getId()));
-        DBService.save(taskData);
+        Task task = dbService.getTask(taskId);
+        task.getAgentList().add(dbService.getAgent(agent.getId()));
+        dbService.save(task);
         return "redirect:../index";
     }
 
     @RequestMapping(value = "removeAgent/{taskId}/{agentId}", method = RequestMethod.POST)
     public String removeAgent(@ModelAttribute("agent") Agent agent, @PathVariable("taskId") long taskId, @PathVariable("agentId") long agentId) throws Exception {
-        Task taskData = DBService.getTaskData(taskId);
-        taskData.getAgentList().remove(DBService.getAgent(agentId));
-        DBService.save(taskData);
+        Task task = dbService.getTask(taskId);
+        task.getAgentList().remove(dbService.getAgent(agentId));
+        dbService.save(task);
         return "redirect:../../index";
     }
 
     @RequestMapping(value = "taskStep/addAgent/{taskStepId}", method = RequestMethod.GET)
     public String addTaskStepAgent(@ModelAttribute("model") ModelMap model, @PathVariable("taskStepId") long taskStepId) throws Exception {
-        model.addAttribute("agents", DBService.list());
+        model.addAttribute("agents", dbService.list());
         model.addAttribute("taskStepId", taskStepId);
         return "addTaskStepAgent";
     }
 
     @RequestMapping(value = "taskStep/addAgent/{taskStepId}", method = RequestMethod.POST)
     public String addTaskStepAgentPOST(@ModelAttribute("agent") Agent agent, @PathVariable("taskStepId") long taskStepId) throws Exception {
-        TaskStep taskStep = DBService.getTaskStep(taskStepId);
-        taskStep.getAgentList().add(DBService.getAgent(agent.getId()));
-        DBService.save(taskStep);
+        TaskStep taskStep = dbService.getTaskStep(taskStepId);
+        taskStep.getAgentList().add(dbService.getAgent(agent.getId()));
+        dbService.save(taskStep);
         return "redirect:../../view/" + taskStep.getTask().getId();
     }
 
     @RequestMapping(value = "taskStep/removeAgent/{taskStepId}/{agentId}", method = RequestMethod.POST)
     public String removeTaskStepAgent(@ModelAttribute("agent") Agent agent, @PathVariable("taskStepId") long taskStepId, @PathVariable("agentId") long agentId) throws Exception {
-        TaskStep taskStepData = DBService.getTaskStep(taskStepId);
-        taskStepData.getAgentList().remove(DBService.getAgent(agentId));
-        DBService.save(taskStepData);
+        TaskStep taskStepData = dbService.getTaskStep(taskStepId);
+        taskStepData.getAgentList().remove(dbService.getAgent(agentId));
+        dbService.save(taskStepData);
         final String referer = request.getHeader("referer");
         System.out.println("referer = " + referer);
         return "redirect:" + referer;
     }
 
     @RequestMapping(value = "/addTask/{id}", method = RequestMethod.POST)
-    public String addTask(@PathVariable("id") long id, @ModelAttribute("user") Task taskData, final HttpServletRequest request) {
-        logger.info("Message received for Add : " + taskData);
+    public String addTask(@PathVariable("id") long id, @ModelAttribute("user") Task task, final HttpServletRequest request) {
+        logger.info("Message received for Add : " + task);
         if (id != 0) {
-            final Task dbTaskData = DBService.getTaskData(id);
-            dbTaskData.setName(taskData.getName());
-            dbTaskData.setDescription(taskData.getDescription());
-            dbTaskData.setTags(taskData.getTags());
-            DBService.save(dbTaskData);
-        } else if (null != taskData && null != taskData.getName() && !taskData.getDescription().isEmpty()) {
+            final Task existingTask = dbService.getTask(id);
+            existingTask.setName(task.getName());
+            existingTask.setDescription(task.getDescription());
+            existingTask.setTags(task.getTags());
+            dbService.save(existingTask);
+        } else if (null != task && null != task.getName() && !task.getDescription().isEmpty()) {
 //          taskData.setTradeDate(new Date());
-            DBService.save(taskData);
+            dbService.save(task);
         }
         final String referer = request.getHeader("referer");
         System.out.println("referer = " + referer);
@@ -183,14 +183,14 @@ public class ServerController {
     @ResponseBody
     //we can also use this @RequestParam("active") String valueOne  ,  @ModelAttribute("active") String valueOne
     public void updateTaskStep(@ModelAttribute("taskStepData") TaskStep taskStepData) throws IOException {
-        TaskStep dbTaskStepData = DBService.getTaskStep(taskStepData.getId());
+        TaskStep dbTaskStepData = dbService.getTaskStep(taskStepData.getId());
         dbTaskStepData.setActive(taskStepData.isActive());
-        DBService.save(dbTaskStepData);
+        dbService.save(dbTaskStepData);
     }
 
     @RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
     public String viewTaskDetails(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id, final HttpServletRequest request) {
-        Task task = DBService.getTaskData(id);
+        Task task = dbService.getTask(id);
 //        task.setStepDataList(task.getStepDataList().stream().sorted(Comparator.comparing(TaskStepData::getSequence)).collect(toList()));
         final String referer = request.getHeader("referer");
         model.addAttribute("task", task);
@@ -200,7 +200,7 @@ public class ServerController {
 
     @RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)
     public String editTaskStep(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id) throws Exception {
-        TaskStep stepData = DBService.getTaskStep(id);
+        TaskStep stepData = dbService.getTaskStep(id);
         model.addAttribute("stepData", stepData);
         model.addAttribute("taskClasses", asList(taskClasses));
 //        FieldPropertiesMap inPropertiesMap = TaskStep.listInputParams(Class.forName(stepData.getClassName()), parseStringMap(stepData.getInputParams()));
@@ -230,13 +230,13 @@ public class ServerController {
     @RequestMapping(value = "/addTaskStep/{id}", method = RequestMethod.POST)
     public String addTaskStep(@PathVariable("id") long id, @ModelAttribute("taskStepDTO") TaskStepDTO taskStepDTO) throws Exception {
         if (id != 0) {
-            TaskStep existingTaskStep = DBService.getTaskStep(id);
+            TaskStep existingTaskStep = dbService.getTaskStep(id);
             existingTaskStep.setId(id);
             existingTaskStep.setSequence(taskStepDTO.getSequence());
             existingTaskStep.setDescription(taskStepDTO.getDescription());
             existingTaskStep.setInputParams(convertObjectToXml(AbstractStep.listInputParams(Class.forName("org.shunya.shared.taskSteps." + existingTaskStep.getTaskClass()), taskStepDTO.getInputParamsMap())));
             existingTaskStep.setOutputParams(convertObjectToXml(AbstractStep.listOutputParams(Class.forName("org.shunya.shared.taskSteps." + existingTaskStep.getTaskClass()), taskStepDTO.getOutputParamsMap())));
-            DBService.save(existingTaskStep);
+            dbService.save(existingTaskStep);
         } else {
             TaskStep newTaskStep = new TaskStep();
             newTaskStep.setSequence(taskStepDTO.getSequence());
@@ -244,8 +244,8 @@ public class ServerController {
             newTaskStep.setTaskClass(taskStepDTO.getTaskClass());
             newTaskStep.setInputParams(convertObjectToXml(AbstractStep.listInputParams(Class.forName("org.shunya.shared.taskSteps." + taskStepDTO.getTaskClass()), taskStepDTO.getInputParamsMap())));
             newTaskStep.setOutputParams(convertObjectToXml(AbstractStep.listOutputParams(Class.forName("org.shunya.shared.taskSteps." + taskStepDTO.getTaskClass()), taskStepDTO.getOutputParamsMap())));
-            newTaskStep.setTask(DBService.getTaskData(taskStepDTO.getTaskId()));
-            DBService.save(newTaskStep);
+            newTaskStep.setTask(dbService.getTask(taskStepDTO.getTaskId()));
+            dbService.save(newTaskStep);
         }
         return "redirect:../view/" + taskStepDTO.getTaskId();
     }
@@ -253,7 +253,7 @@ public class ServerController {
     @RequestMapping(value = "/deleteStep/{id}", method = RequestMethod.GET)
     public String deleteStep(@PathVariable("id") long id, @ModelAttribute("stepData") TaskStep stepData) throws IOException {
         if (id != 0) {
-            DBService.deleteTaskStep(id);
+            dbService.deleteTaskStep(id);
         }
         final String referer = request.getHeader("referer");
         System.out.println("referer = " + referer);
@@ -263,7 +263,7 @@ public class ServerController {
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     public String deleteTask(@PathVariable("id") long id, @ModelAttribute("taskData") Task taskData) throws IOException {
         if (id != 0) {
-            DBService.deleteTask(id);
+            dbService.deleteTask(id);
         }
         final String referer = request.getHeader("referer");
         System.out.println("referer = " + referer);
@@ -272,7 +272,7 @@ public class ServerController {
 
     @RequestMapping(value = "/taskHistory/{taskId}", method = RequestMethod.GET)
     public String viewTaskHistory(@ModelAttribute("model") ModelMap model, @PathVariable("taskId") long taskId) {
-        List<TaskRun> all = DBService.findTaskHistoryForTaskId(taskId);
+        List<TaskRun> all = dbService.findTaskHistoryForTaskId(taskId);
         model.addAttribute("taskHistoryList", all);
         model.addAttribute("taskId", taskId);
         return "taskRun";
@@ -280,7 +280,7 @@ public class ServerController {
 
     @RequestMapping(value = "/taskStepHistory/{taskHistoryId}", method = RequestMethod.GET)
     public String viewTaskStepHistory(@ModelAttribute("model") ModelMap model, @PathVariable("taskHistoryId") long taskHistoryId) {
-        TaskRun taskHistory = DBService.getTaskRun(taskHistoryId);
+        TaskRun taskHistory = dbService.getTaskRun(taskHistoryId);
         model.addAttribute("taskHistory", taskHistory);
         return "taskStepRun";
     }
@@ -293,7 +293,7 @@ public class ServerController {
                            @RequestParam(defaultValue = "false", required = false) boolean notifyStatus,
                            Principal principal) {
         logger.info("Run request for {}, user comments ", taskId, comment);
-        Task task = DBService.getTaskData(taskId);
+        Task task = dbService.getTask(taskId);
         TaskRun taskRun = new TaskRun();
         taskRun.setTask(task);
         taskRun.setName(task.getName());

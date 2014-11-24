@@ -20,9 +20,7 @@ import org.telegram.mtproto.log.LogInterface;
 import org.telegram.mtproto.log.Logger;
 
 import javax.annotation.PostConstruct;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -60,7 +58,6 @@ public class TelegramService {
         apiState = JavaSerializer.load();
         createApi();
 //        login();
-
 //        workLoop();
     }
 
@@ -308,7 +305,7 @@ public class TelegramService {
                 if (args.length > 1) {
                     comments = fromId + args[1];
                 }
-                Task task = dbService.getTaskData(taskId);
+                Task task = dbService.getTask(taskId);
                 TaskRun taskRun = new TaskRun();
                 taskRun.setTask(task);
                 taskRun.setName(task.getName());
@@ -418,7 +415,7 @@ public class TelegramService {
         apiState.updateSettings(config);
         System.out.println("completed.");
         if (!apiState.isAuthenticated(5)) {
-            System.out.print("Phone number for bot:");
+            System.out.print("Phone number for bot : ");
             String phone = scanner.nextLine();
             System.out.print("Sending sms to phone " + phone + "...");
             TLSentCode sentCode;
@@ -447,17 +444,18 @@ public class TelegramService {
             String code = scanner.nextLine();
             System.out.println(sentCode.getPhoneCodeHash());
             System.out.println(code);
-            apiState.setApiHash(sentCode.getPhoneCodeHash());
-            apiState.setCode(code);
-            TLAuthorization auth = api.doRpcCallNonAuth(new TLRequestAuthSignIn(phone, sentCode.getPhoneCodeHash(), code));
-            apiState.setAuthenticated(apiState.getPrimaryDc(), true);
-            System.out.println("Activation Complete.");
+            activateBot(phone, sentCode, code);
         }
         api.switchToDc(5);
-//        TLAuthorization auth = api.doRpcCallNonAuth(new TLRequestAuthSignIn("+918010106513", apiState.getApiHash(), apiState.getCode()));
         System.out.print("Loading Initial State...");
         TLState state = api.doRpcCall(new TLRequestUpdatesGetState());
         System.out.println("loaded.");
         JavaSerializer.save(apiState);
+    }
+
+    private void activateBot(String phone, TLSentCode sentCode, String code) throws IOException {
+        TLAuthorization auth = api.doRpcCallNonAuth(new TLRequestAuthSignIn(phone, sentCode.getPhoneCodeHash(), code));
+        apiState.setAuthenticated(apiState.getPrimaryDc(), true);
+        System.out.println("Activation Complete.");
     }
 }

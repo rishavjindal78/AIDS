@@ -10,19 +10,19 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class TaskExecutionPlan {
-    private final Task taskData;
+    private final Task task;
     private final TreeMap<Integer, List<TaskStep>> treeMap;
     private Map<String, Object> sessionMap = new HashMap<>();
     private boolean taskStatus = true;
     private boolean abortOnFirstFailure = true;
 
-    public TaskExecutionPlan(Task taskData) {
-        this.taskData = taskData;
-        this.treeMap = new TreeMap(taskData.getStepDataList()
+    public TaskExecutionPlan(Task task) {
+        this.task = task;
+        this.treeMap = new TreeMap(task.getStepDataList()
                 .stream()
                 .filter(taskStepData -> taskStepData.isActive())
                 .collect(Collectors.groupingBy(td -> td.getSequence())));
-        this.abortOnFirstFailure = taskData.isAbortOnFirstFailure();
+        this.abortOnFirstFailure = task.isAbortOnFirstFailure();
     }
 
     public Map.Entry<Integer, List<TaskStep>> next() {
@@ -33,8 +33,8 @@ public class TaskExecutionPlan {
         return treeMap.firstEntry()!=null;
     }
 
-    public Task getTaskData() {
-        return taskData;
+    public Task getTask() {
+        return task;
     }
 
     public Map<String, Object> getSessionMap() {

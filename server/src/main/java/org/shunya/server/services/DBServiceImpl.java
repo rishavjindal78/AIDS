@@ -39,11 +39,11 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public void deleteTask(long id) {
-        Task taskData = getTaskData(id);
-        List taskData1 = DBDao.getSessionFactory().getCurrentSession().createQuery("select id from TaskRun tr where tr.taskData = :taskData").setEntity("taskData", taskData).list();
+        Task task = getTask(id);
+        List taskData1 = DBDao.getSessionFactory().getCurrentSession().createQuery("select id from TaskRun tr where tr.task = :task").setEntity("task", task).list();
         DBDao.getSessionFactory().getCurrentSession().createQuery("delete from TaskStepRun tr where tr.taskRun.id in (:taskRunIds)").setParameterList("taskRunIds", taskData1).executeUpdate();
-        DBDao.getSessionFactory().getCurrentSession().createQuery("delete from TaskRun tr where tr.taskData = :taskData").setEntity("taskData", taskData).executeUpdate();
-        DBDao.getSessionFactory().getCurrentSession().delete(taskData);
+        DBDao.getSessionFactory().getCurrentSession().createQuery("delete from TaskRun tr where tr.task = :task").setEntity("task", task).executeUpdate();
+        DBDao.getSessionFactory().getCurrentSession().delete(task);
     }
 
     @Transactional(readOnly = false)
@@ -52,8 +52,8 @@ public class DBServiceImpl implements DBService {
     }
 
     @Transactional(readOnly = false)
-    public void save(Task taskData) {
-        DBDao.saveOrUpdate(taskData);
+    public void save(Task task) {
+        DBDao.saveOrUpdate(task);
     }
 
     @Transactional(readOnly = false)
@@ -92,7 +92,7 @@ public class DBServiceImpl implements DBService {
     }
 
     @Transactional(readOnly = true)
-    public Task getTaskData(long id) {
+    public Task getTask(long id) {
 //        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return (Task) DBDao.getSessionFactory().getCurrentSession().get(Task.class, id);
     }

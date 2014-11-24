@@ -29,13 +29,13 @@ public class DBDaoImpl implements DBDao {
     }
 
     @Override
-    public void saveOrUpdate(Task taskData) {
-        sessionFactory.getCurrentSession().saveOrUpdate(taskData);
+    public void saveOrUpdate(Task task) {
+        sessionFactory.getCurrentSession().saveOrUpdate(task);
     }
 
     @Override
-    public void saveOrUpdate(TaskStep taskStepData) {
-        sessionFactory.getCurrentSession().saveOrUpdate(taskStepData);
+    public void saveOrUpdate(TaskStep taskStep) {
+        sessionFactory.getCurrentSession().saveOrUpdate(taskStep);
     }
 
     @Override
