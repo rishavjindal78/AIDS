@@ -1,8 +1,7 @@
-package org.shunya.agent;
+package org.shunya.agent.services;
 
-import org.shunya.agent.services.RestClient;
-import org.shunya.shared.TaskContext;
 import org.shunya.shared.AbstractStep;
+import org.shunya.shared.TaskContext;
 import org.shunya.shared.TaskStepDTO;
 import org.shunya.shared.model.RunState;
 import org.shunya.shared.model.RunStatus;
@@ -26,8 +25,6 @@ public class TaskProcessor {
     static final Logger logger = LoggerFactory.getLogger(TaskProcessor.class);
     @Autowired
     private RestClient restClient;
-    @Autowired
-    private SystemSupport systemSupport;
     private AtomicBoolean shutdown = new AtomicBoolean(false);
     private AtomicInteger runningJobCount = new AtomicInteger(0);
     private ConcurrentMap<Long, AbstractStep> cache = new ConcurrentHashMap<>();
@@ -83,19 +80,10 @@ public class TaskProcessor {
 
     private void postProcess() {
         runningJobCount.decrementAndGet();
-        updateSystemTray();
     }
 
     private void preProcess() {
         runningJobCount.incrementAndGet();
-        updateSystemTray();
-    }
-
-    private void updateSystemTray() {
-        if (runningJobCount.get() == 0)
-            systemSupport.update(AgentState.Idle);
-        else
-            systemSupport.update(AgentState.Busy);
     }
 
     @PostConstruct

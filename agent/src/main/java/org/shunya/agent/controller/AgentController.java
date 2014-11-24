@@ -1,7 +1,7 @@
 package org.shunya.agent.controller;
 
 import org.apache.commons.io.IOUtils;
-import org.shunya.agent.TaskProcessor;
+import org.shunya.agent.services.TaskProcessor;
 import org.shunya.shared.TaskContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
