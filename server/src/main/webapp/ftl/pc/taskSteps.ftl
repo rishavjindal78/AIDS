@@ -73,12 +73,12 @@
 
     <br/>
     <legend>Task Details</legend>
-    <p>Task Name : ${model.taskData.name}</p>
-    <p>Task Description : ${model.taskData.description}</p>
+    <p>Task Name : ${model.task.name}</p>
+    <p>Task Description : ${model.task.description}</p>
 
-    <a href="../addTaskStep/${model.taskData.id?string}" class="btn btn-mini btn-primary">Add Step</a>
-    <a href="#" onclick="execute('../run/${model.taskData.id?string}')" class="btn btn-mini  btn btn-danger">Run</a>
-    <a href="../taskHistory/${model.taskData.id}" class="btn btn-mini  btn btn-danger">history</a>
+    <a href="../addTaskStep/${model.task.id?string}" class="btn btn-mini btn-primary">Add Step</a>
+    <a href="#" onclick="execute('../run/${model.task.id?string}')" class="btn btn-mini  btn btn-danger">Run</a>
+    <a href="../taskHistory/${model.task.id}" class="btn btn-mini  btn btn-danger">history</a>
 
     <table class="table table-striped">
         <tr>
@@ -89,23 +89,23 @@
             <th>Agents</th>
             <th>Operation</th>
         </tr>
-        <#list model.taskData.stepDataList as taskStepData>
+        <#list model.task.stepDataList as taskStep>
             <tr>
-                <td>${taskStepData.sequence?string}</td>
-                <td>${taskStepData.taskMetadata.name?string}</td>
-                <td>${taskStepData.description!?string}</td>
-                <td><input type="checkbox" id="${taskStepData.id}"
-                           <#if taskStepData.active?? && taskStepData.active?string=="true">checked="true"</#if></td>
+                <td>${taskStep.sequence?string}</td>
+                <td>${taskStep.taskClass?string}</td>
+                <td>${taskStep.description!?string}</td>
+                <td><input type="checkbox" id="${taskStep.id}"
+                           <#if taskStep.active?? && taskStep.active?string=="true">checked="true"</#if></td>
                 <td>
-                    <#list taskStepData.agentList as agent>
-                        <form class="form-horizontal" name="agent" action="/rest/server/taskStep/removeAgent/${taskStepData.id?string}/${agent.id}" method="post">
+                    <#list taskStep.agentList as agent>
+                        <form class="form-horizontal" name="agent" action="/rest/server/taskStep/removeAgent/${taskStep.id?string}/${agent.id}" method="post">
                             <span class="label label-primary">${agent.name}</span><button type="submit" class="btn btn-link" id="save">X</button>
                         </form>
                     </#list>
                 </td>
-                <td><a class="taskStepEdit" id="${taskStepData.id?string}">edit</a>
-                    <a href="../deleteStep/${taskStepData.id}">delete</a>
-                    <a href="#" onclick="addAgent('${taskStepData.id}')">+agent</a>
+                <td><a class="taskStepEdit" id="${taskStep.id?string}">edit</a>
+                    <a href="../deleteStep/${taskStep.id}">delete</a>
+                    <a href="#" onclick="addAgent('${taskStep.id}')">+agent</a>
                 </td>
             </tr>
         </#list>

@@ -5,7 +5,7 @@
         $(document).ready(function () {
             /*onchange="this.form.submit()"*/
             $("#taskClassSelect").change(function () {
-                window.location = '/rest/server/addTaskStep/${model.taskId}?taskClassId=' + this.value;
+                window.location = '/rest/server/addTaskStep/${model.taskId}?taskClass=' + this.value;
             });
         });
     </script>
@@ -26,14 +26,14 @@
                   action="../addTaskStep/0" method="post">
                 <div class="row">
                     <div class="col-lg-3">
-                        <input type="text" class="form-control" name="taskData.id" value="${model.taskId}"
+                        <input type="text" class="form-control" name="taskId" value="${model.taskId}"
                                readonly="true">
                     </div>
                     <div class="col-lg-3">
-                        <select id="taskClassSelect" class="form-control" name="classNameId">
+                        <select id="taskClassSelect" class="form-control" name="taskClass">
                             <#list model["taskClasses"] as taskClass>
-                                <option value="${taskClass.id}"
-                                        <#if taskClass.id == model.selectedClassId >selected="selected"</#if>>${taskClass.name}</option>
+                                <option value="${taskClass}"
+                                        <#if taskClass == model.selectedClass >selected="selected"</#if>>${taskClass}</option>
                             </#list>
                         </select>
                     </div>
@@ -85,7 +85,7 @@
 
                 <div class="control-group">
                     <button type="submit" class="btn btn-primary" id="save">Save</button>
-                    <a href="${model.referer}" class="btn btn-info">Cancel</a>
+                    <a href="${model.referer!''}" class="btn btn-info">Cancel</a>
                 </div>
             </form>
         </fieldset>

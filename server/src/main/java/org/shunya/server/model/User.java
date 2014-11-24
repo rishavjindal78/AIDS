@@ -1,4 +1,4 @@
-package org.shunya.shared.model;
+package org.shunya.server.model;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -20,6 +20,17 @@ public class User {
     @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Team> teamList;
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
+
+    @OneToOne
+    private Organization organization;
     /*@ElementCollection (fetch=FetchType.EAGER)
     @CollectionTable(name="MY_MAP_TABLE" , joinColumns=@JoinColumn(name="ID"))
     @MapKeyColumn(name="name")

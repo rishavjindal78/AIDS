@@ -2,10 +2,10 @@ package org.shunya.agent;
 
 import org.shunya.agent.services.RestClient;
 import org.shunya.shared.TaskContext;
-import org.shunya.shared.TaskStep;
+import org.shunya.shared.AbstractStep;
+import org.shunya.shared.TaskStepDTO;
 import org.shunya.shared.model.RunState;
 import org.shunya.shared.model.RunStatus;
-import org.shunya.shared.model.TaskStepData;
 import org.shunya.shared.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +16,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.Date;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -29,7 +30,7 @@ public class TaskProcessor {
     private SystemSupport systemSupport;
     private AtomicBoolean shutdown = new AtomicBoolean(false);
     private AtomicInteger runningJobCount = new AtomicInteger(0);
-    private ConcurrentMap<Long, TaskStep> cache = new ConcurrentHashMap<>();
+    private ConcurrentMap<Long, AbstractStep> cache = new ConcurrentHashMap<>();
 
     @Autowired
     private TaskExecutor myExecutor;
@@ -38,28 +39,28 @@ public class TaskProcessor {
         try {
             myExecutor.execute(() -> {
                 preProcess();
-                TaskStepData taskStepData = taskContext.getTaskStepRun().getTaskStepData();
-                taskContext.getTaskStepRun().setStartTime(new Date());
-                TaskStep task = TaskStep.getTask(taskStepData);
-                task.setTaskStepData(taskStepData);
+                TaskStepDTO taskStepDTO = taskContext.getStepDTO();
+                taskContext.getTaskStepRunDTO().setStartTime(new Date());
+                AbstractStep task = AbstractStep.getTask(taskStepDTO);
+                task.setTaskStepData(taskStepDTO);
                 task.setSessionMap(taskContext.getSessionMap());
-                cache.putIfAbsent(taskContext.getTaskStepRun().getId(), task);
+                cache.putIfAbsent(taskContext.getTaskStepRunDTO().getId(), task);
                 try {
                     task.beforeTaskStart();
                     boolean status = task.execute();
-                    taskContext.getTaskStepRun().setStatus(status);
-                    taskContext.getTaskStepRun().setFinishTime(new Date());
-                    taskContext.getTaskStepRun().setLogs(task.getMemoryLogs());
+                    taskContext.getTaskStepRunDTO().setStatus(status);
+                    taskContext.getTaskStepRunDTO().setFinishTime(new Date());
+                    taskContext.getTaskStepRunDTO().setLogs(task.getMemoryLogs());
                     if (status)
-                        taskContext.getTaskStepRun().setRunStatus(RunStatus.SUCCESS);
+                        taskContext.getTaskStepRunDTO().setRunStatus(RunStatus.SUCCESS);
                     else
-                        taskContext.getTaskStepRun().setRunStatus(RunStatus.FAILURE);
+                        taskContext.getTaskStepRunDTO().setRunStatus(RunStatus.FAILURE);
                 } catch (Exception e) {
-                    taskContext.getTaskStepRun().setRunStatus(RunStatus.FAILURE);
-                    taskContext.getTaskStepRun().setLogs(Utils.getStackTrace(e) + "\n");
-                    logger.warn("Error executing the task : " + taskStepData.getId(), e);
+                    taskContext.getTaskStepRunDTO().setRunStatus(RunStatus.FAILURE);
+                    taskContext.getTaskStepRunDTO().setLogs(Utils.getStackTrace(e) + "\n");
+                    logger.warn("Error executing the task : " + taskContext.getTaskStepRunDTO().getId(), e);
                 } finally {
-                    taskContext.getTaskStepRun().setRunState(RunState.COMPLETED);
+                    taskContext.getTaskStepRunDTO().setRunState(RunState.COMPLETED);
                     task.afterTaskFinish();
                     restClient.postResultToServer(taskContext.getCallbackURL(), taskContext);
                     postProcess();
@@ -68,14 +69,14 @@ public class TaskProcessor {
         } catch (Throwable t) {
             logger.error("Error executing the task - ", t);
         } finally {
-            cache.remove(taskContext.getTaskStepRun().getId());
+            cache.remove(taskContext.getTaskStepRunDTO().getId());
         }
     }
 
     public String getMemoryLogs(long id, long start) {
-        TaskStep taskStep = cache.get(id);
-        if (taskStep != null) {
-            return taskStep.getMemoryLogs().substring((int) Math.min(taskStep.getMemoryLogs().length(), start));
+        AbstractStep abstractStep = cache.get(id);
+        if (abstractStep != null) {
+            return abstractStep.getMemoryLogs().substring((int) Math.min(abstractStep.getMemoryLogs().length(), start));
         }
         return "";
     }

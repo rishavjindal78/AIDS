@@ -1,6 +1,6 @@
 package org.shunya.shared.taskSteps;
 
-import org.shunya.shared.TaskStep;
+import org.shunya.shared.AbstractStep;
 import org.shunya.shared.annotation.InputParam;
 import org.shunya.shared.annotation.OutputParam;
 import org.shunya.shared.annotation.PunterTask;
@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import java.util.logging.Level;
 
 @PunterTask(author = "munishc", name = "DiscSpaceTaskStep", description = "Echo's the input data to SOP", documentation = "docs/TextSamplerDemoHelp.html")
-public class DiscSpaceTaskStep extends TaskStep {
+public class DiscSpaceStep extends AbstractStep {
     @InputParam(required = true, displayName = "Drive Path", type = "textarea", description = "enter your name here")
     private String drive;
 

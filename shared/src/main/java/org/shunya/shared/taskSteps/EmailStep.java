@@ -1,7 +1,7 @@
 package org.shunya.shared.taskSteps;
 
 import org.shunya.shared.StringUtils;
-import org.shunya.shared.TaskStep;
+import org.shunya.shared.AbstractStep;
 import org.shunya.shared.annotation.InputParam;
 import org.shunya.shared.annotation.PunterTask;
 import org.shunya.shared.utils.DevEmailService;
@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.logging.Level;
 
 @PunterTask(author = "munishc", name = "EmailTask", description = "Email Task", documentation = "src/main/resources/docs/EmailTask.html")
-public class EmailTaskStep extends TaskStep {
+public class EmailStep extends AbstractStep {
     @InputParam(required = true, description = "comma separated to addresses")
     private String toAddress;
     @InputParam(required = true, description = "comma separated to addresses")

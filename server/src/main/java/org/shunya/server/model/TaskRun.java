@@ -1,9 +1,10 @@
-package org.shunya.shared.model;
+package org.shunya.server.model;
 
 import org.hibernate.annotations.*;
+import org.shunya.shared.model.RunState;
+import org.shunya.shared.model.RunStatus;
 
 import javax.persistence.*;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.swing.text.Document;
@@ -25,7 +26,8 @@ public class TaskRun implements Serializable {
     private long id;
     private String name;
     private String comments;
-    private String username;
+    @OneToOne
+    private User runBy;
     @Temporal(TemporalType.TIMESTAMP)
     private Date startTime;
     @Temporal(TemporalType.TIMESTAMP)
@@ -36,7 +38,7 @@ public class TaskRun implements Serializable {
     @LazyCollection(LazyCollectionOption.TRUE)
     private List<TaskStepRun> taskStepRuns = new ArrayList<>();
     @ManyToOne
-    private TaskData taskData;
+    private Task task;
     private boolean status;
     @Transient
     private int progress;
@@ -54,6 +56,15 @@ public class TaskRun implements Serializable {
 //	@Basic(fetch=FetchType.EAGER)
 //	@Column(columnDefinition="blob(6M)")
 //	private String xml;
+
+    public User getRunBy() {
+        return runBy;
+    }
+
+    public void setRunBy(User runBy) {
+        this.runBy = runBy;
+    }
+
     public long getId() {
         return id;
     }
@@ -102,12 +113,12 @@ public class TaskRun implements Serializable {
         this.taskStepRuns = taskStepRuns;
     }
 
-    public TaskData getTaskData() {
-        return taskData;
+    public Task getTask() {
+        return task;
     }
 
-    public void setTaskData(TaskData taskData) {
-        this.taskData = taskData;
+    public void setTask(Task task) {
+        this.task = task;
     }
 
     public RunState getRunState() {
@@ -169,14 +180,6 @@ public class TaskRun implements Serializable {
         if (id != other.id)
             return false;
         return true;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public boolean isStatus() {

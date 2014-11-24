@@ -56,7 +56,7 @@
     </div-->
     <br>
     <hr/>
-    <a href="../taskHistory/${model.taskHistory.taskData.id}"> << Back To Task History</a>
+    <a href="../taskHistory/${model.taskHistory.task.id}"> << Back To Task History</a>
     <div class="well">
         <table class="table table-striped">
             <tr>
@@ -77,7 +77,7 @@
                 <tr class="text-success"></#if>
                 <td>${taskStepHistory.id?string}</td>
                 <td>${taskStepHistory.sequence?string}</td>
-                <td>${taskStepHistory.taskStepData.description!?string}</td>
+                <td>${taskStepHistory.taskStep.description!?string}</td>
                 <td>${taskStepHistory.agent.name!?string}</td>
                 <td><#if taskStepHistory.startTime??>${taskStepHistory.startTime?datetime?string("dd MMM, yyyy hh.mm aa")}</#if></td>
                 <#if taskStepHistory.runStatus?string == 'FAILURE'>

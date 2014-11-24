@@ -1,7 +1,7 @@
 package org.shunya.shared.taskSteps;
 
 import org.shunya.shared.StringUtils;
-import org.shunya.shared.TaskStep;
+import org.shunya.shared.AbstractStep;
 import org.shunya.shared.annotation.InputParam;
 import org.shunya.shared.annotation.PunterTask;
 import org.shunya.shared.utils.AssertionMessageException;
@@ -15,7 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @PunterTask(author = "munishc", name = "SystemCommandTask", description = "Runs System Command on Windows Machine", documentation = "src/main/resources/docs/SystemCommandTask.html")
-public class SystemCommandTask extends TaskStep {
+public class SystemCommandStep extends AbstractStep {
     @InputParam(required = true, displayName = "System Command", type = "textarea", description = "any systemCommand")
     public String systemCommand;
     @InputParam(required = false, displayName = "Success message", type = "text", description = "Import terminated successfully")

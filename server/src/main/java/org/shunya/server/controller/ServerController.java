@@ -1,13 +1,13 @@
 package org.shunya.server.controller;
 
+import org.shunya.server.model.*;
 import org.shunya.server.services.TaskService;
 import org.shunya.server.services.DBService;
 import org.shunya.server.services.MyJobScheduler;
+import org.shunya.shared.AbstractStep;
 import org.shunya.shared.FieldPropertiesMap;
 import org.shunya.shared.TaskContext;
-import org.shunya.shared.TaskStep;
 import org.shunya.shared.TaskStepDTO;
-import org.shunya.shared.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.Arrays.asList;
 import static org.shunya.shared.FieldPropertiesMap.convertObjectToXml;
 
 @Controller
@@ -40,7 +40,7 @@ public class ServerController {
 
     @Autowired
     private MyJobScheduler myJobScheduler;
-//    final String[] taskClasses = {"EchoTaskStep", "DiscSpaceTaskStep", "SystemCommandTask"};
+    final String[] taskClasses = {"EchoStep", "DiscSpaceStep", "SystemCommandStep"};
 
     @RequestMapping(value = "test", method = RequestMethod.GET)
     public String test(@ModelAttribute("model") ModelMap model) {
@@ -101,7 +101,7 @@ public class ServerController {
 
     @RequestMapping(value = "/editTask/{id}", method = RequestMethod.GET)
     public String editTask(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id) throws Exception {
-        TaskData taskData = DBService.getTaskData(id);
+        Task taskData = DBService.getTaskData(id);
         model.addAttribute("task", taskData);
         return "editTask";
     }
@@ -122,7 +122,7 @@ public class ServerController {
 
     @RequestMapping(value = "addAgent/{taskId}", method = RequestMethod.POST)
     public String addAgentPOST(@ModelAttribute("agent") Agent agent, @PathVariable("taskId") long taskId) throws Exception {
-        TaskData taskData = DBService.getTaskData(taskId);
+        Task taskData = DBService.getTaskData(taskId);
         taskData.getAgentList().add(DBService.getAgent(agent.getId()));
         DBService.save(taskData);
         return "redirect:../index";
@@ -130,7 +130,7 @@ public class ServerController {
 
     @RequestMapping(value = "removeAgent/{taskId}/{agentId}", method = RequestMethod.POST)
     public String removeAgent(@ModelAttribute("agent") Agent agent, @PathVariable("taskId") long taskId, @PathVariable("agentId") long agentId) throws Exception {
-        TaskData taskData = DBService.getTaskData(taskId);
+        Task taskData = DBService.getTaskData(taskId);
         taskData.getAgentList().remove(DBService.getAgent(agentId));
         DBService.save(taskData);
         return "redirect:../../index";
@@ -145,15 +145,15 @@ public class ServerController {
 
     @RequestMapping(value = "taskStep/addAgent/{taskStepId}", method = RequestMethod.POST)
     public String addTaskStepAgentPOST(@ModelAttribute("agent") Agent agent, @PathVariable("taskStepId") long taskStepId) throws Exception {
-        TaskStepData taskStepData = DBService.getTaskStepData(taskStepId);
-        taskStepData.getAgentList().add(DBService.getAgent(agent.getId()));
-        DBService.save(taskStepData);
-        return "redirect:../../view/" + taskStepData.getTaskData().getId();
+        TaskStep taskStep = DBService.getTaskStep(taskStepId);
+        taskStep.getAgentList().add(DBService.getAgent(agent.getId()));
+        DBService.save(taskStep);
+        return "redirect:../../view/" + taskStep.getTask().getId();
     }
 
     @RequestMapping(value = "taskStep/removeAgent/{taskStepId}/{agentId}", method = RequestMethod.POST)
     public String removeTaskStepAgent(@ModelAttribute("agent") Agent agent, @PathVariable("taskStepId") long taskStepId, @PathVariable("agentId") long agentId) throws Exception {
-        TaskStepData taskStepData = DBService.getTaskStepData(taskStepId);
+        TaskStep taskStepData = DBService.getTaskStep(taskStepId);
         taskStepData.getAgentList().remove(DBService.getAgent(agentId));
         DBService.save(taskStepData);
         final String referer = request.getHeader("referer");
@@ -162,10 +162,10 @@ public class ServerController {
     }
 
     @RequestMapping(value = "/addTask/{id}", method = RequestMethod.POST)
-    public String addTask(@PathVariable("id") long id, @ModelAttribute("user") TaskData taskData, final HttpServletRequest request) {
+    public String addTask(@PathVariable("id") long id, @ModelAttribute("user") Task taskData, final HttpServletRequest request) {
         logger.info("Message received for Add : " + taskData);
         if (id != 0) {
-            final TaskData dbTaskData = DBService.getTaskData(id);
+            final Task dbTaskData = DBService.getTaskData(id);
             dbTaskData.setName(taskData.getName());
             dbTaskData.setDescription(taskData.getDescription());
             dbTaskData.setTags(taskData.getTags());
@@ -182,28 +182,27 @@ public class ServerController {
     @RequestMapping(value = "updateTaskStep", method = RequestMethod.POST)
     @ResponseBody
     //we can also use this @RequestParam("active") String valueOne  ,  @ModelAttribute("active") String valueOne
-    public void updateTaskStep(@ModelAttribute("taskStepData") TaskStepData taskStepData) throws IOException {
-        TaskStepData dbTaskStepData = DBService.getTaskStepData(taskStepData.getId());
+    public void updateTaskStep(@ModelAttribute("taskStepData") TaskStep taskStepData) throws IOException {
+        TaskStep dbTaskStepData = DBService.getTaskStep(taskStepData.getId());
         dbTaskStepData.setActive(taskStepData.isActive());
         DBService.save(dbTaskStepData);
     }
 
     @RequestMapping(value = "/view/{id}", method = RequestMethod.GET)
     public String viewTaskDetails(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id, final HttpServletRequest request) {
-        TaskData taskData = DBService.getTaskData(id);
-//        taskData.setStepDataList(taskData.getStepDataList().stream().sorted(Comparator.comparing(TaskStepData::getSequence)).collect(toList()));
+        Task task = DBService.getTaskData(id);
+//        task.setStepDataList(task.getStepDataList().stream().sorted(Comparator.comparing(TaskStepData::getSequence)).collect(toList()));
         final String referer = request.getHeader("referer");
-        model.addAttribute("taskData", taskData);
+        model.addAttribute("task", task);
         model.addAttribute("referer", referer);
         return "taskSteps";
     }
 
     @RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)
     public String editTaskStep(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id) throws Exception {
-        TaskStepData stepData = DBService.getTaskStepData(id);
+        TaskStep stepData = DBService.getTaskStep(id);
         model.addAttribute("stepData", stepData);
-        List<String> taskClasses = DBService.lisTaskMetadata().stream().map(TaskMetadata::getName).collect(toList());
-        model.addAttribute("taskClasses", taskClasses);
+        model.addAttribute("taskClasses", asList(taskClasses));
 //        FieldPropertiesMap inPropertiesMap = TaskStep.listInputParams(Class.forName(stepData.getClassName()), parseStringMap(stepData.getInputParams()));
         FieldPropertiesMap inPropertiesMap = FieldPropertiesMap.convertXmlToObject(stepData.getInputParams());
         FieldPropertiesMap outPropertiesMap = FieldPropertiesMap.convertXmlToObject(stepData.getOutputParams());
@@ -213,15 +212,15 @@ public class ServerController {
     }
 
     @RequestMapping(value = "/addTaskStep/{taskId}", method = RequestMethod.GET)
-    public String viewTaskSteps(@ModelAttribute("model") ModelMap model, @PathVariable("taskId") long taskId, @RequestParam(value = "taskClassId", required = false, defaultValue = "0") long taskClassId) throws Exception {
-        List<TaskMetadata> taskMetadatas = DBService.lisTaskMetadata();
-        long firstId = taskMetadatas.stream().findFirst().get().getId();
-        taskClassId = (taskClassId==0?firstId:taskClassId);
+    public String viewTaskSteps(@ModelAttribute("model") ModelMap model, @PathVariable("taskId") long taskId, @RequestParam(value = "taskClass", required = false, defaultValue = "EchoStep") String taskClass) throws Exception {
         model.addAttribute("taskId", taskId);
-        FieldPropertiesMap inPropertiesMap = TaskStep.listInputParams(Class.forName(DBService.getTaskMetadata(taskClassId).getClassName()), Collections.<String, String>emptyMap());
-        FieldPropertiesMap outPropertiesMap = TaskStep.listOutputParams(Class.forName(DBService.getTaskMetadata(taskClassId).getClassName()), Collections.<String, String>emptyMap());
-        model.addAttribute("selectedClassId", taskClassId);
-        model.addAttribute("taskClasses", taskMetadatas);
+        if (taskClass == null || taskClass.isEmpty())
+            taskClass = taskClasses[0];
+        //TODO - Add Task Registry for managing task classes
+        FieldPropertiesMap inPropertiesMap = AbstractStep.listInputParams(Class.forName("org.shunya.shared.taskSteps." + taskClass), Collections.<String, String>emptyMap());
+        FieldPropertiesMap outPropertiesMap = AbstractStep.listOutputParams(Class.forName("org.shunya.shared.taskSteps." + taskClass), Collections.<String, String>emptyMap());
+        model.addAttribute("selectedClass", taskClass);
+        model.addAttribute("taskClasses", taskClasses);
         model.addAttribute("inputParams", inPropertiesMap.values());
         model.addAttribute("outputParams", outPropertiesMap.values());
         model.addAttribute("referer", request.getHeader("referer"));
@@ -231,28 +230,28 @@ public class ServerController {
     @RequestMapping(value = "/addTaskStep/{id}", method = RequestMethod.POST)
     public String addTaskStep(@PathVariable("id") long id, @ModelAttribute("taskStepDTO") TaskStepDTO taskStepDTO) throws Exception {
         if (id != 0) {
-            TaskStepData taskStepData = DBService.getTaskStepData(id);
-            taskStepData.setId(id);
-            taskStepData.setSequence(taskStepDTO.getSequence());
-            taskStepData.setDescription(taskStepDTO.getDescription());
-            taskStepData.setInputParams(convertObjectToXml(TaskStep.listInputParams(Class.forName(taskStepData.getTaskMetadata().getClassName()),taskStepDTO.getInputParamsMap())));
-            taskStepData.setOutputParams(convertObjectToXml(TaskStep.listOutputParams(Class.forName(taskStepData.getTaskMetadata().getClassName()), taskStepDTO.getOutputParamsMap())));
-            DBService.save(taskStepData);
+            TaskStep existingTaskStep = DBService.getTaskStep(id);
+            existingTaskStep.setId(id);
+            existingTaskStep.setSequence(taskStepDTO.getSequence());
+            existingTaskStep.setDescription(taskStepDTO.getDescription());
+            existingTaskStep.setInputParams(convertObjectToXml(AbstractStep.listInputParams(Class.forName("org.shunya.shared.taskSteps." + existingTaskStep.getTaskClass()), taskStepDTO.getInputParamsMap())));
+            existingTaskStep.setOutputParams(convertObjectToXml(AbstractStep.listOutputParams(Class.forName("org.shunya.shared.taskSteps." + existingTaskStep.getTaskClass()), taskStepDTO.getOutputParamsMap())));
+            DBService.save(existingTaskStep);
         } else {
-            TaskStepData taskStepData = new TaskStepData();
-            taskStepData.setSequence(taskStepDTO.getSequence());
-            taskStepData.setDescription(taskStepDTO.getDescription());
-            taskStepData.setTaskMetadata(DBService.getTaskMetadata(taskStepDTO.getClassNameId()));
-            taskStepData.setInputParams(convertObjectToXml(TaskStep.listInputParams(Class.forName(taskStepData.getTaskMetadata().getClassName()),taskStepDTO.getInputParamsMap())));
-            taskStepData.setOutputParams(convertObjectToXml(TaskStep.listOutputParams(Class.forName(taskStepData.getTaskMetadata().getClassName()), taskStepDTO.getOutputParamsMap())));
-            taskStepData.setTaskData(taskStepDTO.getTaskData());
-            DBService.save(taskStepData);
+            TaskStep newTaskStep = new TaskStep();
+            newTaskStep.setSequence(taskStepDTO.getSequence());
+            newTaskStep.setDescription(taskStepDTO.getDescription());
+            newTaskStep.setTaskClass(taskStepDTO.getTaskClass());
+            newTaskStep.setInputParams(convertObjectToXml(AbstractStep.listInputParams(Class.forName("org.shunya.shared.taskSteps." + taskStepDTO.getTaskClass()), taskStepDTO.getInputParamsMap())));
+            newTaskStep.setOutputParams(convertObjectToXml(AbstractStep.listOutputParams(Class.forName("org.shunya.shared.taskSteps." + taskStepDTO.getTaskClass()), taskStepDTO.getOutputParamsMap())));
+            newTaskStep.setTask(DBService.getTaskData(taskStepDTO.getTaskId()));
+            DBService.save(newTaskStep);
         }
-        return "redirect:../view/" + taskStepDTO.getTaskData().getId();
+        return "redirect:../view/" + taskStepDTO.getTaskId();
     }
 
     @RequestMapping(value = "/deleteStep/{id}", method = RequestMethod.GET)
-    public String deleteStep(@PathVariable("id") long id, @ModelAttribute("stepData") TaskStepData stepData) throws IOException {
+    public String deleteStep(@PathVariable("id") long id, @ModelAttribute("stepData") TaskStep stepData) throws IOException {
         if (id != 0) {
             DBService.deleteTaskStep(id);
         }
@@ -262,7 +261,7 @@ public class ServerController {
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
-    public String deleteTask(@PathVariable("id") long id, @ModelAttribute("taskData") TaskData taskData) throws IOException {
+    public String deleteTask(@PathVariable("id") long id, @ModelAttribute("taskData") Task taskData) throws IOException {
         if (id != 0) {
             DBService.deleteTask(id);
         }
@@ -294,9 +293,9 @@ public class ServerController {
                            @RequestParam(defaultValue = "false", required = false) boolean notifyStatus,
                            Principal principal) {
         logger.info("Run request for {}, user comments ", taskId, comment);
-        TaskData taskData = DBService.getTaskData(taskId);
+        Task taskData = DBService.getTaskData(taskId);
         TaskRun taskRun = new TaskRun();
-        taskRun.setTaskData(taskData);
+        taskRun.setTask(taskData);
         taskRun.setName(taskData.getName());
         taskRun.setStartTime(new Date());
         taskRun.setComments(comment);
@@ -307,9 +306,16 @@ public class ServerController {
     @RequestMapping(value = "submitTaskStepResults", method = RequestMethod.POST)
     @ResponseBody
     public String submitTaskStepResults(@RequestBody TaskContext taskContext) {
-        logger.info("Successfully received Task results {} ", taskContext.getTaskStepRun().getSequence());
-        TaskRun taskRun = DBService.getTaskRun(taskContext.getTaskStepRun());
-        taskService.consumeStepResult(taskRun, taskContext);
+        logger.info("Successfully received Task results {} ", taskContext.getStepDTO().getSequence());
+        TaskStepRun taskStepRun = DBService.getTaskStepRun(taskContext.getTaskStepRunDTO().getId());
+        taskStepRun.setStartTime(taskContext.getTaskStepRunDTO().getStartTime());
+        taskStepRun.setFinishTime(taskContext.getTaskStepRunDTO().getFinishTime());
+        taskStepRun.setLogs(taskContext.getTaskStepRunDTO().getLogs());
+        taskStepRun.setStatus(taskContext.getTaskStepRunDTO().isStatus());
+        taskStepRun.setRunStatus(taskContext.getTaskStepRunDTO().getRunStatus());
+        taskStepRun.setRunState(taskContext.getTaskStepRunDTO().getRunState());
+        TaskRun taskRun = DBService.getTaskRun(taskContext.getTaskStepRunDTO().getId());
+        taskService.consumeStepResult(taskRun, taskContext, taskStepRun);
         return "success";
     }
 

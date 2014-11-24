@@ -1,7 +1,7 @@
 package org.shunya.server;
 
 import org.shunya.server.services.RestClient;
-import org.shunya.shared.model.TaskRun;
+import org.shunya.server.model.TaskRun;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

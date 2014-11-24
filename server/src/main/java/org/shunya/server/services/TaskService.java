@@ -1,7 +1,14 @@
 package org.shunya.server.services;
 
 import org.shunya.server.TaskExecutionPlan;
+import org.shunya.server.model.Agent;
+import org.shunya.server.model.TaskRun;
+import org.shunya.server.model.TaskStep;
+import org.shunya.server.model.TaskStepRun;
+import org.shunya.shared.FieldPropertiesMap;
 import org.shunya.shared.TaskContext;
+import org.shunya.shared.TaskStepDTO;
+import org.shunya.shared.TaskStepRunDTO;
 import org.shunya.shared.model.*;
 import org.shunya.shared.utils.Utils;
 import org.slf4j.Logger;
@@ -13,6 +20,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PreDestroy;
+import javax.xml.bind.JAXBException;
 import java.net.ConnectException;
 import java.net.Inet4Address;
 import java.util.Date;
@@ -46,8 +54,8 @@ public class TaskService {
     public void execute(TaskRun taskRun) {
         logger.info("starting execution for TaskRun {}", taskRun.getName());
         DBService.save(taskRun);
-        TaskExecutionPlan executionPlan = taskExecutionPlanMap.computeIfAbsent(taskRun, k -> new TaskExecutionPlan(taskRun.getTaskData()));
-        Map.Entry<Integer, List<TaskStepData>> next = executionPlan.next();
+        TaskExecutionPlan executionPlan = taskExecutionPlanMap.computeIfAbsent(taskRun, k -> new TaskExecutionPlan(taskRun.getTask()));
+        Map.Entry<Integer, List<TaskStep>> next = executionPlan.next();
         if (next != null) {
             taskRun.setRunState(RunState.RUNNING);
             taskRun.setRunStatus(RunStatus.RUNNING);
@@ -64,9 +72,8 @@ public class TaskService {
     }
 
     @Async
-    public void consumeStepResult(TaskRun taskRun, TaskContext taskContext) {
-        TaskStepRun taskStepRun = taskContext.getTaskStepRun();
-        logger.info("Execution Completed for Step - " + taskStepRun.getSequence() + ", Status = " + taskStepRun.getRunStatus());
+    public void consumeStepResult(TaskRun taskRun, TaskContext taskContext, TaskStepRun taskStepRun) {
+        logger.info("Execution Completed for Step - " + taskStepRun.getId() + ", Status = " + taskStepRun.getRunStatus());
         taskStepRun.setTaskRun(taskRun);
         DBService.save(taskStepRun);
         currentlyRunningTaskSteps.get(taskRun).remove(taskStepRun);
@@ -81,12 +88,12 @@ public class TaskService {
             }
             processNextStep(taskRun, taskExecutionPlan);
         } else {
-            logger.info("Waiting for other parallel steps to complete for sequence - " + taskStepRun.getTaskStepData().getSequence());
+            logger.info("Waiting for other parallel steps to complete for sequence - " + taskStepRun.getTaskStep().getSequence());
         }
     }
 
     private void processNextStep(TaskRun taskRun, TaskExecutionPlan taskExecutionPlan) {
-        Map.Entry<Integer, List<TaskStepData>> next = taskExecutionPlan.next();
+        Map.Entry<Integer, List<TaskStep>> next = taskExecutionPlan.next();
         if (next != null) {
             delegateStepToAgents(next.getValue(), taskRun);
         } else {
@@ -111,13 +118,13 @@ public class TaskService {
         logger.info("Destroying the Task Service context");
     }
 
-    private void delegateStepToAgents(List<TaskStepData> taskStepDataList, TaskRun taskRun) {
+    private void delegateStepToAgents(List<TaskStep> taskStepDataList, TaskRun taskRun) {
         taskStepDataList.parallelStream().forEach(stepData -> {
             List<Agent> agentList = stepData.getAgentList().size() > 0 ? stepData.getAgentList() : taskExecutionPlanMap.get(taskRun).getTaskData().getAgentList();
             agentList.stream().forEach(agent -> {
                 TaskStepRun taskStepRun = new TaskStepRun();
                 taskStepRun.setSequence(stepData.getSequence());
-                taskStepRun.setTaskStepData(stepData);
+                taskStepRun.setTaskStep(stepData);
                 taskStepRun.setTaskRun(taskRun);
                 taskStepRun.setAgent(agent);
                 DBService.save(taskStepRun);
@@ -133,22 +140,24 @@ public class TaskService {
                     String callbackUrl = "http://" + hostAddress + ":9290/rest/server/submitTaskStepResults";
                     executionContext.setCallbackURL(callbackUrl);
                     executionContext.setSessionMap(taskExecutionPlanMap.get(taskRun).getSessionMap());
-                    executionContext.setTaskStepRun(taskStepRun);
-                    restClient.submitTaskToAgent(executionContext);
-                    logger.info("task submitted - " + taskStepRun.getTaskStepData().getDescription());
+                    executionContext.setTaskStepRunDTO(convertToDTO(taskStepRun));
+                    TaskStep taskStep = taskStepRun.getTaskStep();
+                    executionContext.setStepDTO(convertToDTO(taskStep));
+                    restClient.submitTaskToAgent(executionContext , taskStepRun.getAgent());
+                    logger.info("task submitted - " + taskStep.getDescription());
                 } catch (Exception e) {
                     logger.error("Task Submission Failed", e);
                     taskExecutionPlanMap.get(taskRun).setTaskStatus(false);
-                    executionContext.getTaskStepRun().setStatus(false);
+                    executionContext.getTaskStepRunDTO().setStatus(false);
                     if (e.getCause() != null && e.getCause() instanceof ConnectException) {
-                        executionContext.getTaskStepRun().setLogs("Task Submission Failed, Agent not reachable - " + executionContext.getTaskStepRun().getAgent().getName() + "\r\n" + e);
+                        executionContext.getTaskStepRunDTO().setLogs("Task Submission Failed, Agent not reachable - " + taskStepRun.getAgent().getName() + "\r\n" + e);
                     } else {
-                        executionContext.getTaskStepRun().setLogs("Task Submission Failed - " + Utils.getStackTrace(e));
+                        executionContext.getTaskStepRunDTO().setLogs("Task Submission Failed - " + Utils.getStackTrace(e));
                     }
-                    executionContext.getTaskStepRun().setFinishTime(new Date());
-                    executionContext.getTaskStepRun().setRunStatus(RunStatus.FAILURE);
-                    executionContext.getTaskStepRun().setRunState(RunState.COMPLETED);
-                    consumeStepResult(taskRun, executionContext);
+                    executionContext.getTaskStepRunDTO().setFinishTime(new Date());
+                    executionContext.getTaskStepRunDTO().setRunStatus(RunStatus.FAILURE);
+                    executionContext.getTaskStepRunDTO().setRunState(RunState.COMPLETED);
+                    consumeStepResult(taskRun, executionContext , taskStepRun);
                 }
             });
             logger.info("execution command sent for task step - " + taskStepDataList.get(0).getSequence());
@@ -156,5 +165,24 @@ public class TaskService {
             logger.warn("execution skipped for task step as there was no agent configured - " + taskStepDataList.get(0).getSequence());
             processNextStep(taskRun, taskExecutionPlanMap.get(taskRun));
         }
+    }
+
+    private TaskStepDTO convertToDTO(TaskStep taskStep) throws JAXBException {
+        TaskStepDTO taskStepDTO = new TaskStepDTO();
+        taskStepDTO.setName(taskStep.getName());
+        taskStepDTO.setDescription(taskStep.getDescription());
+        taskStepDTO.setInputParamsMap(FieldPropertiesMap.convertStringToMap(taskStep.getInputParams()));
+        taskStepDTO.setOutputParamsMap(FieldPropertiesMap.convertStringToMap(taskStep.getOutputParams()));
+        taskStepDTO.setSequence(taskStep.getSequence());
+        //TODO - Handle taskName and TaskClass using taskRegistryService
+        taskStepDTO.setTaskClass("org.shunya.shared.taskSteps."+taskStep.getTaskClass());
+        taskStepDTO.setTaskId(taskStep.getTask().getId());
+        return taskStepDTO;
+    }
+
+    private TaskStepRunDTO convertToDTO(TaskStepRun taskStepRun) {
+        TaskStepRunDTO taskStepRunDTO = new TaskStepRunDTO();
+        taskStepRunDTO.setId(taskStepRun.getId());
+        return taskStepRunDTO;
     }
 }

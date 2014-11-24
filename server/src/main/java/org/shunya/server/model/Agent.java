@@ -1,4 +1,4 @@
-package org.shunya.shared.model;
+package org.shunya.server.model;
 
 import javax.persistence.*;
 
@@ -10,12 +10,30 @@ public class Agent {
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")
     private long id;
     @OneToOne
-    private Organization organization;
+    private User createdBy;
     @OneToOne
     private Team team;
     private String name;
     private String description;
     private String baseUrl;
+
+    public Boolean getPrivateAccess() {
+        return privateAccess;
+    }
+
+    public void setPrivateAccess(Boolean privateAccess) {
+        this.privateAccess = privateAccess;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    private Boolean privateAccess;
 
     public Agent() {}
 
@@ -66,14 +84,6 @@ public class Agent {
     @Override
     public int hashCode() {
         return (int) (id ^ (id >>> 32));
-    }
-
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
     }
 
     public Team getTeam() {

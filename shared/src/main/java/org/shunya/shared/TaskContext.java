@@ -1,21 +1,20 @@
 package org.shunya.shared;
 
-import org.shunya.shared.model.TaskStepRun;
-
 import java.util.Map;
 
 public class TaskContext {
-    private TaskStepRun taskStepRun;
+    private TaskStepDTO stepDTO;
+    private TaskStepRunDTO taskStepRunDTO;
     private Map<String, Object> sessionMap;
     private boolean doVariableSubstitution = true;
     private String callbackURL = "http://localhost:9290/rest/server/submitTaskStepResults";
 
-    public TaskStepRun getTaskStepRun() {
-        return taskStepRun;
+    public TaskStepRunDTO getTaskStepRunDTO() {
+        return taskStepRunDTO;
     }
 
-    public void setTaskStepRun(TaskStepRun taskStepRun) {
-        this.taskStepRun = taskStepRun;
+    public void setTaskStepRunDTO(TaskStepRunDTO taskStepRunDTO) {
+        this.taskStepRunDTO = taskStepRunDTO;
     }
 
     public Map<String, Object> getSessionMap() {
@@ -40,5 +39,13 @@ public class TaskContext {
 
     public void setCallbackURL(String callbackURL) {
         this.callbackURL = callbackURL;
+    }
+
+    public TaskStepDTO getStepDTO() {
+        return stepDTO;
+    }
+
+    public void setStepDTO(TaskStepDTO stepDTO) {
+        this.stepDTO = stepDTO;
     }
 }

@@ -18,7 +18,7 @@
                 <label for="taskDataId" class="col-lg-2 control-label">TaskData Id</label>
 
                 <div class="col-lg-10">
-                    <input type="text" id="taskDataId" class="form-control" name="taskData.id" value="${model.stepData.taskData.id}"
+                    <input type="text" id="taskDataId" class="form-control" name="task.id" value="${model.stepData.task.id}"
                            readonly="true">
                 </div>
             </div>
@@ -28,7 +28,7 @@
 
                 <div class="col-lg-10">
                     <input id="classNameId" type="text" readonly="true" class="form-control" name="className"
-                           value="${model.stepData.taskMetadata.name}">
+                           value="${model.stepData.taskClass}">
                 </div>
             </div>
 

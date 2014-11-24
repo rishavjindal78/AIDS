@@ -1,7 +1,6 @@
 package org.shunya.server.poc;
 
-import org.shunya.server.poc.AgentContextListner;
-import org.shunya.shared.model.Agent;
+import org.shunya.server.model.Agent;
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletContext;
 import javax.servlet.annotation.WebServlet;

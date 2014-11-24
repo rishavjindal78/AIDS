@@ -1,4 +1,4 @@
-package org.shunya.shared.model;
+package org.shunya.server.model;
 
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
@@ -12,35 +12,37 @@ import java.io.Serializable;
 import java.util.List;
 
 @Entity
-@Table(name = "TASK_DATA")
+@Table(name = "TASK")
 @TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "TASK_DATA", allocationSize = 10)
 @XmlRootElement()
 //@XmlAccessorOrder(value=XmlAccessOrder.ALPHABETICAL)
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-        "username",
+        "author",
         "name",
         "description",
-        "comments",
         "inputParams",
         "stepDataList"
 })
-public class TaskData implements Serializable {
+public class Task implements Serializable {
     private static final long serialVersionUID = 3450975996342231267L;
     @Id
     @XmlTransient
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")
     private long id;
-    private String username;
+    @OneToOne
+    private User author;
     private String name;
+
+    @Column(length = 500)
     private String description;
     private String tags;
     @OneToOne
     private Organization organization;
     @OneToOne
     private Team team;
-    @Column(length = 500)
-    private String comments;
+    /*@Column(length = 500)
+    private String comments;*/
     private boolean abortOnFirstFailure = true;
     @Lob
     @Basic(fetch = FetchType.EAGER)
@@ -49,14 +51,14 @@ public class TaskData implements Serializable {
     @LazyCollection(LazyCollectionOption.FALSE)
     @BatchSize(size = 10)
     @OrderBy(clause = "sequence asc")
-    @OneToMany(mappedBy = "taskData", fetch = FetchType.EAGER)
-    private List<TaskStepData> stepDataList;
-    @OneToMany(mappedBy = "taskData", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "task", fetch = FetchType.EAGER)
+    private List<TaskStep> stepDataList;
+    /*@OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
     @XmlTransient
     @LazyCollection(LazyCollectionOption.TRUE)
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE})
     private List<TaskRun> taskRuns;
-    @ManyToMany
+    */@ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Agent> agentList;
 
@@ -84,29 +86,29 @@ public class TaskData implements Serializable {
         this.description = description;
     }
 
-    public String getComments() {
+    /*public String getComments() {
         return comments;
     }
 
     public void setComments(String comments) {
         this.comments = comments;
-    }
+    }*/
 
-    public List<TaskStepData> getStepDataList() {
+    public List<TaskStep> getStepDataList() {
         return stepDataList;
     }
 
-    public void setStepDataList(List<TaskStepData> stepDataList) {
+    public void setStepDataList(List<TaskStep> stepDataList) {
         this.stepDataList = stepDataList;
     }
 
-    public List<TaskRun> getTaskRuns() {
+   /* public List<TaskRun> getTaskRuns() {
         return taskRuns;
     }
 
     public void setTaskRuns(List<TaskRun> taskRuns) {
         this.taskRuns = taskRuns;
-    }
+    }*/
 
     public String getInputParams() {
         return inputParams;
@@ -130,20 +132,20 @@ public class TaskData implements Serializable {
             return true;
         if (obj == null)
             return false;
-        if (!(obj instanceof TaskData))
+        if (!(obj instanceof Task))
             return false;
-        TaskData other = (TaskData) obj;
+        Task other = (Task) obj;
         if (id != other.id)
             return false;
         return true;
     }
 
-    public String getUsername() {
-        return username;
+    public User getAuthor() {
+        return author;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
     public String getTags() {

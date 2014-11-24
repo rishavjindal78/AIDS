@@ -1,7 +1,7 @@
 package org.shunya.server.poc;
 
 import org.shunya.shared.TaskContext;
-import org.shunya.shared.model.Agent;
+import org.shunya.server.model.Agent;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.AsyncContext;

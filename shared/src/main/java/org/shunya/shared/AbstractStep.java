@@ -2,9 +2,7 @@ package org.shunya.shared;
 
 import org.shunya.shared.annotation.InputParam;
 import org.shunya.shared.annotation.OutputParam;
-import org.shunya.shared.model.TaskStepData;
 
-import javax.xml.bind.JAXBException;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.*;
 
-public abstract class TaskStep {
+public abstract class AbstractStep {
     private Map<String, Object> sessionMap;
     private FieldPropertiesMap outputParams;
     private FieldPropertiesMap inputParams;
     private FieldPropertiesMap overrideInputParams;
-    protected TaskStepData taskStepData;
+    protected TaskStepDTO taskStepData;
     private boolean doVariableSubstitution = true;
     protected StringBuilder strLogger;
     private transient ConsoleHandler cHandler = null;
@@ -89,15 +87,14 @@ public abstract class TaskStep {
         return new FieldPropertiesMap(fieldPropertiesMap);
     }
 
-    public static TaskStep getTask(TaskStepData stepData) {
+    public static AbstractStep getTask(TaskStepDTO stepDTO) {
         try {
-            Class<?> clz = Class.forName(stepData.getTaskMetadata().getClassName());
-            TaskStep task = (TaskStep) clz.newInstance();
-            task.setOutputParams(FieldPropertiesMap.convertXmlToObject(stepData.getOutputParams()));
-            task.setInputParams(FieldPropertiesMap.convertXmlToObject(stepData.getInputParams()));
-            task.setTaskStepData(stepData);
+            Class<?> clz = Class.forName(stepDTO.getTaskClass());
+            AbstractStep task = (AbstractStep) clz.newInstance();
+            task.setOutputParams(FieldPropertiesMap.parseStringMap(stepDTO.getOutputParamsMap()));
+            task.setInputParams(FieldPropertiesMap.parseStringMap(stepDTO.getInputParamsMap()));
             return task;
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | JAXBException e) {
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return null;
@@ -272,11 +269,11 @@ public abstract class TaskStep {
         sessionMap.put(key, obj);
     }
 
-    public void setTaskStepData(TaskStepData taskStepData) {
+    public void setTaskStepData(TaskStepDTO taskStepData) {
         this.taskStepData = taskStepData;
     }
 
-    public TaskStepData getTaskStepData() {
+    public TaskStepDTO getTaskStepData() {
         return taskStepData;
     }
 

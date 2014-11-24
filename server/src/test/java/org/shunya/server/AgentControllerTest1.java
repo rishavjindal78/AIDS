@@ -2,16 +2,15 @@ package org.shunya.server;
 
 import org.junit.Test;
 import org.shunya.shared.TaskContext;
-import org.shunya.shared.model.Agent;
-import org.shunya.shared.model.TaskData;
-import org.shunya.shared.model.TaskStepData;
+import org.shunya.server.model.Agent;
+import org.shunya.server.model.Task;
+import org.shunya.server.model.TaskStep;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
 import static org.shunya.shared.FieldPropertiesMap.convertObjectToXml;
 import static org.shunya.shared.FieldPropertiesMap.parseStringMap;
 
@@ -20,7 +19,7 @@ public class AgentControllerTest1 {
 
     @Test
     public void testExecute() throws Exception {
-        TaskStepData stepData = new TaskStepData();
+        TaskStep stepData = new TaskStep();
         stepData.setId(10);
 //        stepData.setClassName("org.shunya.shared.taskSteps.EchoTaskStep");
         stepData.setName("Echo Munish Chandel");
@@ -30,7 +29,7 @@ public class AgentControllerTest1 {
         Map<String, String> outMap = new HashMap<>();
         outMap.put("outName", "echo");
         stepData.setOutputParams(convertObjectToXml(parseStringMap(outMap)));
-        TaskData taskData = new TaskData();
+        Task taskData = new Task();
 //        taskData.setStepDataList(asList(stepData));
         taskData.setInputParams(convertObjectToXml(parseStringMap(new HashMap<>(inMap))));
 
@@ -38,7 +37,7 @@ public class AgentControllerTest1 {
         agent.setName("Agent-1");
         TaskContext taskContext = new TaskContext();
 //        taskConfig.setId(100);
-//        taskConfig.setTaskData(taskData);
+//        taskConfig.setTask(taskData);
 //        taskConfig.setAgent(agent);
 
         ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:9290/rest/agent/execute", taskContext, String.class);
@@ -48,7 +47,7 @@ public class AgentControllerTest1 {
 
     @Test
     public void testDiscSpaceExecute() throws Exception {
-        TaskStepData stepData = new TaskStepData();
+        TaskStep stepData = new TaskStep();
         stepData.setId(10);
 //        stepData.setClassName("org.shunya.shared.taskSteps.DiscSpaceTaskStep");
         stepData.setName("Get Disc Space");
@@ -60,7 +59,7 @@ public class AgentControllerTest1 {
         outMap.put("totalSpace", "totalSpace");
         outMap.put("freeSpace", "freeSpace");
         stepData.setOutputParams(convertObjectToXml(parseStringMap(outMap)));
-        TaskData taskData = new TaskData();
+        Task taskData = new Task();
 //        taskData.setStepDataList(asList(stepData));
         taskData.setInputParams(convertObjectToXml(parseStringMap(new HashMap<>(inMap))));
 
@@ -68,7 +67,7 @@ public class AgentControllerTest1 {
         agent.setName("Agent-1");
         TaskContext taskContext = new TaskContext();
 //        taskConfig.setId(100);
-//        taskConfig.setTaskData(taskData);
+//        taskConfig.setTask(taskData);
 //        taskConfig.setAgent(agent);
 
         ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:9290/rest/agent/execute", taskContext, String.class);

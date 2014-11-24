@@ -1,4 +1,4 @@
-package org.shunya.shared.model;
+package org.shunya.server.model;
 
 import org.hibernate.annotations.*;
 
@@ -19,10 +19,21 @@ public class AgentGroup {
     private long id;
     private String name;
     private String description;
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
+
     @Cascade({SAVE_UPDATE, DELETE})
 //    @Fetch(FetchMode.JOIN)
     @BatchSize(size = 10)
     @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToOne
+    private Team team;
     @OneToMany
     private List<Agent> agentList;
 

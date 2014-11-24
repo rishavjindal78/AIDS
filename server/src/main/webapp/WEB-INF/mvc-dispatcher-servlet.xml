@@ -52,7 +52,7 @@
                 <!--<prop key="hibernate.search.default.indexBase">${lucene.indexBase}</prop>-->
             </props>
         </property>
-        <property name="packagesToScan" value="org.shunya.shared.model"/>
+        <property name="packagesToScan" value="org.shunya.server.model"/>
     </bean>
 
     <tx:annotation-driven transaction-manager="transactionManager"/>

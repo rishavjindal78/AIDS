@@ -1,19 +1,18 @@
 package org.shunya.shared;
 
-import org.shunya.shared.model.TaskData;
+import com.sun.javafx.tk.Toolkit;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class TaskStepDTO {
+    private long taskId;
     private int sequence;
-    private int classNameId;
+    private String name;
+    private String taskClass;
     private String description;
-    private boolean active = true;
-    private Map<String,String> inputParamsMap = new HashMap<>();
-    private Map<String,String> outputParamsMap = new HashMap<>();
-
-    private TaskData taskData;
+    private Map<String, String> inputParamsMap = new HashMap<>();
+    private Map<String, String> outputParamsMap = new HashMap<>();
 
     public int getSequence() {
         return sequence;
@@ -23,21 +22,6 @@ public class TaskStepDTO {
         this.sequence = sequence;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
 
     public Map<String, String> getInputParamsMap() {
         return inputParamsMap;
@@ -55,19 +39,36 @@ public class TaskStepDTO {
         this.outputParamsMap = outputParamsMap;
     }
 
-    public int getClassNameId() {
-        return classNameId;
+
+    public String getTaskClass() {
+        return taskClass;
     }
 
-    public void setClassNameId(int classNameId) {
-        this.classNameId = classNameId;
+    public void setTaskClass(String taskClass) {
+        this.taskClass = taskClass;
     }
 
-    public TaskData getTaskData() {
-        return taskData;
+    public String getName() {
+        return name;
     }
 
-    public void setTaskData(TaskData taskData) {
-        this.taskData = taskData;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(long taskId) {
+        this.taskId = taskId;
     }
 }

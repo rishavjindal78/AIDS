@@ -1,4 +1,4 @@
-package org.shunya.shared.model;
+package org.shunya.server.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Cascade;

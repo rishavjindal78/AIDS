@@ -1,6 +1,8 @@
-package org.shunya.shared.model;
+package org.shunya.server.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.shunya.shared.model.RunState;
+import org.shunya.shared.model.RunStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -24,7 +26,7 @@ public class TaskStepRun implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date finishTime;
     @ManyToOne
-    private TaskStepData taskStepData;
+    private TaskStep taskStep;
     @ManyToOne
     @JsonIgnore
     private TaskRun taskRun;
@@ -69,12 +71,12 @@ public class TaskStepRun implements Serializable {
         this.status = status;
     }
 
-    public TaskStepData getTaskStepData() {
-        return taskStepData;
+    public TaskStep getTaskStep() {
+        return taskStep;
     }
 
-    public void setTaskStepData(TaskStepData taskStepData) {
-        this.taskStepData = taskStepData;
+    public void setTaskStep(TaskStep taskStep) {
+        this.taskStep = taskStep;
     }
 
     public RunState getRunState() {

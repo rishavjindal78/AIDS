@@ -2,8 +2,8 @@ package org.shunya.server.poc;
 
 import org.reflections.Reflections;
 import org.shunya.shared.annotation.PunterTask;
-import org.shunya.shared.model.TaskData;
-import org.shunya.shared.model.TaskStepData;
+import org.shunya.server.model.Task;
+import org.shunya.server.model.TaskStep;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -14,14 +14,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static java.util.Arrays.asList;
 import static org.shunya.shared.FieldPropertiesMap.convertObjectToXml;
 import static org.shunya.shared.FieldPropertiesMap.parseStringMap;
 
 @Service
 public class PunterTaskService {
     public static void main(String[] args) throws JAXBException {
-        TaskStepData stepData = new TaskStepData();
+        TaskStep stepData = new TaskStep();
         stepData.setId(10);
 //        stepData.setClassName("org.shunya.shared.taskSteps.EchoTaskStep");
         stepData.setName("Echo Munish Chandel");
@@ -31,7 +30,7 @@ public class PunterTaskService {
         Map<String, String> outMap = new HashMap<>();
         outMap.put("outName", "echo");
         stepData.setOutputParams(convertObjectToXml(parseStringMap(outMap)));
-        TaskData taskData = new TaskData();
+        Task taskData = new Task();
 //        taskData.setStepDataList(asList(stepData));
 //        taskData.setInputParams(convertObjectToXml(parseStringMap(new HashMap<>(inMap))));
     }

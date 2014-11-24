@@ -2,11 +2,10 @@ package org.shunya.server.services;
 
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
-import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.shunya.server.dao.DBDao;
-import org.shunya.shared.model.*;
+import org.shunya.server.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -26,27 +25,21 @@ public class DBServiceImpl implements DBService {
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<TaskData> listTasks() {
-        return DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskData.class)
+    public List<Task> listTasks() {
+        return DBDao.getSessionFactory().getCurrentSession().createCriteria(Task.class)
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).addOrder(Order.desc("id")).list();
     }
 
     @Override
-    public List<TaskMetadata> lisTaskMetadata() {
-        return DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskMetadata.class)
-                .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY).setMaxResults(20).setCacheable(true).addOrder(Order.asc("name")).list();
-    }
-
-    @Override
     public void deleteTaskStep(long id) {
-        TaskStepData taskStepData = getTaskStepData(id);
-        taskStepData.getTaskData().getStepDataList().remove(taskStepData);
+        TaskStep taskStepData = getTaskStep(id);
+        taskStepData.getTask().getStepDataList().remove(taskStepData);
         DBDao.getSessionFactory().getCurrentSession().delete(taskStepData);
     }
 
     @Override
     public void deleteTask(long id) {
-        TaskData taskData = getTaskData(id);
+        Task taskData = getTaskData(id);
         List taskData1 = DBDao.getSessionFactory().getCurrentSession().createQuery("select id from TaskRun tr where tr.taskData = :taskData").setEntity("taskData", taskData).list();
         DBDao.getSessionFactory().getCurrentSession().createQuery("delete from TaskStepRun tr where tr.taskRun.id in (:taskRunIds)").setParameterList("taskRunIds", taskData1).executeUpdate();
         DBDao.getSessionFactory().getCurrentSession().createQuery("delete from TaskRun tr where tr.taskData = :taskData").setEntity("taskData", taskData).executeUpdate();
@@ -59,12 +52,12 @@ public class DBServiceImpl implements DBService {
     }
 
     @Transactional(readOnly = false)
-    public void save(TaskData taskData) {
+    public void save(Task taskData) {
         DBDao.saveOrUpdate(taskData);
     }
 
     @Transactional(readOnly = false)
-    public void save(TaskStepData taskStepData) {
+    public void save(TaskStep taskStepData) {
         DBDao.saveOrUpdate(taskStepData);
     }
 
@@ -99,9 +92,9 @@ public class DBServiceImpl implements DBService {
     }
 
     @Transactional(readOnly = true)
-    public TaskData getTaskData(long id) {
+    public Task getTaskData(long id) {
 //        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        return (TaskData) DBDao.getSessionFactory().getCurrentSession().get(TaskData.class, id);
+        return (Task) DBDao.getSessionFactory().getCurrentSession().get(Task.class, id);
     }
 
     @Override
@@ -110,13 +103,8 @@ public class DBServiceImpl implements DBService {
     }
 
     @Override
-    public TaskStepData getTaskStepData(long id) {
-        return (TaskStepData) DBDao.getSessionFactory().getCurrentSession().get(TaskStepData.class, id);
-    }
-
-    @Override
-    public TaskMetadata getTaskMetadata(long id) {
-        return (TaskMetadata) DBDao.getSessionFactory().getCurrentSession().get(TaskMetadata.class, id);
+    public TaskStep getTaskStep(long id) {
+        return (TaskStep) DBDao.getSessionFactory().getCurrentSession().get(TaskStep.class, id);
     }
 
     @Override

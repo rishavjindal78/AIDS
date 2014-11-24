@@ -2,7 +2,7 @@ package org.shunya.shared.taskSteps;
 
 
 import org.shunya.shared.StringUtils;
-import org.shunya.shared.TaskStep;
+import org.shunya.shared.AbstractStep;
 import org.shunya.shared.annotation.InputParam;
 import org.shunya.shared.annotation.PunterTask;
 import org.shunya.shared.utils.RestClient;
@@ -10,7 +10,7 @@ import org.shunya.shared.utils.RestClient;
 import java.util.logging.Level;
 
 @PunterTask(author = "munishc", name = "FileUploadTask", description = "Transfers file from one agent to another", documentation = "src/main/resources/docs/TextSamplerDemoHelp.html")
-public class FileUploadTaskStep extends TaskStep {
+public class FileUploadStep extends AbstractStep {
     @InputParam(required = true, displayName = "Server Address", description = "enter your httpUrl here http://localhost:8080/upload/")
     private String server;
     @InputParam(required = false, displayName = "Local File Path", description = "Path of the file to upload e:/test.mp3")

@@ -2,7 +2,7 @@ package org.shunya.server.dao;
 
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
-import org.shunya.shared.model.*;
+import org.shunya.server.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -29,12 +29,12 @@ public class DBDaoImpl implements DBDao {
     }
 
     @Override
-    public void saveOrUpdate(TaskData taskData) {
+    public void saveOrUpdate(Task taskData) {
         sessionFactory.getCurrentSession().saveOrUpdate(taskData);
     }
 
     @Override
-    public void saveOrUpdate(TaskStepData taskStepData) {
+    public void saveOrUpdate(TaskStep taskStepData) {
         sessionFactory.getCurrentSession().saveOrUpdate(taskStepData);
     }
 

@@ -9,7 +9,7 @@ import org.mockito.Mockito;
 import org.shunya.server.services.TaskService;
 import org.shunya.shared.TaskContext;
 import org.shunya.shared.TaskState;
-import org.shunya.shared.model.Agent;
+import org.shunya.server.model.Agent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -77,7 +77,7 @@ public class AgentControllerTests {
         agent.setName("Agent-1");
         TaskContext taskContext = new TaskContext();
 //        taskConfig.setId(100);
-//        taskConfig.setTaskData(new TaskData());
+//        taskConfig.setTask(new TaskData());
 //        taskConfig.setAgent(agent);
 
         mockMvc.perform(post("/agent/execute")

@@ -1,8 +1,6 @@
-package org.shunya.shared.model;
+package org.shunya.server.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -10,16 +8,14 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
 
 @Entity
-@Table(name = "TASK_STEP_DATA")
+@Table(name = "TASK_STEP")
 @TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "TASK_STEP_DATA", allocationSize = 10)
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
         "sequence",
         "name",
-        "taskMetadata",
         "description",
         "author",
         "active",
@@ -28,7 +24,7 @@ import java.util.Set;
         "outputParams"
 })
 @XmlRootElement
-public class TaskStepData implements Serializable {
+public class TaskStep implements Serializable {
     private static final long serialVersionUID = 1907841119637052268L;
     @Id
     @XmlTransient
@@ -36,12 +32,20 @@ public class TaskStepData implements Serializable {
     private long id;
     private int sequence;
     private String name;
-    @OneToOne
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private TaskMetadata taskMetadata;
+
+    public String getTaskClass() {
+        return taskClass;
+    }
+
+    public void setTaskClass(String taskClass) {
+        this.taskClass = taskClass;
+    }
+
+    private String taskClass;
     @Column(length = 500)
     private String description;
-    private String author;
+    @OneToOne
+    private User author;
     private boolean active = true;
     private boolean failOver = false;
     @Lob
@@ -53,8 +57,8 @@ public class TaskStepData implements Serializable {
     @ManyToOne
     @XmlTransient
     @JsonIgnore
-    private TaskData taskData;
-    @OneToMany(cascade = {CascadeType.REMOVE}, mappedBy = "taskStepData", fetch = FetchType.LAZY)
+    private Task task;//TODO : To keep till we get better redirection strategy
+    @OneToMany(cascade = {CascadeType.REMOVE}, mappedBy = "taskStep", fetch = FetchType.LAZY)
     @XmlTransient
     @JsonIgnore
     @LazyCollection(LazyCollectionOption.TRUE)
@@ -69,6 +73,14 @@ public class TaskStepData implements Serializable {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
     public int getSequence() {
@@ -95,20 +107,12 @@ public class TaskStepData implements Serializable {
         this.description = description;
     }
 
-    public String getAuthor() {
-        return author;
+    public Task getTask() {
+        return task;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public TaskData getTaskData() {
-        return taskData;
-    }
-
-    public void setTaskData(TaskData taskData) {
-        this.taskData = taskData;
+    public void setTask(Task task) {
+        this.task = task;
     }
 
     public boolean isActive() {
@@ -149,9 +153,9 @@ public class TaskStepData implements Serializable {
             return true;
         if (obj == null)
             return false;
-        if (!(obj instanceof TaskStepData))
+        if (!(obj instanceof TaskStep))
             return false;
-        TaskStepData other = (TaskStepData) obj;
+        TaskStep other = (TaskStep) obj;
         if (id != other.id)
             return false;
         return true;
@@ -181,11 +185,5 @@ public class TaskStepData implements Serializable {
         this.agentList = agentList;
     }
 
-    public TaskMetadata getTaskMetadata() {
-        return taskMetadata;
-    }
 
-    public void setTaskMetadata(TaskMetadata taskMetadata) {
-        this.taskMetadata = taskMetadata;
-    }
 }

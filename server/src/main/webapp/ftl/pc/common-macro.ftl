@@ -153,25 +153,25 @@
             </tr>
             </thead>
             <tbody>
-                <#list items as taskData>
+                <#list items as task>
                 <tr>
                     <td>${taskData_index + 1}</td>
                     <td>
-                        <a class="title btn-link">${taskData.name!?string}</a>
+                        <a class="title btn-link">${task.name!?string}</a>
 
                         <div class="description">
-                            <#if taskData.description??>
-                                <div class="markdown"><#noescape>${taskData.description?string?chop_linebreak}</#noescape></div>
+                            <#if task.description??>
+                                <div class="markdown"><#noescape>${task.description?string?chop_linebreak}</#noescape></div>
                             </#if>
                         </div>
                     </td>
-                    <td> <#if taskData.schedule??>${taskData.schedule}</#if></td>
-                    <td> <#if taskData.project??>${taskData.project.id}</#if></td>
+                    <td> <#if task.schedule??>${task.schedule}</#if></td>
+                    <td> <#if task.project??>${task.project.id}</#if></td>
                     <td>
-                        <#if taskData.dateUpdated??>${taskData.dateUpdated!?date?string("dd MMM, yyyy")}</#if>
+                        <#if task.dateUpdated??>${task.dateUpdated!?date?string("dd MMM, yyyy")}</#if>
                     </td>
                     <td>
-                        <#if  (taskData.active?c == 'true')><span class="glyphicon glyphicon-ok"></span><#else><span class="glyphicon glyphicon-off"></#if>
+                        <#if  (task.active?c == 'true')><span class="glyphicon glyphicon-ok"></span><#else><span class="glyphicon glyphicon-off"></#if>
                     </td>
                     <td>
                         <div class="btn-group">
@@ -179,12 +179,12 @@
                                 Action <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
-                                <li><a href="view/${taskData.id}">view</a></li>
-                                <li><a href="add/${taskData.id}">edit</a></li>
-                                <li><a href="#" onclick="myFunction('run/${taskData.id}')">run</a></li>
-                                <li><a href="taskHistory/${taskData.id}">history</a></li>
+                                <li><a href="view/${task.id}">view</a></li>
+                                <li><a href="add/${task.id}">edit</a></li>
+                                <li><a href="#" onclick="myFunction('run/${task.id}')">run</a></li>
+                                <li><a href="taskHistory/${task.id}">history</a></li>
                                 <li class="divider"></li>
-                                <li><a href="delete/${taskData.id}">Delete</a></li>
+                                <li><a href="delete/${task.id}">Delete</a></li>
                             </ul>
                         </div>
                     </td>

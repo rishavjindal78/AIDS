@@ -1,23 +1,22 @@
 package org.shunya.server;
 
-import org.shunya.shared.model.TaskData;
-import org.shunya.shared.model.TaskStepData;
+import org.shunya.server.model.Task;
+import org.shunya.server.model.TaskStep;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class TaskExecutionPlan {
-    private final TaskData taskData;
-    private final TreeMap<Integer, List<TaskStepData>> treeMap;
+    private final Task taskData;
+    private final TreeMap<Integer, List<TaskStep>> treeMap;
     private Map<String, Object> sessionMap = new HashMap<>();
     private boolean taskStatus = true;
     private boolean abortOnFirstFailure = true;
 
-    public TaskExecutionPlan(TaskData taskData) {
+    public TaskExecutionPlan(Task taskData) {
         this.taskData = taskData;
         this.treeMap = new TreeMap(taskData.getStepDataList()
                 .stream()
@@ -26,7 +25,7 @@ public class TaskExecutionPlan {
         this.abortOnFirstFailure = taskData.isAbortOnFirstFailure();
     }
 
-    public Map.Entry<Integer, List<TaskStepData>> next() {
+    public Map.Entry<Integer, List<TaskStep>> next() {
         return treeMap.pollFirstEntry();
     }
 
@@ -34,7 +33,7 @@ public class TaskExecutionPlan {
         return treeMap.firstEntry()!=null;
     }
 
-    public TaskData getTaskData() {
+    public Task getTaskData() {
         return taskData;
     }
 

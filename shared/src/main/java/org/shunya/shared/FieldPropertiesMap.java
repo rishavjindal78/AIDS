@@ -57,6 +57,15 @@ public class FieldPropertiesMap {
         return (FieldPropertiesMap) unmarshaller.unmarshal(new StringReader(xml));
     }
 
+    public static Map<String, String> convertStringToMap(String xml) throws JAXBException {
+        JAXBContext context = JAXBContext.newInstance(FieldPropertiesMap.class);
+        Unmarshaller unmarshaller = context.createUnmarshaller();
+        FieldPropertiesMap fieldPropertiesMap = (FieldPropertiesMap) unmarshaller.unmarshal(new StringReader(xml));
+        Map<String, String> result = new HashMap<>();
+        fieldPropertiesMap.properties.forEach((s, fieldProperties) -> result.put(s, fieldProperties.getValue()));
+        return result;
+    }
+
     public Set<String> keySet() {
         return properties.keySet();
     }
