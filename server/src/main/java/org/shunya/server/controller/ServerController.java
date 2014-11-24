@@ -307,16 +307,7 @@ public class ServerController {
     @ResponseBody
     public String submitTaskStepResults(@RequestBody TaskContext taskContext) {
         logger.info("Successfully received Task results {} ", taskContext.getStepDTO().getSequence());
-        TaskStepRun taskStepRun = DBService.getTaskStepRun(taskContext.getTaskStepRunDTO().getId());
-        taskStepRun.setStartTime(taskContext.getTaskStepRunDTO().getStartTime());
-        taskStepRun.setFinishTime(taskContext.getTaskStepRunDTO().getFinishTime());
-        taskStepRun.setLogs(taskContext.getTaskStepRunDTO().getLogs());
-        taskStepRun.setStatus(taskContext.getTaskStepRunDTO().isStatus());
-        taskStepRun.setRunStatus(taskContext.getTaskStepRunDTO().getRunStatus());
-        taskStepRun.setRunState(taskContext.getTaskStepRunDTO().getRunState());
-        DBService.save(taskStepRun);
-        TaskRun taskRun = DBService.getTaskRun(taskStepRun);
-        taskService.consumeStepResult(taskRun, taskContext, taskStepRun);
+        taskService.consumeStepResult(taskContext);
         return "success";
     }
 

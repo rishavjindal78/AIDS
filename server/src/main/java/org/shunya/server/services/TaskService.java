@@ -72,9 +72,17 @@ public class TaskService {
     }
 
     @Async
-    public void consumeStepResult(TaskRun taskRun, TaskContext taskContext, TaskStepRun taskStepRun) {
-        logger.info("Execution Completed for Step - " + taskStepRun.getId() + ", Status = " + taskStepRun.getRunStatus());
-//        taskStepRun.setTaskRun(taskRun);
+    public void consumeStepResult(TaskContext taskContext) {
+        logger.info("Execution Completed for Step - " + taskContext.getStepDTO().getSequence() + ", Status = " + taskContext.getTaskStepRunDTO().getRunStatus());
+        TaskStepRun taskStepRun = DBService.getTaskStepRun(taskContext.getTaskStepRunDTO().getId());
+        taskStepRun.setStartTime(taskContext.getTaskStepRunDTO().getStartTime());
+        taskStepRun.setFinishTime(taskContext.getTaskStepRunDTO().getFinishTime());
+        taskStepRun.setLogs(taskContext.getTaskStepRunDTO().getLogs());
+        taskStepRun.setStatus(taskContext.getTaskStepRunDTO().isStatus());
+        taskStepRun.setRunStatus(taskContext.getTaskStepRunDTO().getRunStatus());
+        taskStepRun.setRunState(taskContext.getTaskStepRunDTO().getRunState());
+        DBService.save(taskStepRun);
+        TaskRun taskRun = DBService.getTaskRun(taskStepRun);
         currentlyRunningTaskSteps.get(taskRun).remove(taskStepRun);
         TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);
         taskExecutionPlan.getSessionMap().putAll(taskContext.getSessionMap());
@@ -142,21 +150,21 @@ public class TaskService {
                     executionContext.setTaskStepRunDTO(convertToDTO(taskStepRun));
                     TaskStep taskStep = taskStepRun.getTaskStep();
                     executionContext.setStepDTO(convertToDTO(taskStep));
-                    restClient.submitTaskToAgent(executionContext , taskStepRun.getAgent());
+                    restClient.submitTaskToAgent(executionContext, taskStepRun.getAgent());
                     logger.info("task submitted - " + taskStep.getDescription());
                 } catch (Exception e) {
                     logger.error("Task Submission Failed", e);
                     taskExecutionPlanMap.get(taskRun).setTaskStatus(false);
-                    taskStepRun.setStatus(false);
+                    executionContext.getTaskStepRunDTO().setStatus(false);
                     if (e.getCause() != null && e.getCause() instanceof ConnectException) {
-                        taskStepRun.setLogs("Task Submission Failed, Agent not reachable - " + taskStepRun.getAgent().getName() + "\r\n" + e);
+                        executionContext.getTaskStepRunDTO().setLogs("Task Submission Failed, Agent not reachable - " + taskStepRun.getAgent().getName() + "\r\n" + e);
                     } else {
-                        taskStepRun.setLogs("Task Submission Failed - " + Utils.getStackTrace(e));
+                        executionContext.getTaskStepRunDTO().setLogs("Task Submission Failed - " + Utils.getStackTrace(e));
                     }
-                    taskStepRun.setFinishTime(new Date());
-                    taskStepRun.setRunStatus(RunStatus.FAILURE);
-                    taskStepRun.setRunState(RunState.COMPLETED);
-                    consumeStepResult(taskRun, executionContext , taskStepRun);
+                    executionContext.getTaskStepRunDTO().setFinishTime(new Date());
+                    executionContext.getTaskStepRunDTO().setRunStatus(RunStatus.FAILURE);
+                    executionContext.getTaskStepRunDTO().setRunState(RunState.COMPLETED);
+                    consumeStepResult(executionContext);
                 }
             });
             logger.info("execution command sent for task step - " + taskStepDataList.get(0).getSequence());
@@ -174,7 +182,7 @@ public class TaskService {
         taskStepDTO.setOutputParamsMap(FieldPropertiesMap.convertStringToMap(taskStep.getOutputParams()));
         taskStepDTO.setSequence(taskStep.getSequence());
         //TODO - Handle taskName and TaskClass using taskRegistryService
-        taskStepDTO.setTaskClass("org.shunya.shared.taskSteps."+taskStep.getTaskClass());
+        taskStepDTO.setTaskClass("org.shunya.shared.taskSteps." + taskStep.getTaskClass());
         taskStepDTO.setTaskId(taskStep.getTask().getId());
         return taskStepDTO;
     }
