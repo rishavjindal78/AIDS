@@ -1,4 +1,4 @@
-package org.shunya.bot;
+package org.shunya.server.engine;
 
 public class TaskStatusMsg {
     private int chatId;

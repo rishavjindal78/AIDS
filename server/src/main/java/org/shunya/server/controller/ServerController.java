@@ -293,12 +293,13 @@ public class ServerController {
                            @RequestParam(defaultValue = "false", required = false) boolean notifyStatus,
                            Principal principal) {
         logger.info("Run request for {}, user comments ", taskId, comment);
-        Task taskData = DBService.getTaskData(taskId);
+        Task task = DBService.getTaskData(taskId);
         TaskRun taskRun = new TaskRun();
-        taskRun.setTask(taskData);
-        taskRun.setName(taskData.getName());
+        taskRun.setTask(task);
+        taskRun.setName(task.getName());
         taskRun.setStartTime(new Date());
         taskRun.setComments(comment);
+        taskRun.setNotifyStatus(notifyStatus);
         taskService.execute(taskRun);
         return taskRun;
     }

@@ -1,4 +1,4 @@
-package org.shunya.bot.engine;
+package org.shunya.server.engine;
 
 import org.telegram.api.TLConfig;
 import org.telegram.api.TLDcOption;

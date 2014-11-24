@@ -1,4 +1,4 @@
-package org.shunya.bot.engine;
+package org.shunya.server.engine;
 
 import java.io.*;
 import java.nio.file.FileSystems;

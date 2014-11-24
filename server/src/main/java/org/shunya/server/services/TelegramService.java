@@ -1,7 +1,11 @@
-package org.shunya.bot.services;
+package org.shunya.server.services;
 
-import org.shunya.bot.engine.JavaSerializer;
-import org.shunya.bot.engine.PeerState;
+import org.shunya.server.engine.JavaSerializer;
+import org.shunya.server.engine.MemoryApiState;
+import org.shunya.server.engine.PeerState;
+import org.shunya.server.model.Task;
+import org.shunya.server.model.TaskRun;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.api.*;
 import org.telegram.api.auth.TLAuthorization;
@@ -12,7 +16,6 @@ import org.telegram.api.messages.TLAbsSentMessage;
 import org.telegram.api.messages.TLAbsStatedMessage;
 import org.telegram.api.requests.*;
 import org.telegram.api.updates.TLState;
-import org.shunya.bot.engine.MemoryApiState;
 import org.telegram.mtproto.log.LogInterface;
 import org.telegram.mtproto.log.Logger;
 
@@ -20,9 +23,7 @@ import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -47,12 +48,19 @@ public class TelegramService {
     private long lastOnline = System.currentTimeMillis();
     private Executor mediaSender = Executors.newSingleThreadExecutor();
 
+    @Autowired
+    private DBService dbService;
+
+    @Autowired
+    private TaskService taskService;
+
     @PostConstruct
     public void start() throws IOException {
         disableLogging();
         apiState = JavaSerializer.load();
         createApi();
-        login();
+//        login();
+
 //        workLoop();
     }
 
@@ -166,13 +174,13 @@ public class TelegramService {
     }
 
     //Chat with User- Peer to Peer
-    private void onIncomingMessageUser(int uid, String message) {
+    private void onIncomingMessageUser(int uid, int fromId, String message) {
         //Todo:Enable for individual User
         System.out.println("Incoming message from user #" + uid + ": " + message);
         PeerState peerState = getUserPeer(uid);
         if (message.startsWith("bot")) {
             sendMessageUser(uid, "Received: " + message);
-            processCommand(message.trim().substring(3).trim(), peerState);
+            processCommand(message.trim().substring(3).trim(), peerState, fromId);
         } else {
             if (peerState.isForwardingEnabled()) {
                 sendMessageUser(uid, "FW: " + message);
@@ -181,12 +189,14 @@ public class TelegramService {
     }
 
     //Chat Channel - Chat
-    private void onIncomingMessageChat(int chatId, String message) {
+    private void onIncomingMessageChat(int chatId, int fromId, String message) {
         //Todo: Desing command interceptor-> 1. Identify the team for the chat Id, 2. Provide search/help options specific to team
         System.out.println("Incoming message from in chat #" + chatId + ": " + message);
         PeerState peerState = getChatPeer(chatId);
-        if (message.startsWith("bot")) {
-            processCommand(message.trim().substring(3).trim(), getChatPeer(chatId));
+        if (message.toLowerCase().startsWith("bot")) {
+            processCommand(message.trim().substring(3).trim(), getChatPeer(chatId), fromId);
+        } else if (message.toLowerCase().contains("bot")) {
+            sendMessageChat(chatId, "Are you talking about me ? type bot help !");
         } else {
             if (peerState.isForwardingEnabled()) {
                 sendMessageChat(chatId, "FW: " + message);
@@ -210,7 +220,7 @@ public class TelegramService {
         return res + "|";
     }
 
-    private void processCommand(String message, final PeerState peerState) {
+    private void processCommand(String message, final PeerState peerState, int fromId) {
         String[] args = message.split(" ");
         if (args.length == 0) {
             sendMessage(peerState, "Unknown command");
@@ -266,7 +276,15 @@ public class TelegramService {
         } else if (command.equals("war2")) {
             sendMessage(peerState, "WarAndPeace.TEXT");
         } else if (command.equals("help")) {
-            sendMessage(peerState, "Bot commands:\n" +
+            List<Task> tasks = dbService.listTasks();
+            StringBuilder helpMessage = new StringBuilder("Bot commands:\n");
+            for (Task task : tasks) {
+                long id = task.getId();
+                String name = task.getName();
+                helpMessage.append("bot " + id + " <" + name + ">\n");
+            }
+            sendMessage(peerState, helpMessage.toString());
+            /*sendMessage(peerState, "Bot commands:\n" +
                     "bot enable_forward/disable_forward - forwarding of incoming messages\n" +
                     "bot start_flood [delay] - Start flood with [delay] sec (default = 15)\n" +
                     "bot stop_flood - Stop flood\n" +
@@ -276,8 +294,7 @@ public class TelegramService {
                     "bot war2 - alternative war and peace fragment (currently unable to send)\n" +
                     "bot war_ping - ping with 50 war and peace fragments\n" +
                     "bot img - sending sample image\n" +
-                    "bot img50 - sending sample image\n");
-
+                    "bot img50 - sending sample image\n");*/
         } else if (command.equals("img")) {
             mediaSender.execute(() -> sendMedia(peerState, "demo.jpg"));
         } else if (command.equals("img50")) {
@@ -285,7 +302,24 @@ public class TelegramService {
                 mediaSender.execute(() -> sendMedia(peerState, "demo.jpg"));
             }
         } else {
-            sendMessage(peerState, "Unknown command '" + args[0] + "'");
+            try {
+                long taskId = Long.parseLong(args[0]);
+                String comments = "process run by ChatId - " + fromId;
+                if (args.length > 1) {
+                    comments = fromId + args[1];
+                }
+                Task task = dbService.getTaskData(taskId);
+                TaskRun taskRun = new TaskRun();
+                taskRun.setTask(task);
+                taskRun.setName(task.getName());
+                taskRun.setStartTime(new Date());
+                taskRun.setComments(comments);
+                taskRun.setNotifyStatus(true);
+                taskService.execute(taskRun);
+                sendMessage(peerState, "Command Sent to run - " + task.getName());
+            } catch (Exception e) {
+                sendMessage(peerState, "Unknown command '" + args[0] + "'");
+            }
         }
     }
 
@@ -367,9 +401,9 @@ public class TelegramService {
             @Override
             public void onUpdate(TLAbsUpdates updates) {
                 if (updates instanceof TLUpdateShortMessage) {
-                    onIncomingMessageUser(((TLUpdateShortMessage) updates).getFromId(), ((TLUpdateShortMessage) updates).getMessage());
+                    onIncomingMessageUser(((TLUpdateShortMessage) updates).getFromId(), ((TLUpdateShortMessage) updates).getFromId(), ((TLUpdateShortMessage) updates).getMessage());
                 } else if (updates instanceof TLUpdateShortChatMessage) {
-                    onIncomingMessageChat(((TLUpdateShortChatMessage) updates).getChatId(), ((TLUpdateShortChatMessage) updates).getMessage());
+                    onIncomingMessageChat(((TLUpdateShortChatMessage) updates).getChatId(), ((TLUpdateShortChatMessage) updates).getFromId(), ((TLUpdateShortChatMessage) updates).getMessage());
                 }
             }
         });
@@ -377,7 +411,7 @@ public class TelegramService {
 
     private void login() throws IOException {
         //Todo: Mobile Phone Registration- Create UI
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        Scanner scanner = new Scanner(System.in);
         System.out.print("Loading fresh DC list...");
         api.switchToDc(1);
         TLConfig config = api.doRpcCallNonAuth(new TLRequestHelpGetConfig());
@@ -385,7 +419,7 @@ public class TelegramService {
         System.out.println("completed.");
         if (!apiState.isAuthenticated(5)) {
             System.out.print("Phone number for bot:");
-            String phone = reader.readLine();
+            String phone = scanner.nextLine();
             System.out.print("Sending sms to phone " + phone + "...");
             TLSentCode sentCode;
             try {
@@ -410,7 +444,7 @@ public class TelegramService {
             }
             System.out.println("sent.");
             System.out.print("Activation code:");
-            String code = reader.readLine();
+            String code = scanner.nextLine();
             System.out.println(sentCode.getPhoneCodeHash());
             System.out.println(code);
             apiState.setApiHash(sentCode.getPhoneCodeHash());
@@ -425,9 +459,5 @@ public class TelegramService {
         TLState state = api.doRpcCall(new TLRequestUpdatesGetState());
         System.out.println("loaded.");
         JavaSerializer.save(apiState);
-        /*while (true) {
-            String msg = reader.readLine();
-            sendMessage(new PeerState(4659270, false), msg);
-        }*/
     }
 }

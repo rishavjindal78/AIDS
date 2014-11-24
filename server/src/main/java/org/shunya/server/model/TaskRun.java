@@ -40,6 +40,7 @@ public class TaskRun implements Serializable {
     @ManyToOne
     private Task task;
     private boolean status;
+    private boolean notifyStatus = false;
     @Transient
     private int progress;
     @Transient
@@ -207,5 +208,13 @@ public class TaskRun implements Serializable {
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    public boolean isNotifyStatus() {
+        return notifyStatus;
+    }
+
+    public void setNotifyStatus(boolean notifyStatus) {
+        this.notifyStatus = notifyStatus;
     }
 }

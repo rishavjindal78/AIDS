@@ -1,6 +1,7 @@
 package org.shunya.server.services;
 
 import org.shunya.server.TaskExecutionPlan;
+import org.shunya.server.TelegramStatusObserver;
 import org.shunya.server.model.Agent;
 import org.shunya.server.model.TaskRun;
 import org.shunya.server.model.TaskStep;
@@ -47,11 +48,16 @@ public class TaskService {
     @Qualifier("myExecutor")
     private TaskExecutor executor;
 
+    @Autowired
+    private TelegramStatusObserver statusObserver;
+
     // if task is not started at all - create execution plan and start it
     // if task has start but not completed - then execute rest of steps
     // if all task steps has completed, then do the cleanup
     @Async
     public void execute(TaskRun taskRun) {
+        if (taskRun.isNotifyStatus())
+            statusObserver.notifyStatus(4659270, "starting execution for - " + taskRun.getName());
         logger.info("starting execution for TaskRun {}", taskRun.getName());
         DBService.save(taskRun);
         TaskExecutionPlan executionPlan = taskExecutionPlanMap.computeIfAbsent(taskRun, k -> new TaskExecutionPlan(taskRun.getTask()));
@@ -83,6 +89,8 @@ public class TaskService {
         taskStepRun.setRunState(taskContext.getTaskStepRunDTO().getRunState());
         DBService.save(taskStepRun);
         TaskRun taskRun = DBService.getTaskRun(taskStepRun);
+        if (taskRun.isNotifyStatus())
+            statusObserver.notifyStatus(4659270, "Execution Completed for Step# " + taskContext.getStepDTO().getSequence() + ", Status = " + taskContext.getTaskStepRunDTO().getRunStatus());
         currentlyRunningTaskSteps.get(taskRun).remove(taskStepRun);
         TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);
         taskExecutionPlan.getSessionMap().putAll(taskContext.getSessionMap());
@@ -91,6 +99,8 @@ public class TaskService {
             if (!taskExecutionPlan.isTaskStatus() && taskExecutionPlan.isAbortOnFirstFailure()) {
                 logger.info("Aborting Task Execution after first failure");
                 saveTaskRun(taskRun, taskExecutionPlan, RunStatus.FAILURE);
+                if (taskRun.isNotifyStatus())
+                    statusObserver.notifyStatus(4659270, "Aborting Task Execution after first failure");
                 return;
             }
             processNextStep(taskRun, taskExecutionPlan);
@@ -107,6 +117,8 @@ public class TaskService {
             currentlyRunningTaskSteps.remove(taskRun);
             saveTaskRun(taskRun, taskExecutionPlan, RunStatus.SUCCESS);
             logger.info("Task has no further steps, completing it now");
+            if (taskRun.isNotifyStatus())
+                statusObserver.notifyStatus(4659270, "Task has no further steps, completing it now");
         }
     }
 

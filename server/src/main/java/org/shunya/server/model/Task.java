@@ -61,6 +61,7 @@ public class Task implements Serializable {
     */@ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Agent> agentList;
+    private boolean notifyStatus = false;
 
     public long getId() {
         return id;
@@ -186,5 +187,13 @@ public class Task implements Serializable {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public boolean isNotifyStatus() {
+        return notifyStatus;
+    }
+
+    public void setNotifyStatus(boolean notifyStatus) {
+        this.notifyStatus = notifyStatus;
     }
 }

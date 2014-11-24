@@ -1,9 +1,8 @@
-package org.shunya.bot.controller;
+package org.shunya.server.controller;
 
-import org.shunya.bot.TaskStatusMsg;
-import org.shunya.bot.engine.PeerState;
-import org.shunya.bot.services.TelegramService;
-import org.shunya.shared.TaskContext;
+import org.shunya.server.engine.PeerState;
+import org.shunya.server.engine.TaskStatusMsg;
+import org.shunya.server.services.TelegramService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;

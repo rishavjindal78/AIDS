@@ -158,6 +158,35 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>mtproto</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/lib/mtproto-1.0-SNAPSHOT.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>api</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/lib/telegram-api-1.0-SNAPSHOT.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>tl-api</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/lib/tl-api-v11.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>tl-core</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/lib/tl-core-1.0-SNAPSHOT.jar</systemPath>
+        </dependency>
+
     </dependencies>
 
     <build>
