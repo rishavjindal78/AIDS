@@ -1,4 +1,4 @@
-package org.shunya;
+package org.shunya.agent;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

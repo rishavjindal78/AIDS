@@ -62,8 +62,8 @@ public class TaskProcessor {
                 } finally {
                     taskContext.getTaskStepRunDTO().setRunState(RunState.COMPLETED);
                     task.afterTaskFinish();
-                    restClient.postResultToServer(taskContext.getCallbackURL(), taskContext);
                     postProcess();
+                    restClient.postResultToServer(taskContext.getCallbackURL(), taskContext);
                 }
             });
         } catch (Throwable t) {

@@ -111,7 +111,7 @@ public class DBServiceImpl implements DBService {
     public List<TaskRun> findTaskHistoryForTaskId(long taskId) {
         Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskRun.class);
         criteria.setFetchSize(30);
-        criteria.add(Restrictions.eq("taskData.id", taskId));
+        criteria.add(Restrictions.eq("task.id", taskId));
         criteria.addOrder(Order.desc("id"));
         criteria.setMaxResults(30);
         criteria.setCacheable(true);

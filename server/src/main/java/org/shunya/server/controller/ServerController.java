@@ -314,7 +314,8 @@ public class ServerController {
         taskStepRun.setStatus(taskContext.getTaskStepRunDTO().isStatus());
         taskStepRun.setRunStatus(taskContext.getTaskStepRunDTO().getRunStatus());
         taskStepRun.setRunState(taskContext.getTaskStepRunDTO().getRunState());
-        TaskRun taskRun = DBService.getTaskRun(taskContext.getTaskStepRunDTO().getId());
+        DBService.save(taskStepRun);
+        TaskRun taskRun = DBService.getTaskRun(taskStepRun);
         taskService.consumeStepResult(taskRun, taskContext, taskStepRun);
         return "success";
     }

@@ -74,8 +74,7 @@ public class TaskService {
     @Async
     public void consumeStepResult(TaskRun taskRun, TaskContext taskContext, TaskStepRun taskStepRun) {
         logger.info("Execution Completed for Step - " + taskStepRun.getId() + ", Status = " + taskStepRun.getRunStatus());
-        taskStepRun.setTaskRun(taskRun);
-        DBService.save(taskStepRun);
+//        taskStepRun.setTaskRun(taskRun);
         currentlyRunningTaskSteps.get(taskRun).remove(taskStepRun);
         TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);
         taskExecutionPlan.getSessionMap().putAll(taskContext.getSessionMap());
@@ -148,15 +147,15 @@ public class TaskService {
                 } catch (Exception e) {
                     logger.error("Task Submission Failed", e);
                     taskExecutionPlanMap.get(taskRun).setTaskStatus(false);
-                    executionContext.getTaskStepRunDTO().setStatus(false);
+                    taskStepRun.setStatus(false);
                     if (e.getCause() != null && e.getCause() instanceof ConnectException) {
-                        executionContext.getTaskStepRunDTO().setLogs("Task Submission Failed, Agent not reachable - " + taskStepRun.getAgent().getName() + "\r\n" + e);
+                        taskStepRun.setLogs("Task Submission Failed, Agent not reachable - " + taskStepRun.getAgent().getName() + "\r\n" + e);
                     } else {
-                        executionContext.getTaskStepRunDTO().setLogs("Task Submission Failed - " + Utils.getStackTrace(e));
+                        taskStepRun.setLogs("Task Submission Failed - " + Utils.getStackTrace(e));
                     }
-                    executionContext.getTaskStepRunDTO().setFinishTime(new Date());
-                    executionContext.getTaskStepRunDTO().setRunStatus(RunStatus.FAILURE);
-                    executionContext.getTaskStepRunDTO().setRunState(RunState.COMPLETED);
+                    taskStepRun.setFinishTime(new Date());
+                    taskStepRun.setRunStatus(RunStatus.FAILURE);
+                    taskStepRun.setRunState(RunState.COMPLETED);
                     consumeStepResult(taskRun, executionContext , taskStepRun);
                 }
             });

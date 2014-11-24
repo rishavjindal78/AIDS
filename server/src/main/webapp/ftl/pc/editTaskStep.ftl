@@ -18,7 +18,7 @@
                 <label for="taskDataId" class="col-lg-2 control-label">TaskData Id</label>
 
                 <div class="col-lg-10">
-                    <input type="text" id="taskDataId" class="form-control" name="task.id" value="${model.stepData.task.id}"
+                    <input type="text" id="taskDataId" class="form-control" name="taskId" value="${model.stepData.task.id}"
                            readonly="true">
                 </div>
             </div>

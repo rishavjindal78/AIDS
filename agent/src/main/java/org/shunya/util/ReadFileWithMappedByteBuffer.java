@@ -1,4 +1,4 @@
-package org.shunya.test;
+package org.shunya.util;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;

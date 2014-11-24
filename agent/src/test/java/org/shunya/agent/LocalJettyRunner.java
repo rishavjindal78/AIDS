@@ -1,4 +1,4 @@
-package org.shunya;
+package org.shunya.agent;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
