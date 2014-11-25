@@ -33,14 +33,6 @@ public class LocalJettyRunner {
 //        server.addBean(loginService);
 
 //        context.setParentLoaderPriority(true);
-
-//        context.addServlet(new ServletHolder(new ServerHealthMonitor()), "/healthMonitor/*");
-//        context.addServlet(new ServletHolder(new FileUpload()), "/fileUpload/*");
-//        context.addServlet(new ServletHolder(new FileDownload()), "/fileDownload/*");
-//        context.addServlet(new ServletHolder(new UploadData()), "/upload/*");
-//        context.addServlet(new ServletHolder(new DownloadData()), "/download/*");
-
-//        context.addServlet(new ServletHolder(new HelloServlet()),"/hello/*");
         context.configure();
         server.setHandler(context);
     }
