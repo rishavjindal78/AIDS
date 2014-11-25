@@ -28,6 +28,7 @@
                 username-parameter="j_username"
                 password-parameter="j_password"/>
         <!--<security:logout logout-url="/rest/server/logout" logout-success-url="/rest/server/logoutSuccess" />-->
+        <security:remember-me data-source-ref="dataSource"/>
     </security:http>
 
     <security:authentication-manager>
