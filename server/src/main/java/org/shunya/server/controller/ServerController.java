@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -57,8 +58,10 @@ public class ServerController {
     }
 
     @RequestMapping(value = "agents", method = RequestMethod.GET)
-    public String agents(@ModelAttribute("model") ModelMap model) {
+    public String agents(@ModelAttribute("model") ModelMap model, Principal principal) {
         model.addAttribute("message", "Hello world!");
+        System.out.println("principal = " + principal.getName());
+        model.addAttribute("username", principal.getName());
         model.addAttribute("agents", dbService.list());
         return "agents";
     }

@@ -31,7 +31,16 @@
 
     <mvc:resources mapping="/resources/**" location="resources/" />
 
-    <import resource="DataSources.xml"/>
+    <bean id="messageSource"
+          class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>mymessages</value>
+            </list>
+        </property>
+    </bean>
+
+    <!--<import resource="DataSources.xml"/>-->
 
     <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
