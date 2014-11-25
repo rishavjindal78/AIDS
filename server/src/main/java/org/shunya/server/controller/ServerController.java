@@ -1,6 +1,7 @@
 package org.shunya.server.controller;
 
 import org.shunya.server.model.*;
+import org.shunya.server.services.AgentStatusService;
 import org.shunya.server.services.TaskService;
 import org.shunya.server.services.DBService;
 import org.shunya.server.services.MyJobScheduler;
@@ -39,6 +40,9 @@ public class ServerController {
     private DBService dbService;
 
     @Autowired
+    private AgentStatusService agentStatusService;
+
+    @Autowired
     private MyJobScheduler myJobScheduler;
     final String[] taskClasses = {"EchoStep", "DiscSpaceStep", "SystemCommandStep", "FileUploadStep", "HttpDownloadStep"};
 
@@ -57,6 +61,14 @@ public class ServerController {
         model.addAttribute("message", "Hello world!");
         model.addAttribute("agents", dbService.list());
         return "agents";
+    }
+
+    @RequestMapping(value = "agent/status/{agentId}", method = RequestMethod.GET)
+    @ResponseBody
+    public String agentStatus(@ModelAttribute("model") ModelMap model, @PathVariable("agentId") long agentId) {
+        Agent agent = new Agent();
+        agent.setId(agentId);
+        return agentStatusService.getStatus(agent).toString();
     }
 
     @RequestMapping(value = {"index", ""}, method = RequestMethod.GET)

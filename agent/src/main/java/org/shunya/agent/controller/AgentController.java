@@ -67,7 +67,7 @@ public class AgentController {
 
     @RequestMapping(value = "getMemoryLogs/{id}", method = RequestMethod.GET)
     @ResponseBody
-    public String editAgent(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id, @RequestParam("start") long start) throws Exception {
+    public String getMemoryLogs(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id, @RequestParam("start") long start) throws Exception {
         return taskProcessor.getMemoryLogs(id, start);
     }
 

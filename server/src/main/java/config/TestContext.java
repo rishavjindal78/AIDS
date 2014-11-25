@@ -1,15 +1,14 @@
 package config;
 
-import org.mockito.Mockito;
-import org.shunya.server.services.TaskService;
-import org.shunya.server.services.DBService;
-import org.shunya.server.services.RestClient;
-import org.shunya.server.services.MyJobScheduler;
+import org.shunya.server.TelegramStatusObserver;
+import org.shunya.server.services.*;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.task.TaskExecutor;
+
+import static org.mockito.Mockito.mock;
 
 @Configuration
 public class TestContext {
@@ -27,26 +26,36 @@ public class TestContext {
 
     @Bean
     public TaskService taskService() {
-        return Mockito.mock(TaskService.class);
+        return mock(TaskService.class);
     }
 
     @Bean
     public RestClient agentWorker() {
-        return Mockito.mock(RestClient.class);
+        return mock(RestClient.class);
     }
 
     @Bean
     public DBService agentService() {
-        return Mockito.mock(DBService.class);
+        return mock(DBService.class);
     }
 
     @Bean
     public MyJobScheduler myJobScheduler() {
-        return Mockito.mock(MyJobScheduler.class);
+        return mock(MyJobScheduler.class);
     }
 
     @Bean
     public TaskExecutor myExecutor() {
-        return Mockito.mock(TaskExecutor.class);
+        return mock(TaskExecutor.class);
+    }
+
+    @Bean
+    public TelegramService telegramService() {
+        return mock(TelegramService.class);
+    }
+
+    @Bean
+    public TelegramStatusObserver telegramStatusObserver(){
+        return mock(TelegramStatusObserver.class);
     }
 }

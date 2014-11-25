@@ -2,10 +2,7 @@ package org.shunya.server.services;
 
 import org.shunya.shared.TaskContext;
 import org.shunya.server.model.Agent;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,10 +13,13 @@ public class RestClient {
     private static final Logger logger = Logger.getLogger(RestClient.class.getName());
     private RestTemplate restTemplate = new RestTemplate();
 
-    public void ping(Agent agent) {
+    public boolean ping(Agent agent) {
         ResponseEntity<String> entity = restTemplate.getForEntity(agent.getBaseUrl() + "rest/agent/ping", String.class);
-        String body = entity.getBody();
-        System.out.println("ping = " + body);
+//        String body = entity.getBody();
+        if(entity.getStatusCode() == HttpStatus.ACCEPTED){
+            return true;
+        }
+        return false;
     }
 
     public void submitTaskToAgent(TaskContext taskContext , Agent agent) {
