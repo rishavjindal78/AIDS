@@ -25,7 +25,6 @@ public class TaskProcessor {
     static final Logger logger = LoggerFactory.getLogger(TaskProcessor.class);
     @Autowired
     private RestClient restClient;
-    private AtomicBoolean shutdown = new AtomicBoolean(false);
     private AtomicInteger runningJobCount = new AtomicInteger(0);
     private ConcurrentMap<Long, AbstractStep> cache = new ConcurrentHashMap<>();
 
@@ -91,6 +90,6 @@ public class TaskProcessor {
 
     @PreDestroy
     public void shutdown() throws InterruptedException {
-        shutdown.set(true);
+        logger.warn("Shutting down the Agent on this machine");
     }
 }
