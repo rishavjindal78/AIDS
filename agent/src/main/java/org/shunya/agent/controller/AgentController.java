@@ -38,7 +38,7 @@ public class AgentController {
     @ResponseBody
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public void ping() {
-
+        System.out.println("ping success");
     }
 
     @RequestMapping(value = "download/{name}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE})

@@ -61,12 +61,11 @@ public class TaskProcessor {
                     task.afterTaskFinish();
                     postProcess();
                     restClient.postResultToServer(taskContext.getCallbackURL(), taskContext);
+                    cache.remove(taskContext.getTaskStepRunDTO().getId());
                 }
             });
         } catch (Throwable t) {
             logger.error("Error executing the task - ", t);
-        } finally {
-            cache.remove(taskContext.getTaskStepRunDTO().getId());
         }
     }
 

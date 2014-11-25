@@ -18,11 +18,6 @@ public class EchoStep extends AbstractStep {
     @Override
     public boolean run() {
         outName = "Hello " + name;
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         LOGGER.get().log(Level.INFO, outName);
         return true;
     }

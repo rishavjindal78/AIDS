@@ -313,7 +313,7 @@ public class TelegramService {
                 taskRun.setComments(comments);
                 taskRun.setNotifyStatus(true);
                 taskService.execute(taskRun);
-                sendMessage(peerState, "Command Sent to run - " + task.getName());
+                sendMessage(peerState, "Command Sent to Server - " + task.getName());
             } catch (Exception e) {
                 sendMessage(peerState, "Unknown command '" + args[0] + "'");
             }
