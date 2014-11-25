@@ -12,13 +12,14 @@
     <security:http auto-config="true">
         <!-- Restrict URLs based on role -->
         <security:intercept-url pattern="/rest/server/login*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+        <security:intercept-url pattern="/rest/server/submitTaskStepResults*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <security:intercept-url pattern="/rest/server/logoutSuccess*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 
         <security:intercept-url pattern="/css/main.css" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <security:intercept-url pattern="/resources/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 
         <security:intercept-url pattern="/rest/**" access="ROLE_USER" />
-        <security:csrf disabled="true"/>
+        <!--<security:csrf disabled="true"/>-->
 
         <!-- Override default login and logout pages -->
         <security:form-login login-page="/rest/server/login"
