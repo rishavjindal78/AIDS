@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/security
+                           http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <security:global-method-security secured-annotations="enabled" />
+
+    <security:http auto-config="true">
+        <!-- Restrict URLs based on role -->
+        <security:intercept-url pattern="/rest/server/login*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+        <security:intercept-url pattern="/rest/server/logoutSuccess*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+
+        <security:intercept-url pattern="/css/main.css" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+        <security:intercept-url pattern="/resources/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+
+        <security:intercept-url pattern="/rest/**" access="ROLE_USER" />
+        <security:csrf disabled="true"/>
+
+        <!-- Override default login and logout pages -->
+        <security:form-login login-page="/rest/server/login"
+
+                             default-target-url="/rest/server/agents"
+                             authentication-failure-url="/rest/server/login?login_error=1"
+                username-parameter="j_username"
+                password-parameter="j_password"/>
+        <!--<security:logout logout-url="/rest/server/logout" logout-success-url="/rest/server/logoutSuccess" />-->
+    </security:http>
+
+    <security:authentication-manager>
+        <!--<security:authentication-provider >
+            <security:jdbc-user-service data-source-ref="dataSource" />
+        </security:authentication-provider>-->
+        <security:authentication-provider>
+            <security:user-service>
+                <security:user name="user" password="123456" authorities="ROLE_USER"/>
+            </security:user-service>
+        </security:authentication-provider>
+    </security:authentication-manager>
+
+</beans>

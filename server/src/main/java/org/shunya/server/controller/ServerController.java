@@ -47,6 +47,11 @@ public class ServerController {
         return "test";
     }
 
+    @RequestMapping(value = "login", method = RequestMethod.GET)
+    public String login(@ModelAttribute("model") ModelMap model) {
+        return "login";
+    }
+
     @RequestMapping(value = "agents", method = RequestMethod.GET)
     public String agents(@ModelAttribute("model") ModelMap model) {
         model.addAttribute("message", "Hello world!");

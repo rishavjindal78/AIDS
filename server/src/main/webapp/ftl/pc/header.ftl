@@ -27,7 +27,7 @@
                     Anonymous
                 </#if>
                 </a></li>
-            <li id="logout"><a id="logoutLink" href="/j_spring_security_logout"><span class="glyphicon glyphicon-log-out"></span></a></li>
+            <li id="logout"><a id="logoutLink" href="/rest/j_spring_security_logout"><span class="glyphicon glyphicon-log-out"></span></a></li>
         </ul>
         <h3 class="text-muted">My Assistant</h3>
         <!--form class="navbar-form navbar-right form-inline" action="search">
