@@ -44,7 +44,17 @@ public class DBDaoImpl implements DBDao {
     }
 
     @Override
+    public void saveOrUpdate(Authority authority) {
+        sessionFactory.getCurrentSession().saveOrUpdate(authority);
+    }
+
+    @Override
     public SessionFactory getSessionFactory() {
         return sessionFactory;
+    }
+
+    @Override
+    public void saveOrUpdate(User user) {
+        sessionFactory.getCurrentSession().saveOrUpdate(user);
     }
 }

@@ -33,7 +33,7 @@
 
     </style>
 
-    <form class="form-signin" name="agent" action="/rest//server/register" method="POST">
+    <form class="form-signin" name="agent" action="${rc.getContextPath()}/rest/server/register" method="POST">
         <h2 class="form-signin-heading">Please Register Agent Here</h2>
         <input type="text" class="input-block-level" name="name" placeholder="Name">
         <input type="text" class="input-block-level" name="description" placeholder="Description">

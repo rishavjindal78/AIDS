@@ -10,67 +10,48 @@
 </head>
 <body onload="document.login_form.j_username.focus();">
 <div class="container">
-<form name="login_form" class="form-horizontal" role="form" action="${rc.contextPath}/rest/j_spring_security_check" method="POST">
-    <h3 class="text-muted">Autonomous Integrated Deployment Software</h3>
-    <br/>
-    <div class="form-group">
-        <label for="inputEmail3" class="col-sm-2 control-label">Username</label>
-        <div class="col-sm-4">
-            <input type="text" name='j_username' class="form-control" id="inputEmail3" placeholder="Username">
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
-        <div class="col-sm-4">
-            <input type="password" name='j_password' class="form-control" id="inputPassword3" placeholder="Password">
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" name="_spring_security_remember_me"> Remember me
-                </label>
+    <form name="login_form" class="form-horizontal" role="form" action="${rc.contextPath}/rest/j_spring_security_check"
+          method="POST">
+        <h3 class="text-muted">Autonomous Integrated Deployment Software</h3>
+        <br/>
+
+        <div class="form-group">
+            <label for="inputEmail3" class="col-sm-2 control-label">Username</label>
+
+            <div class="col-sm-4">
+                <input type="text" name='j_username' class="form-control" id="inputEmail3" placeholder="Username">
             </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" name="submit" class="btn btn-primary">Sign in</button>
+        <div class="form-group">
+            <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+
+            <div class="col-sm-4">
+                <input type="password" name='j_password' class="form-control" id="inputPassword3"
+                       placeholder="Password">
+            </div>
         </div>
-    </div>
-</form>
-<#--
-<form name="login_form" action="${rc.contextPath}/rest/j_spring_security_check" method="POST">
-    <table>
-        <tr>
-            <td>User:</td>
-            <td><input type='text' name='j_username' value=''/></td>
-        </tr>
-        <tr>
-            <td>Password:</td>
-            <td><input type='password' name='j_password' value=''/></td>
-        </tr>
-        <tr>
-            <td><input type="checkbox" class="form-control" name="_spring_security_remember_me"/></td>
-            <td>Don't ask for my password for two weeks</td>
-        </tr>
-        <tr>
-            <td colspan='1'><input type="submit" class="form-control" id="submit" name="submit" placeholder="Login">
-            </td>
-        </tr>
-        <tr>
-            <td colspan='1'><input type="reset" class="form-control" id="reset" name="reset" placeholder="Reset"></td>
-        </tr>
-    </table>
-</form>
--->
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" name="_spring_security_remember_me"> Remember me
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" name="submit" class="btn btn-primary">Sign in</button>
+                <a class="btn btn-link" type="button" href="/rest/user/register">Register Here</a>
+            </div>
+        </div>
+    </form>
     <#if Session.SPRING_SECURITY_LAST_EXCEPTION?? && Session.SPRING_SECURITY_LAST_EXCEPTION.message?has_content>
-    <div><span style='color:red;'>
-            Your login attempt was not successful, try again.<br />
+        <div><span style='color:red;'>
+            Your login attempt was not successful, try again.<br/>
             Reason :   ${Session.SPRING_SECURITY_LAST_EXCEPTION.message}
         </span>
-    </div>
+        </div>
     </#if>
 </div>
 </body>

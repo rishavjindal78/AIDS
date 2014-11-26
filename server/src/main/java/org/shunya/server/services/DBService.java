@@ -5,20 +5,23 @@ import org.shunya.server.model.*;
 import java.util.List;
 
 public interface DBService {
-    public List<Agent> list();
-    public List<Task> listTasks();
-    public void deleteTaskStep(long id);
-    public void deleteTask(long id);
-    public void save(Agent agent);
-    public void save(Task task);
-    public void save(TaskStep taskStep);
-    public void save(TaskStepRun taskStepRun);
-    public void save(TaskRun taskRun);
-    public TaskRun getTaskRun(TaskStepRun taskStepRun);
-    public TaskRun getTaskRun(long id);
-    public TaskStepRun getTaskStepRun(long id);
-    public Task getTask(long id);
-    public Agent getAgent(long id);
-    public TaskStep getTaskStep(long id);
+    List<Agent> list();
+    List<Task> listTasks();
+    List<Authority> listAuthorities();
+    void deleteTaskStep(long id);
+    void deleteTask(long id);
+    void save(Agent agent);
+    void save(Task task);
+    void save(TaskStep taskStep);
+    void save(TaskStepRun taskStepRun);
+    void save(TaskRun taskRun);
+    void save(Authority authority);
+    void save(User user);
+    TaskRun getTaskRun(TaskStepRun taskStepRun);
+    TaskRun getTaskRun(long id);
+    TaskStepRun getTaskStepRun(long id);
+    Task getTask(long id);
+    Agent getAgent(long id);
+    TaskStep getTaskStep(long id);
     List<TaskRun> findTaskHistoryForTaskId(long taskId);
 }

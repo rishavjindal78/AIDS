@@ -31,6 +31,13 @@ public class DBServiceImpl implements DBService {
     }
 
     @Override
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public List<Authority> listAuthorities() {
+        return DBDao.getSessionFactory().getCurrentSession().createCriteria(Authority.class)
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).addOrder(Order.desc("id")).list();
+    }
+
+    @Override
     public void deleteTaskStep(long id) {
         TaskStep taskStepData = getTaskStep(id);
         taskStepData.getTask().getStepDataList().remove(taskStepData);
@@ -69,6 +76,16 @@ public class DBServiceImpl implements DBService {
     @Transactional(readOnly = false)
     public void save(TaskRun taskRun) {
         DBDao.saveOrUpdate(taskRun);
+    }
+
+    @Transactional(readOnly = false)
+    public void save(Authority authority) {
+        DBDao.saveOrUpdate(authority);
+    }
+
+    @Transactional(readOnly = false)
+    public void save(User user) {
+        DBDao.saveOrUpdate(user);
     }
 
     @Transactional(readOnly = true)
