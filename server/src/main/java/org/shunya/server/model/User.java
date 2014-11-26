@@ -13,7 +13,9 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")
     private long id;
+    @Column(length = 64)
     private String username;
+    @Column(length = 64)
     private String password;
     private boolean enabled;
     private String name;
@@ -23,17 +25,10 @@ public class User {
     @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Team> teamList;
+    @ManyToMany
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<Authority> authorities;
 
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
-    }
-
-    @OneToOne
-    private Organization organization;
     /*@ElementCollection (fetch=FetchType.EAGER)
     @CollectionTable(name="MY_MAP_TABLE" , joinColumns=@JoinColumn(name="ID"))
     @MapKeyColumn(name="name")
@@ -127,5 +122,13 @@ public class User {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public List<Authority> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(List<Authority> authorities) {
+        this.authorities = authorities;
     }
 }
