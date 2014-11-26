@@ -13,7 +13,7 @@
         <!-- Restrict URLs based on role -->
         <security:intercept-url pattern="/rest/server/login*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <security:intercept-url pattern="/rest/user/register*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
-        <security:intercept-url pattern="/rest/server/submitTaskStepResults*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+        <security:intercept-url pattern="/rest/server/submitTaskStepResults*" access="ROLE_AGENT" />
         <security:intercept-url pattern="/rest/server/logoutSuccess*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 
         <security:intercept-url pattern="/css/main.css" access="IS_AUTHENTICATED_ANONYMOUSLY" />

@@ -17,7 +17,6 @@ import javax.annotation.PreDestroy;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -59,7 +58,7 @@ public class TaskProcessor {
                     taskContext.getTaskStepRunDTO().setRunState(RunState.COMPLETED);
                     task.afterTaskFinish();
                     postProcess();
-                    restClient.postResultToServer(taskContext.getCallbackURL(), taskContext);
+                    restClient.postResultToServer(taskContext);
                     cache.remove(taskContext.getTaskStepRunDTO().getId());
                 }
             });

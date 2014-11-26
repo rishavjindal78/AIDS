@@ -156,8 +156,10 @@ public class TaskService {
                 TaskContext executionContext = new TaskContext();
                 try {
                     String hostAddress = Inet4Address.getLocalHost().getHostAddress();
-                    String callbackUrl = "http://" + hostAddress + ":9290/rest/server/submitTaskStepResults";
-                    executionContext.setCallbackURL(callbackUrl);
+                    executionContext.setCallbackURL("http://" + hostAddress + ":9290/rest/server/submitTaskStepResults");
+                    executionContext.setBaseUrl("http://" + hostAddress + ":9290/rest");
+                    executionContext.setUsername("agent");
+                    executionContext.setPassword("agent");
                     executionContext.setSessionMap(taskExecutionPlanMap.get(taskRun).getSessionMap());
                     executionContext.setTaskStepRunDTO(convertToDTO(taskStepRun));
                     TaskStep taskStep = taskStepRun.getTaskStep();
