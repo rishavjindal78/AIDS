@@ -1,3 +1,4 @@
+<#import "/spring.ftl" as spring />
 <#macro page title="" activeTab="">
 <!DOCTYPE html>
 <html>
