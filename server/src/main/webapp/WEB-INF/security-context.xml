@@ -19,7 +19,7 @@
         <security:intercept-url pattern="/css/main.css" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <security:intercept-url pattern="/resources/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 
-        <security:intercept-url pattern="/rest/**" access="ROLE_USER" />
+        <security:intercept-url pattern="/rest/**" access="ROLE_USER, ROLE_ADMIN" />
         <!--<security:csrf disabled="true"/>-->
 
         <!-- Override default login and logout pages -->
