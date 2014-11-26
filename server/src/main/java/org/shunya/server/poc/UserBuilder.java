@@ -1,4 +1,8 @@
-package org.shunya.server.model;
+package org.shunya.server.poc;
+
+import org.shunya.server.model.Authority;
+import org.shunya.server.model.Team;
+import org.shunya.server.model.User;
 
 import java.util.List;
 

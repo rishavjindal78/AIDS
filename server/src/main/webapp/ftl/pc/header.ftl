@@ -19,7 +19,7 @@
         <ul class="nav nav-pills pull-right">
             <li id="agents"><a href="${rc.getContextPath()}/rest/server/agents">Agents</a></li>
             <li id="tasks"><a href="${rc.getContextPath()}/rest/server/index">Tasks</a></li>
-            <li id="todo"><a href="/rest/todo/awaiting">Todo</a></li>
+            <li id="todo"><a href="<@spring.url '/rest/todo/awaiting'/>">Todo</a></li>
             <li id="settings"><a href="/rest/settings/index">Admin</a></li>
             <li id="home"><a href="/rest/home/index">
                 <#if Session["SPRING_SECURITY_CONTEXT"]?exists>

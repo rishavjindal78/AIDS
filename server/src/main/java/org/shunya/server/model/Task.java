@@ -33,13 +33,10 @@ public class Task implements Serializable {
     @OneToOne
     private User author;
     private String name;
-
     @Column(length = 500)
     private String description;
     private String tags;
-    @OneToOne
-    private Organization organization;
-    @OneToOne
+    @ManyToOne
     private Team team;
     /*@Column(length = 500)
     private String comments;*/
@@ -171,14 +168,6 @@ public class Task implements Serializable {
 
     public void setAbortOnFirstFailure(boolean abortOnFirstFailure) {
         this.abortOnFirstFailure = abortOnFirstFailure;
-    }
-
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
     }
 
     public Team getTeam() {

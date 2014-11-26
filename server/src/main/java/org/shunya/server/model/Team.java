@@ -17,8 +17,6 @@ public class Team {
     private String telegramId;
     @ManyToMany
     private List<User> userList;
-    @ManyToOne
-    private Organization organization;
 
     public Team() {}
 
@@ -93,13 +91,5 @@ public class Team {
 
     public void setTelegramId(String telegramId) {
         this.telegramId = telegramId;
-    }
-
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
     }
 }
