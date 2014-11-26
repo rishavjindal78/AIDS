@@ -33,7 +33,10 @@
         <property name="ignoreResourceNotFound" value="true"/>
     </bean>
 
-    <mvc:resources mapping="/resources/**" location="resources/" />
+    <mvc:resources mapping="/resources/**" location="/resources/" />
+    <mvc:resources mapping="/css/**" location="/resources/bootstrap" />
+    <mvc:resources mapping="/js/**" location="/resources/js/" />
+    <!--<mvc:resources mapping="/images/**" location="/images/" />-->
 
     <bean id="messageSource"
           class="org.springframework.context.support.ResourceBundleMessageSource">
@@ -147,5 +150,13 @@
     <mvc:interceptors>
         <!-- On pre-handle, resolve the device that originated the web request -->
         <bean class="org.springframework.mobile.device.DeviceResolverHandlerInterceptor" />
+        <bean class="org.shunya.server.AuthenticationInterceptor" />
     </mvc:interceptors>
+
+    <!--<mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/*"/>
+            <bean class="org.shunya.server.AuthenticationInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>-->
 </beans>

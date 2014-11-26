@@ -45,7 +45,7 @@
             });
         });
     </script>
-    <div class="container">
+    <#--<div class="container">-->
         <div class="heading btn-link">Add New Task</div>
         <div class="content">
             <form role="form" name="agent" action="/rest/server/addTask/0" method="POST">
@@ -120,6 +120,6 @@
             <span id="span_task_agent"></span>
             <span id="span_task_edit"></span>
         </div>
-    </div>
+    <#--</div>-->
     </@com.page>
 </#escape>

@@ -5,7 +5,6 @@ import org.shunya.server.model.Agent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +26,7 @@ public class AgentStatusService {
     @Scheduled(cron = "0 0/2 * * * ?")
     public void checkStatus() {
         logger.info("Checking Agent Status");
-        List<Agent> agents = dbService.list();
+        List<Agent> agents = dbService.listAgents();
         agents.parallelStream().forEach(agent -> {
             try {
                 boolean status = restClient.ping(agent);

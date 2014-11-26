@@ -20,7 +20,7 @@ public class DBServiceImpl implements DBService {
     private DBDao DBDao;
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<Agent> list() {
+    public List<Agent> listAgents() {
         return DBDao.list();
     }
 
@@ -89,14 +89,20 @@ public class DBServiceImpl implements DBService {
     }
 
     @Transactional(readOnly = true)
-    public Authority findByName(String role) {
+    public Authority findAuthorityByName(String role) {
         Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(Authority.class);
-        criteria.setFetchSize(1);
         criteria.add(Restrictions.eq("role", role));
-        criteria.setMaxResults(1);
         criteria.setCacheable(true);
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return (Authority) criteria.uniqueResult();
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        return (User) DBDao.getSessionFactory().getCurrentSession()
+                .createCriteria(User.class)
+                .add(Restrictions.eq("username", username))
+                .setCacheable(true)
+                .uniqueResult();
     }
 
     @Transactional(readOnly = true)
@@ -140,6 +146,17 @@ public class DBServiceImpl implements DBService {
         Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskRun.class);
         criteria.setFetchSize(30);
         criteria.add(Restrictions.eq("task.id", taskId));
+        criteria.addOrder(Order.desc("id"));
+        criteria.setMaxResults(30);
+        criteria.setCacheable(true);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        return criteria.list();
+    }
+
+    @Override
+    public List<TaskRun> findTaskHistory() {
+        Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskRun.class);
+        criteria.setFetchSize(30);
         criteria.addOrder(Order.desc("id"));
         criteria.setMaxResults(30);
         criteria.setCacheable(true);

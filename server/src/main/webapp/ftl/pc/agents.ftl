@@ -79,24 +79,24 @@
         };
         $(document).ready(lpStart);
     </script>
-    <div class="container">
+    <#--<div class="container">-->
         <div class="heading btn-link">Add New Agent</div>
         <div class="content">
             <form role="form" name="agent" action="register" method="POST">
                 <div class="form-group">
                     <label for="exampleInputEmail1">Task Name</label>
                     <input type="text" class="form-control" id="exampleInputEmail1" name="name"
-                           placeholder="Enter Agent Name">
+                           placeholder="Enter Agent Name e.g. Build Machine Agent">
                 </div>
                 <div class="form-group">
                     <label for="exampleInputPassword1">Task Description</label>
                     <input type="text" class="form-control" id="exampleInputPassword1" name="description"
-                           placeholder="Enter Agent Description">
+                           placeholder="Enter Agent Description e.g. Dev Server">
                 </div>
                 <div class="form-group">
                     <label for="exampleInputTags">Base Url</label>
                     <input type="text" class="form-control" id="exampleInputTags" name="baseUrl"
-                           placeholder="Enter Base Url">
+                           placeholder="Enter Base Url e.g. http://localhost:9291/">
                 </div>
                 <div class="checkbox">
                     <label>
@@ -125,14 +125,20 @@
                         <td>${agent.name?string}</td>
                         <td>${agent.description?string}</td>
                         <td>${agent.baseUrl?string}</td>
-                        <td id="td_${agent.id}">${agent.status!''?string}<span class="label label-success"
-                                                                               id="${agent.id}">UP</span></td>
+                        <td id="td_${agent.id}">
+                            <#if agent.status?exists && agent.status == 'UP'>
+                                <span class="label label-success" id="${agent.id}">${agent.status!'N/A'?string}</span>
+                            <#else>
+                                <span class="label label-danger" id="${agent.id}">${agent.status!'N/A'?string}</span>
+                            </#if>
+
+                        </td>
                     <#--<td>${debt.comments?size}</td>-->
                     </tr>
                 </#list>
             </table>
             <span id="spane_edit_agent"></span>
         </div>
-    </div>
+    <#--</div>-->
     </@com.page>
 </#escape>

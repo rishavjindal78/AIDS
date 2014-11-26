@@ -39,6 +39,8 @@ public class TaskRun implements Serializable {
     private List<TaskStepRun> taskStepRuns = new ArrayList<>();
     @ManyToOne
     private Task task;
+    @ManyToOne
+    private Team team;
     private boolean status;
     private boolean notifyStatus = false;
     @Transient
@@ -216,5 +218,13 @@ public class TaskRun implements Serializable {
 
     public void setNotifyStatus(boolean notifyStatus) {
         this.notifyStatus = notifyStatus;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
     }
 }

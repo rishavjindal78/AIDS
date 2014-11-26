@@ -9,6 +9,7 @@ import java.util.List;
 @Entity
 @Table(name="USER", uniqueConstraints = {@UniqueConstraint(columnNames = {"username"})})
 @TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "USER", allocationSize = 1)
+@Cacheable(true)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")

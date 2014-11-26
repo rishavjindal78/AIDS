@@ -5,6 +5,8 @@ import org.shunya.server.services.AgentStatusService;
 import org.shunya.server.services.TaskService;
 import org.shunya.server.services.DBService;
 import org.shunya.server.services.MyJobScheduler;
+import org.shunya.server.vo.AgentVO;
+import org.shunya.server.vo.AgentVOBuilder;
 import org.shunya.shared.AbstractStep;
 import org.shunya.shared.FieldPropertiesMap;
 import org.shunya.shared.TaskContext;
@@ -13,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -52,17 +53,22 @@ public class ServerController {
         return "test";
     }
 
-    @RequestMapping(value = "login", method = RequestMethod.GET)
-    public String login(@ModelAttribute("model") ModelMap model) {
-        return "login";
-    }
-
     @RequestMapping(value = "agents", method = RequestMethod.GET)
     public String agents(@ModelAttribute("model") ModelMap model, Principal principal) {
         model.addAttribute("message", "Hello world!");
         System.out.println("principal = " + principal.getName());
         model.addAttribute("username", principal.getName());
-        model.addAttribute("agents", dbService.list());
+        List<Agent> agentList = dbService.listAgents();
+        List<AgentVO> agentVOList = new ArrayList<>(agentList.size());
+        agentList.forEach(agent -> {
+            agentVOList.add(AgentVOBuilder.anAgentVO().withName(agent.getName())
+                    .withId(agent.getId())
+                    .withDescription(agent.getDescription())
+                    .withBaseUrl(agent.getBaseUrl())
+                    .withStatus(agentStatusService.getStatus(agent))
+                    .build());
+        });
+        model.addAttribute("agents", agentVOList);
         return "agents";
     }
 
@@ -135,7 +141,7 @@ public class ServerController {
 
     @RequestMapping(value = "addAgent/{id}", method = RequestMethod.GET)
     public String addAgent(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id) throws Exception {
-        model.addAttribute("agents", dbService.list());
+        model.addAttribute("agents", dbService.listAgents());
         model.addAttribute("task.id", id);
         return "addAgent";
     }
@@ -158,7 +164,7 @@ public class ServerController {
 
     @RequestMapping(value = "taskStep/addAgent/{taskStepId}", method = RequestMethod.GET)
     public String addTaskStepAgent(@ModelAttribute("model") ModelMap model, @PathVariable("taskStepId") long taskStepId) throws Exception {
-        model.addAttribute("agents", dbService.list());
+        model.addAttribute("agents", dbService.listAgents());
         model.addAttribute("taskStepId", taskStepId);
         return "addTaskStepAgent";
     }
@@ -291,11 +297,18 @@ public class ServerController {
     }
 
     @RequestMapping(value = "/taskHistory/{taskId}", method = RequestMethod.GET)
-    public String viewTaskHistory(@ModelAttribute("model") ModelMap model, @PathVariable("taskId") long taskId) {
+    public String viewTaskHistoryForTask(@ModelAttribute("model") ModelMap model, @PathVariable("taskId") long taskId) {
         List<TaskRun> all = dbService.findTaskHistoryForTaskId(taskId);
         model.addAttribute("taskHistoryList", all);
         model.addAttribute("taskId", taskId);
         return "taskRun";
+    }
+
+    @RequestMapping(value = "taskHistory", method = RequestMethod.GET)
+    public String viewTaskHistory(@ModelAttribute("model") ModelMap model) {
+        List<TaskRun> all = dbService.findTaskHistory();
+        model.addAttribute("taskHistoryList", all);
+        return "taskRunAll";
     }
 
     @RequestMapping(value = "/taskStepHistory/{taskHistoryId}", method = RequestMethod.GET)
@@ -320,6 +333,7 @@ public class ServerController {
         taskRun.setStartTime(new Date());
         taskRun.setComments(comment);
         taskRun.setNotifyStatus(notifyStatus);
+        taskRun.setRunBy(dbService.findByUsername(principal.getName()));
         taskService.execute(taskRun);
         return taskRun;
     }

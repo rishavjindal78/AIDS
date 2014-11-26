@@ -5,7 +5,7 @@ import org.shunya.server.model.*;
 import java.util.List;
 
 public interface DBService {
-    List<Agent> list();
+    List<Agent> listAgents();
     List<Task> listTasks();
     List<Authority> listAuthorities();
     void deleteTaskStep(long id);
@@ -17,7 +17,8 @@ public interface DBService {
     void save(TaskRun taskRun);
     void save(Authority authority);
     void save(User user);
-    Authority findByName(String role);
+    Authority findAuthorityByName(String role);
+    User findByUsername(String username);
     TaskRun getTaskRun(TaskStepRun taskStepRun);
     TaskRun getTaskRun(long id);
     TaskStepRun getTaskStepRun(long id);
@@ -25,4 +26,6 @@ public interface DBService {
     Agent getAgent(long id);
     TaskStep getTaskStep(long id);
     List<TaskRun> findTaskHistoryForTaskId(long taskId);
+
+    List<TaskRun> findTaskHistory();
 }

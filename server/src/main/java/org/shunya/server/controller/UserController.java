@@ -7,6 +7,7 @@ import org.shunya.server.model.User;
 import org.shunya.server.services.DBService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,5 +34,10 @@ public class UserController {
         user.setEnabled(true);
         dbService.save(user);
         return "redirect:../../rest/server/index";
+    }
+
+    @RequestMapping(value = "login", method = RequestMethod.GET)
+    public String login(@ModelAttribute("model") ModelMap model) {
+        return "login";
     }
 }

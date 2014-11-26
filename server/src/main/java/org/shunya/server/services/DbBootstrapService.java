@@ -36,7 +36,7 @@ public class DbBootstrapService {
     }
 
     public void loadDefaultUsers() {
-        Authority role_admin = dbService.findByName("ROLE_ADMIN");
+        Authority role_admin = dbService.findAuthorityByName("ROLE_ADMIN");
         User adminUser = UserBuilder.anUser().withName("Admin").withUsername("admin").withPassword("admin").withAuthorities(asList(role_admin)).withEnabled(true).build();
         try {
             dbService.save(adminUser);
@@ -44,7 +44,7 @@ public class DbBootstrapService {
             e.printStackTrace();
         }
 
-        Authority role_user = dbService.findByName("ROLE_USER");
+        Authority role_user = dbService.findAuthorityByName("ROLE_USER");
         User user = UserBuilder.anUser().withName("Admin").withUsername("user").withPassword("user").withAuthorities(asList(role_user)).withEnabled(true).build();
         try {
             dbService.save(user);
@@ -52,7 +52,7 @@ public class DbBootstrapService {
             e.printStackTrace();
         }
 
-        Authority role_agent = dbService.findByName("ROLE_AGENT");
+        Authority role_agent = dbService.findAuthorityByName("ROLE_AGENT");
         User agentUser = UserBuilder.anUser().withName("Admin").withUsername("agent").withPassword("agent").withAuthorities(asList(role_agent)).withEnabled(true).build();
         try {
             dbService.save(agentUser);

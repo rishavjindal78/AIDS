@@ -11,7 +11,7 @@
 
     <security:http auto-config="true">
         <!-- Restrict URLs based on role -->
-        <security:intercept-url pattern="/rest/server/login*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+        <security:intercept-url pattern="/rest/user/login*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <security:intercept-url pattern="/rest/user/register*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <security:intercept-url pattern="/rest/server/submitTaskStepResults*" access="ROLE_AGENT" />
         <security:intercept-url pattern="/rest/server/logoutSuccess*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
@@ -23,9 +23,9 @@
         <!--<security:csrf disabled="true"/>-->
 
         <!-- Override default login and logout pages -->
-        <security:form-login login-page="/rest/server/login"
+        <security:form-login login-page="/rest/user/login"
                              default-target-url="/rest/server/agents"
-                             authentication-failure-url="/rest/server/login?login_error=1"
+                             authentication-failure-url="/rest/user/login?login_error=1"
                 username-parameter="j_username"
                 password-parameter="j_password"/>
         <!--<security:logout logout-url="/rest/server/logout" logout-success-url="/rest/server/logoutSuccess" />-->

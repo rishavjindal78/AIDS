@@ -1,21 +1,20 @@
-package org.shunya.server.model;
+package org.shunya.server.vo;
+
+import org.shunya.server.AgentStatus;
+import org.shunya.server.model.Team;
+import org.shunya.server.model.User;
 
 import javax.persistence.*;
 
-@Entity
-@Table(name="AGENT")
-@TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "AGENT", allocationSize = 10)
-public class Agent {
-    @Id
-    @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")
+public class AgentVO {
     private long id;
-    @OneToOne
     private User createdBy;
-    @ManyToOne
     private Team team;
     private String name;
     private String description;
     private String baseUrl;
+    private Boolean privateAccess;
+    private AgentStatus status;
 
     public Boolean getPrivateAccess() {
         return privateAccess;
@@ -33,9 +32,7 @@ public class Agent {
         this.createdBy = createdBy;
     }
 
-    private Boolean privateAccess;
-
-    public Agent() {}
+    public AgentVO() {}
 
     public long getId() {
         return id;
@@ -74,7 +71,7 @@ public class Agent {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Agent agent = (Agent) o;
+        AgentVO agent = (AgentVO) o;
 
         if (id != agent.id) return false;
 
@@ -92,5 +89,13 @@ public class Agent {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public AgentStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(AgentStatus status) {
+        this.status = status;
     }
 }
