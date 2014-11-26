@@ -70,7 +70,7 @@
             </form>
         </div>
 
-        <h2 class="sub-header">Tasks</h2>
+        <h2 class="sub-header text-muted">Tasks</h2>
 
         <div class="table-responsive">
             <table class="table table-striped">

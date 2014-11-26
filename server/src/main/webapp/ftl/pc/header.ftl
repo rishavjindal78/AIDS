@@ -1,3 +1,4 @@
+<#import "/spring.ftl" as spring />
 <script>
     var activeTab = $('meta[name="activeTab"]').attr('content');
     $(document).ready(function () {
@@ -29,7 +30,7 @@
                 </a></li>
             <li id="logout"><a id="logoutLink" href="/rest/j_spring_security_logout"><span class="glyphicon glyphicon-log-out"></span></a></li>
         </ul>
-        <h3 class="text-muted">Autonomous Integrated Deployment Software</h3>
+        <h3 class="text-muted"><@spring.message code="application.title"/></h3>
         <!--form class="navbar-form navbar-right form-inline" action="search">
             <div class="col-lg-3">
                 <input type="text" class="form-control" placeholder="type to search here">

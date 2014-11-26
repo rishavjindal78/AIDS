@@ -17,6 +17,10 @@
     <context:component-scan base-package="org.shunya.server"/>
     <context:annotation-config />
 
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="1000000000"/>
+    </bean>
+
     <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
         <property name="locations">
             <list>
@@ -35,7 +39,7 @@
           class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basenames">
             <list>
-                <value>mymessages</value>
+                <value>messages</value>
             </list>
         </property>
     </bean>

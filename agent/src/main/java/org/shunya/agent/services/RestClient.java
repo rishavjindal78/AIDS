@@ -41,10 +41,8 @@ public class RestClient {
 
         ResponseEntity<String> result = restTemplate.exchange(authURL, HttpMethod.POST, entity, String.class);
         HttpHeaders respHeaders = result.getHeaders();
-        System.out.println(respHeaders.toString());
-
-        System.out.println(result.getStatusCode());
-
+//        System.out.println(respHeaders.toString());
+//        System.out.println(result.getStatusCode());
         String cookies = respHeaders.getFirst("Set-Cookie");
         return cookies;
     }

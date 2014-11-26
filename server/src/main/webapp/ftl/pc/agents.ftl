@@ -106,7 +106,7 @@
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>
-        <h2 class="sub-header">Agents</h2>
+        <h2 class="sub-header text-muted">Agents</h2>
 
         <div class="table-responsive">
             <table class="table table-striped">
