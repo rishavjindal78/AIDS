@@ -17,6 +17,7 @@ public interface DBService {
     void save(TaskRun taskRun);
     void save(Authority authority);
     void save(User user);
+    Authority findByName(String role);
     TaskRun getTaskRun(TaskStepRun taskStepRun);
     TaskRun getTaskRun(long id);
     TaskStepRun getTaskStepRun(long id);

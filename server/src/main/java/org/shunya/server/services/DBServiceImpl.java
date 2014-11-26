@@ -89,6 +89,17 @@ public class DBServiceImpl implements DBService {
     }
 
     @Transactional(readOnly = true)
+    public Authority findByName(String role) {
+        Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(Authority.class);
+        criteria.setFetchSize(1);
+        criteria.add(Restrictions.eq("role", role));
+        criteria.setMaxResults(1);
+        criteria.setCacheable(true);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        return (Authority) criteria.uniqueResult();
+    }
+
+    @Transactional(readOnly = true)
     public TaskRun getTaskRun(TaskStepRun taskStepRun) {
         TaskStepRun taskStepRunDb = (TaskStepRun) DBDao.getSessionFactory().getCurrentSession().get(TaskStepRun.class, taskStepRun.getId());
         TaskRun taskRun = taskStepRunDb.getTaskRun();
