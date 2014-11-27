@@ -9,6 +9,7 @@ public interface DBService {
     List<Agent> listAgents();
     List<Task> listTasks();
     List<Team> listTeams();
+    List<User> listUser();
     List<Authority> listAuthorities();
     void deleteTaskStep(long id);
     void deleteTask(long id);
@@ -28,6 +29,8 @@ public interface DBService {
     TaskStepRun getTaskStepRun(long id);
     Task getTask(long id);
     Agent getAgent(long id);
+    Team getTeam(long id);
+    User getUser(long id);
     TaskStep getTaskStep(long id);
     List<TaskRun> findTaskHistoryForTaskId(long taskId);
     List<TaskRun> findTaskHistory();

@@ -37,6 +37,12 @@ public class DBServiceImpl implements DBService {
     }
 
     @Override
+    public List<User> listUser() {
+        return DBDao.getSessionFactory().getCurrentSession().createCriteria(User.class)
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).addOrder(Order.desc("id")).list();
+    }
+
+    @Override
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<Authority> listAuthorities() {
         return DBDao.getSessionFactory().getCurrentSession().createCriteria(Authority.class)
@@ -146,6 +152,16 @@ public class DBServiceImpl implements DBService {
     @Override
     public Agent getAgent(long id) {
         return (Agent) DBDao.getSessionFactory().getCurrentSession().get(Agent.class, id);
+    }
+
+    @Override
+    public Team getTeam(long id) {
+        return (Team) DBDao.getSessionFactory().getCurrentSession().get(Team.class, id);
+    }
+
+    @Override
+    public User getUser(long id) {
+        return (User) DBDao.getSessionFactory().getCurrentSession().get(User.class, id);
     }
 
     @Override

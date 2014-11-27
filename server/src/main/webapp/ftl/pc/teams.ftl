@@ -88,6 +88,7 @@
                 <th>Description</th>
                 <th>TelegramID</th>
                 <th>Email</th>
+                <th>View</th>
             <#--<th>Comments</th>-->
             </tr>
             <#list model["teams"] as team>
@@ -98,6 +99,7 @@
                     <td>${team.description?string}</td>
                     <td>${team.telegramId?string}</td>
                     <td>${team.email?string}</td>
+                    <td><a href="/rest/admin/team/${team.id}">view</a></td>
                 <#--<td>${debt.comments?size}</td>-->
                 </tr>
             </#list>
