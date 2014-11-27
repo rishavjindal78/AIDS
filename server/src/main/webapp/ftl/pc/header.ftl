@@ -1,3 +1,4 @@
+<#assign security=JspTaglibs["/WEB-INF/tlds/security.tld"] />
 <#import "/spring.ftl" as spring />
 <script>
     var activeTab = $('meta[name="activeTab"]').attr('content');
@@ -20,15 +21,18 @@
             <li id="agents"><a href="${rc.getContextPath()}/rest/server/agents">Agents</a></li>
             <li id="tasks"><a href="${rc.getContextPath()}/rest/server/index">Tasks</a></li>
             <li id="history"><a href="<@spring.url '/rest/server/taskHistory'/>">History</a></li>
+        <@security.authorize ifAllGranted="ROLE_USER">
             <li id="settings"><a href="/rest/settings/index">Admin</a></li>
+        </@security.authorize>
             <li id="home"><a href="/rest/home/index">
-                <#if Session["SPRING_SECURITY_CONTEXT"]?exists>
-                    ${Session["SPRING_SECURITY_CONTEXT"].authentication.name}
-                <#else>
-                    Anonymous
-                </#if>
-                </a></li>
-            <li id="logout"><a id="logoutLink" href="/rest/j_spring_security_logout"><span class="glyphicon glyphicon-log-out"></span></a></li>
+            <#if Session["SPRING_SECURITY_CONTEXT"]?exists>
+            ${Session["SPRING_SECURITY_CONTEXT"].authentication.name}
+            <#else>
+                Anonymous
+            </#if>
+            </a></li>
+            <li id="logout"><a id="logoutLink" href="/rest/j_spring_security_logout"><span
+                    class="glyphicon glyphicon-log-out"></span></a></li>
         </ul>
         <h3 class="text-muted"><@spring.message code="application.title"/></h3>
         <!--form class="navbar-form navbar-right form-inline" action="search">
@@ -53,5 +57,5 @@
             </form>
         </fieldset>
     </div-->
-    <#--<hr>-->
+<#--<hr>-->
 </div>

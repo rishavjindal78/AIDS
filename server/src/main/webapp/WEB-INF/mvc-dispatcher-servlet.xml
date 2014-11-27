@@ -139,6 +139,7 @@
                 <property name="prefix" value=""/>
                 <property name="suffix" value=".ftl"/>
                 <property name="requestContextAttribute" value="rc"/>
+                <property name="exposeSpringMacroHelpers" value="true"/>
             </bean>
         </constructor-arg>
         <property name="mobilePrefix" value="mobile/" />
@@ -153,10 +154,4 @@
         <bean class="org.shunya.server.AuthenticationInterceptor" />
     </mvc:interceptors>
 
-    <!--<mvc:interceptors>
-        <mvc:interceptor>
-            <mvc:mapping path="/*"/>
-            <bean class="org.shunya.server.AuthenticationInterceptor" />
-        </mvc:interceptor>
-    </mvc:interceptors>-->
 </beans>
