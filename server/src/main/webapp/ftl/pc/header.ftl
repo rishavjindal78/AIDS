@@ -11,6 +11,13 @@
         $('#refreshLink').click(function () {
             location.reload();
         });
+
+        $('#selectedTeam').on('change', function() {
+            var newTeam = this.value;
+            $.post("/rest/server/team", { teamId: newTeam}, function (data) {
+//                $("#results").html('<div class="alert alert-success">Job Submitted Successfully - ' + url + '</div>');
+            });
+        });
     });
 
 </script>
@@ -26,12 +33,22 @@
             <li id="settings"><a href="/rest/admin/index">Admin</a></li>
         </@security.authorize>
             <li id="home"><a href="/rest/home/index">
-            <#if Session["SPRING_SECURITY_CONTEXT"]?exists>
+            <#if Session["LOGGED_USER"]?exists>
+            ${Session["LOGGED_USER"].name}
+            <#elseif Session["SPRING_SECURITY_CONTEXT"]?exists>
             ${Session["SPRING_SECURITY_CONTEXT"].authentication.name}
             <#else>
                 Anonymous
             </#if>
             </a></li>
+        <@security.authorize ifAllGranted="ROLE_USER">
+            <li><select id="selectedTeam" class="form-control" name="id">
+                <#list Session["LOGGED_USER"].teamList as team>
+                    <option value="${team.id}">${team.name}</option>
+                </#list>
+            </select>
+            </li>
+        </@security.authorize>
             <li id="logout"><a id="logoutLink" href="/rest/j_spring_security_logout"><span
                     class="glyphicon glyphicon-log-out"></span></a></li>
         </ul>

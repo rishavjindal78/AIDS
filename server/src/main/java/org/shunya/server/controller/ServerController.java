@@ -338,6 +338,14 @@ public class ServerController {
         return taskRun;
     }
 
+    @RequestMapping(value = "team", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void changeTeam(@RequestParam("teamId") Long teamId, Principal principal) {
+        logger.info("Current Team changed to {}", teamId);
+        Team team = dbService.getTeam(teamId);
+        request.getSession().setAttribute("SELECTED_TEAM", team);
+    }
+
     @RequestMapping(value = "submitTaskStepResults", method = RequestMethod.POST)
     @ResponseBody
     public String submitTaskStepResults(@RequestBody TaskContext taskContext) {
