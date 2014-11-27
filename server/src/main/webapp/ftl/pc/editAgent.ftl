@@ -24,7 +24,7 @@
                            value="${model.agent.description!?string}">
                 </div>
                 <div class="col-lg-3">
-                    <input type="text" class="form-control input" placeholder="Base Url" name="baseUrl"
+                    <input type="text" class="form-control input" placeholder="Base Url e.g. http://localhost:9291/" name="baseUrl"
                            value="${model.agent.baseUrl!?string}">
                 </div>
                 <div class="control-group">

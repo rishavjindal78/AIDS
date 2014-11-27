@@ -18,4 +18,6 @@ public interface DBDao {
     SessionFactory getSessionFactory();
 
     void saveOrUpdate(User user);
+
+    void saveOrUpdate(Team team);
 }

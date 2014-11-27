@@ -1,12 +1,14 @@
 package org.shunya.server.services;
 
 import org.shunya.server.model.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 public interface DBService {
     List<Agent> listAgents();
     List<Task> listTasks();
+    List<Team> listTeams();
     List<Authority> listAuthorities();
     void deleteTaskStep(long id);
     void deleteTask(long id);
@@ -17,6 +19,8 @@ public interface DBService {
     void save(TaskRun taskRun);
     void save(Authority authority);
     void save(User user);
+    @Transactional(readOnly = false)
+    void save(Team team);
     Authority findAuthorityByName(String role);
     User findByUsername(String username);
     TaskRun getTaskRun(TaskStepRun taskStepRun);
@@ -26,6 +30,5 @@ public interface DBService {
     Agent getAgent(long id);
     TaskStep getTaskStep(long id);
     List<TaskRun> findTaskHistoryForTaskId(long taskId);
-
     List<TaskRun> findTaskHistory();
 }

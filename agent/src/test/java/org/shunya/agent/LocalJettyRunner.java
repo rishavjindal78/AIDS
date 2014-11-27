@@ -11,9 +11,6 @@ public class LocalJettyRunner {
     private static final Server server = new Server(9291);
 
     public LocalJettyRunner() throws Exception {
-//        MBeanContainer mbContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
-//        server.addBean(mbContainer);
-
         WebAppContext context = new WebAppContext("src/main/webapp", "/");
         context.setResourceBase("src/main/webapp");
         context.setLogUrlOnStart(true);

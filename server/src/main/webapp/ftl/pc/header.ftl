@@ -21,8 +21,9 @@
             <li id="agents"><a href="${rc.getContextPath()}/rest/server/agents">Agents</a></li>
             <li id="tasks"><a href='<@spring.url "/rest/server/index" />'>Tasks</a></li>
             <li id="history"><a href='<@spring.url "/rest/server/taskHistory" />'>History</a></li>
-        <@security.authorize ifAllGranted="ROLE_USER">
-            <li id="settings"><a href="/rest/settings/index">Admin</a></li>
+        <@security.authorize ifAllGranted="ROLE_ADMIN">
+            <li id="teams"><a href="/rest/admin/team/index">Teams</a></li>
+            <li id="settings"><a href="/rest/admin/index">Admin</a></li>
         </@security.authorize>
             <li id="home"><a href="/rest/home/index">
             <#if Session["SPRING_SECURITY_CONTEXT"]?exists>
