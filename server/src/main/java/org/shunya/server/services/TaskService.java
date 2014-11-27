@@ -171,6 +171,7 @@ public class TaskService {
                     taskExecutionPlanMap.get(taskRun).setTaskStatus(false);
                     executionContext.getTaskStepRunDTO().setStatus(false);
                     if (e.getCause() != null && e.getCause() instanceof ConnectException) {
+                        statusObserver.notifyStatus(4659270, "Task Submission Failed, Agent not reachable - " + taskStepRun.getAgent().getName() + e.getMessage());
                         executionContext.getTaskStepRunDTO().setLogs("Task Submission Failed, Agent not reachable - " + taskStepRun.getAgent().getName() + "\r\n" + e);
                     } else {
                         executionContext.getTaskStepRunDTO().setLogs("Task Submission Failed - " + Utils.getStackTrace(e));

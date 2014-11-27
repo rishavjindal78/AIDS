@@ -19,8 +19,8 @@
     <div id="nav">
         <ul class="nav nav-pills pull-right">
             <li id="agents"><a href="${rc.getContextPath()}/rest/server/agents">Agents</a></li>
-            <li id="tasks"><a href="${rc.getContextPath()}/rest/server/index">Tasks</a></li>
-            <li id="history"><a href="<@spring.url '/rest/server/taskHistory'/>">History</a></li>
+            <li id="tasks"><a href='<@spring.url "/rest/server/index" />'>Tasks</a></li>
+            <li id="history"><a href='<@spring.url "/rest/server/taskHistory" />'>History</a></li>
         <@security.authorize ifAllGranted="ROLE_USER">
             <li id="settings"><a href="/rest/settings/index">Admin</a></li>
         </@security.authorize>
