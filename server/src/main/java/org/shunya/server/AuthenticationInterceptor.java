@@ -20,7 +20,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             String username = ((SecurityContext) httpServletRequest.getSession().getAttribute("SPRING_SECURITY_CONTEXT")).getAuthentication().getName();
             User byUsername = dbService.findByUsername(username);
             httpServletRequest.getSession().setAttribute("LOGGED_USER", byUsername);
-            httpServletRequest.getSession().setAttribute("SELECTED_TEAM", byUsername.getTeamList().get(0));
+            if (byUsername.getTeamList().size() > 0)
+                httpServletRequest.getSession().setAttribute("SELECTED_TEAM", byUsername.getTeamList().get(0));
             System.out.println("Name of the user = " + byUsername.getName());
         }
         return true;

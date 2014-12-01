@@ -89,7 +89,8 @@ public class ServerController {
 
     @RequestMapping(value = "register", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public String registerAgent(@ModelAttribute("agent") Agent agent) {
+    public String registerAgent(@ModelAttribute("agent") Agent agent, Principal principal) {
+        agent.setCreatedBy(dbService.findByUsername(principal.getName()));
         dbService.save(agent);
         final String referer = request.getHeader("referer");
         System.out.println("referer = " + referer);
@@ -188,7 +189,7 @@ public class ServerController {
     }
 
     @RequestMapping(value = "/addTask/{id}", method = RequestMethod.POST)
-    public String addTask(@PathVariable("id") long id, @ModelAttribute("user") Task task, final HttpServletRequest request) {
+    public String addTask(@PathVariable("id") long id, @ModelAttribute("user") Task task, final HttpServletRequest request, Principal principal) {
         logger.info("Message received for Add : " + task);
         if (id != 0) {
             final Task existingTask = dbService.getTask(id);
@@ -197,6 +198,7 @@ public class ServerController {
             existingTask.setTags(task.getTags());
             dbService.save(existingTask);
         } else if (null != task && null != task.getName() && !task.getDescription().isEmpty()) {
+            task.setAuthor(dbService.findByUsername(principal.getName()));
 //          taskData.setTradeDate(new Date());
             dbService.save(task);
         }
