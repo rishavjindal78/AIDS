@@ -3,6 +3,8 @@ package org.shunya.server.controller;
 import org.shunya.server.model.Team;
 import org.shunya.server.model.User;
 import org.shunya.server.services.DBService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -14,6 +16,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+    private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     @Autowired
     private DBService dbService;

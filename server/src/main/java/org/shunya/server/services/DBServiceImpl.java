@@ -113,6 +113,17 @@ public class DBServiceImpl implements DBService {
     }
 
     @Override
+    public void update(User user) {
+        User existingUser = getUser(user.getId());
+        existingUser.setPhone(user.getPhone());
+        existingUser.setTelegramId(user.getTelegramId());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setName(user.getName());
+        existingUser.setPassword(user.getPassword());
+        DBDao.saveOrUpdate(existingUser);
+    }
+
+    @Override
     @Transactional(readOnly = false)
     public void save(Team team) {
         DBDao.saveOrUpdate(team);

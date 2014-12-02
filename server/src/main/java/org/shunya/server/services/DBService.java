@@ -21,6 +21,7 @@ public interface DBService {
     void save(TaskRun taskRun);
     void save(Authority authority);
     void save(User user);
+    void update(User user);
     @Transactional(readOnly = false)
     void save(Team team);
 

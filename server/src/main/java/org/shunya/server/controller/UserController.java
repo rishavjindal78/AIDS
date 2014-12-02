@@ -1,5 +1,6 @@
 package org.shunya.server.controller;
 
+import org.shunya.server.Role;
 import org.shunya.server.model.Authority;
 import org.shunya.server.model.User;
 import org.shunya.server.services.DBService;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
+
+import static java.util.Arrays.asList;
 
 @Controller
 @RequestMapping("/user")
@@ -27,8 +30,7 @@ public class UserController {
 
     @RequestMapping(value = "register", method = RequestMethod.POST)
     public String registerUser(@ModelAttribute("user") User user) throws Exception {
-        List<Authority> authorities = dbService.listAuthorities();
-        user.setAuthorities(authorities);
+        user.setAuthorities(asList(dbService.findAuthorityByName(Role.ROLE_USER)));
         user.setEnabled(true);
         dbService.save(user);
         return "redirect:/rest/server";
@@ -36,10 +38,7 @@ public class UserController {
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
     public String updateUser(@ModelAttribute("user") User user) throws Exception {
-        List<Authority> authorities = dbService.listAuthorities();
-        user.setAuthorities(authorities);
-        user.setEnabled(true);
-        dbService.save(user);
+        dbService.update(user);
         return "redirect:../../rest/server";
     }
 

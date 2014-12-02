@@ -79,7 +79,7 @@
                 <td>${taskStepHistory.sequence?string}</td>
                 <td>${taskStepHistory.taskStep.description!?string}</td>
                 <td>${taskStepHistory.agent.name!?string}</td>
-                <td><#if taskStepHistory.startTime??>${taskStepHistory.startTime?datetime?string("dd MMM, yyyy hh.mm aa")}</#if></td>
+                <td><#if taskStepHistory.finishTime??>${taskStepHistory.finishTime?datetime?string("dd MMM, yyyy hh.mm aa")}</#if></td>
                 <#if taskStepHistory.runStatus?string == 'FAILURE'>
                 <td><button type="button" class="btn btn-danger">${taskStepHistory.runStatus!?string}</button></td>
                 <#else >

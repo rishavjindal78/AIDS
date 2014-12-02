@@ -50,6 +50,8 @@
             <h3 class="text-muted">Profile Details - ${model.user.name!}</h3>
             <br/>
 
+            <input type="hidden" name='id' class="form-control" id="userId" value="${model.user.id?string}">
+
             <div class="form-group">
                 <label for="inputEmail3" class="col-sm-2 control-label">Username</label>
 
