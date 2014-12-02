@@ -1,5 +1,6 @@
 package org.shunya.server.controller;
 
+import org.shunya.server.Role;
 import org.shunya.server.model.*;
 import org.shunya.server.services.AgentStatusService;
 import org.shunya.server.services.TaskService;
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -350,6 +352,7 @@ public class ServerController {
 
     @RequestMapping(value = "submitTaskStepResults", method = RequestMethod.POST)
     @ResponseBody
+    @Secured({Role.ROLE_AGENT})
     public String submitTaskStepResults(@RequestBody TaskContext taskContext) {
         logger.info("Successfully received Task results {} ", taskContext.getStepDTO().getSequence());
         taskService.consumeStepResult(taskContext);

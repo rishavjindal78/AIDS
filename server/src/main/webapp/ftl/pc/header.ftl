@@ -39,8 +39,8 @@
             ${Session["SPRING_SECURITY_CONTEXT"].authentication.name}
             <#else>
                 Anonymous
-            </#if>
-            </a></li>
+            </#if></a>
+            </li>
         <@security.authorize ifAllGranted="ROLE_USER">
             <li><select id="selectedTeam" class="form-control" name="id">
                 <#list Session["LOGGED_USER"].teamList as team>

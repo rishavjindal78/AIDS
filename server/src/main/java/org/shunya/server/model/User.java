@@ -1,5 +1,6 @@
 package org.shunya.server.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -25,6 +26,7 @@ public class User {
     private String telegramId;
     @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
+    @JsonManagedReference
     private List<Team> teamList;
     @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)

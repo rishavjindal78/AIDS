@@ -12,10 +12,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.concurrent.ExecutionException;
 
-/**
- * Created by Aman Verma on 11/23/2014.
- */
-
 @Controller
 @RequestMapping("/bot")
 public class BotController {

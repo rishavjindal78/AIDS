@@ -77,7 +77,7 @@
             <table class="table table-striped">
                 <tr>
                     <th>#</th>
-                    <th width="20%">Name</th>
+                    <th width="30%">Name</th>
                     <th width="30%">Description</th>
                     <th>Tags</th>
                     <th>Agents</th>
