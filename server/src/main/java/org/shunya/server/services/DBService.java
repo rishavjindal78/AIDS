@@ -7,7 +7,8 @@ import java.util.List;
 
 public interface DBService {
     List<Agent> listAgents();
-    List<Task> listTasks();
+    List<Agent> listAgentsByTeam(long teamId);
+    List<Task> listTasksByTeam(long teamId);
     List<Team> listTeams();
     List<User> listUser();
     List<Authority> listAuthorities();
@@ -22,16 +23,22 @@ public interface DBService {
     void save(User user);
     @Transactional(readOnly = false)
     void save(Team team);
+
+    @Transactional(readOnly = false)
+    void update(Team team);
+
     Authority findAuthorityByName(String role);
-    User findByUsername(String username);
+    User findUserByUsername(String username);
+    User findUserByTelegramId(int telegramId);
     TaskRun getTaskRun(TaskStepRun taskStepRun);
     TaskRun getTaskRun(long id);
     TaskStepRun getTaskStepRun(long id);
     Task getTask(long id);
     Agent getAgent(long id);
-    Team getTeam(long id);
+    Team findTeamById(long id);
+    Team findTeamByChatId(long telegramId);
     User getUser(long id);
     TaskStep getTaskStep(long id);
     List<TaskRun> findTaskHistoryForTaskId(long taskId);
-    List<TaskRun> findTaskHistory();
+    List<TaskRun> findTaskHistoryByTeam(long teamId);
 }

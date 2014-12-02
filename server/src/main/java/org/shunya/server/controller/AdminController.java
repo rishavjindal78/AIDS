@@ -32,9 +32,23 @@ public class AdminController {
         return "redirect:index";
     }
 
+    @RequestMapping(value = "team/update", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.CREATED)
+    public String updateTeam(@ModelAttribute("team") Team team) {
+        dbService.update(team);
+        return "redirect:index";
+    }
+
+    @RequestMapping(value = "team/update/{teamId}", method = RequestMethod.GET)
+    public String editAgent(@ModelAttribute("model") ModelMap model, @PathVariable("teamId") long teamId) throws Exception {
+        Team team = dbService.findTeamById(teamId);
+        model.addAttribute("team", team);
+        return "editTeam";
+    }
+
     @RequestMapping(value = "team/{teamId}", method = RequestMethod.GET)
     public String team(@ModelAttribute("model") ModelMap model, @PathVariable("teamId") long teamId) {
-        Team team = dbService.getTeam(teamId);
+        Team team = dbService.findTeamById(teamId);
         model.addAttribute("team", team);
         return "team";
     }
@@ -48,7 +62,7 @@ public class AdminController {
 
     @RequestMapping(value = "team/{teamId}/addUser", method = RequestMethod.POST)
     public String addAgentPOST(@ModelAttribute("user") User user, @PathVariable("teamId") long teamId) throws Exception {
-        Team team = dbService.getTeam(teamId);
+        Team team = dbService.findTeamById(teamId);
         User existingUser = dbService.getUser(user.getId());
         team.getUserList().add(existingUser);
         dbService.save(team);

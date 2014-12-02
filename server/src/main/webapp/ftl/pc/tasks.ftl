@@ -15,7 +15,7 @@
         }
 
         function editExpense(id) {
-            $.get('/rest/server/editTask/' + id, function (data) {
+            $.get('/rest/server/team/${model.team.id}/editTask/' + id, function (data) {
                 $('#span_task_edit').empty();
                 $('#span_task_edit').html(data);
 //                $('#span_expense_edit_'+id).empty();
@@ -24,7 +24,7 @@
         }
 
         function addAgent(id) {
-            $.get('/rest/server/addAgent/' + id, function (data) {
+            $.get('${rc.getContextPath()}/rest/server/team/${model.team.id}/addAgent/' + id, function (data) {
                 $('#span_task_agent').empty();
                 $('#span_task_agent').html(data);
             });
@@ -48,7 +48,7 @@
     <#--<div class="container">-->
         <div class="heading btn-link">Add New Task</div>
         <div class="content">
-            <form role="form" name="agent" action="/rest/server/addTask/0" method="POST">
+            <form role="form" name="agent" action="/rest/server/team/${model.team.id}/addTask/0" method="POST">
                 <div class="form-group">
                     <label for="exampleInputEmail1">Task Name</label>
                     <input type="text" class="form-control" id="exampleInputEmail1" name="name" placeholder="Enter Task Name">
@@ -83,7 +83,7 @@
                     <th>Agents</th>
                     <th width="5%">Operation</th>
                 </tr>
-                <#list model["taskDatas"] as td>
+                <#list model["tasks"] as td>
                     <tr>
                         <td>${td_index+1} &nbsp;<a href="#" onclick="editExpense('${td.id}')"><span
                                 class="glyphicon glyphicon-edit"/></a></td>
@@ -105,11 +105,11 @@
                                         data-toggle="dropdown"> Action <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href="view/${td.id}">view</a></li>
+                                    <li><a href="${rc.getContextPath()}/rest/server/task/${td.id}">view</a></li>
                                     <li><a href="#" onclick="editExpense('${td.id}')">edit</a></li>
                                     <li><a href="#" onclick="addAgent('${td.id}')">add agent</a></li>
-                                    <li><a href="#" onclick="executeFunction('run/${td.id}')">run</a></li>
-                                    <li><a href="taskHistory/${td.id}">history</a></li>
+                                    <li><a href="#" onclick="executeFunction('${rc.getContextPath()}/rest/server/run/${td.id}')">run</a></li>
+                                    <li><a href="${rc.getContextPath()}/rest/server/taskHistory/${td.id}">history</a></li>
                                     <li class="divider"></li>
                                     <li><a href="delete/${td.id}">Delete</a></li>
                                 </ul>

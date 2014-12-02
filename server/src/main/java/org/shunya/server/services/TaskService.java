@@ -57,7 +57,7 @@ public class TaskService {
     @Async
     public void execute(TaskRun taskRun) {
         if (taskRun.isNotifyStatus())
-            statusObserver.notifyStatus(4659270, "starting execution for - " + taskRun.getName());
+            statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), "starting execution for - " + taskRun.getName());
         logger.info("starting execution for TaskRun {}", taskRun.getName());
         DBService.save(taskRun);
         TaskExecutionPlan executionPlan = taskExecutionPlanMap.computeIfAbsent(taskRun, k -> new TaskExecutionPlan(taskRun.getTask()));
@@ -90,7 +90,7 @@ public class TaskService {
         DBService.save(taskStepRun);
         TaskRun taskRun = DBService.getTaskRun(taskStepRun);
         if (taskRun.isNotifyStatus())
-            statusObserver.notifyStatus(4659270, "Execution Completed for Step# " + taskContext.getStepDTO().getSequence() + ", Status = " + taskContext.getTaskStepRunDTO().getRunStatus());
+            statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), "Execution Completed for Step# " + taskContext.getStepDTO().getSequence() + ", Status = " + taskContext.getTaskStepRunDTO().getRunStatus());
         currentlyRunningTaskSteps.get(taskRun).remove(taskStepRun);
         TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);
         taskExecutionPlan.getSessionMap().putAll(taskContext.getSessionMap());
@@ -100,7 +100,7 @@ public class TaskService {
                 logger.info("Aborting Task Execution after first failure");
                 saveTaskRun(taskRun, taskExecutionPlan, RunStatus.FAILURE);
                 if (taskRun.isNotifyStatus())
-                    statusObserver.notifyStatus(4659270, "Aborting Task Execution after first failure");
+                    statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), "Aborting Task Execution after first failure");
                 return;
             }
             processNextStep(taskRun, taskExecutionPlan);
@@ -118,7 +118,7 @@ public class TaskService {
             saveTaskRun(taskRun, taskExecutionPlan, RunStatus.SUCCESS);
             logger.info("Task has no further steps, completing it now");
             if (taskRun.isNotifyStatus())
-                statusObserver.notifyStatus(4659270, "Task has no further steps, completing it now");
+                statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), "Task has no further steps, completing it now");
         }
     }
 
@@ -150,7 +150,7 @@ public class TaskService {
                 currentlyRunningTaskSteps.computeIfAbsent(taskRun, tsr -> new Vector<>()).add(taskStepRun);
             });
         });
-        if (currentlyRunningTaskSteps.get(taskRun).size() > 0) {
+        if (currentlyRunningTaskSteps.get(taskRun) !=null && currentlyRunningTaskSteps.get(taskRun).size() > 0) {
             logger.info("execution started for task step - " + taskStepDataList.get(0).getSequence());
             new CopyOnWriteArrayList<>(currentlyRunningTaskSteps.get(taskRun)).parallelStream().forEach(taskStepRun -> {
                 TaskContext executionContext = new TaskContext();
@@ -171,7 +171,7 @@ public class TaskService {
                     taskExecutionPlanMap.get(taskRun).setTaskStatus(false);
                     executionContext.getTaskStepRunDTO().setStatus(false);
                     if (e.getCause() != null && e.getCause() instanceof ConnectException) {
-                        statusObserver.notifyStatus(4659270, "Task Submission Failed, Agent not reachable - " + taskStepRun.getAgent().getName() + e.getMessage());
+                        statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), "Task Submission Failed, Agent not reachable - " + taskStepRun.getAgent().getName() + e.getMessage());
                         executionContext.getTaskStepRunDTO().setLogs("Task Submission Failed, Agent not reachable - " + taskStepRun.getAgent().getName() + "\r\n" + e);
                     } else {
                         executionContext.getTaskStepRunDTO().setLogs("Task Submission Failed - " + Utils.getStackTrace(e));

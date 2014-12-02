@@ -19,15 +19,27 @@ public class DBServiceImpl implements DBService {
     @Autowired
     private DBDao DBDao;
 
-    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    @Override
     public List<Agent> listAgents() {
         return DBDao.list();
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<Task> listTasks() {
+    public List<Agent> listAgentsByTeam(long teamId) {
+        return DBDao.getSessionFactory().getCurrentSession().createCriteria(Agent.class)
+                .add(Restrictions.eq("team.id", teamId))
+                .addOrder(Order.desc("id"))
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+                .list();
+    }
+
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public List<Task> listTasksByTeam(long teamId) {
         return DBDao.getSessionFactory().getCurrentSession().createCriteria(Task.class)
-                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).addOrder(Order.desc("id")).list();
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+                .addOrder(Order.desc("id"))
+                .add(Restrictions.eq("team.id", teamId))
+                .list();
     }
 
     @Override
@@ -106,6 +118,18 @@ public class DBServiceImpl implements DBService {
         DBDao.saveOrUpdate(team);
     }
 
+    @Override
+    @Transactional(readOnly = false)
+    public void update(Team team) {
+        Team existingTeam = findTeamById(team.getId());
+        existingTeam.setName(team.getName());
+        existingTeam.setDescription(team.getDescription());
+        existingTeam.setEmail(team.getEmail());
+        existingTeam.setTelegramId(team.getTelegramId());
+        existingTeam.setPhone(team.getPhone());
+        DBDao.saveOrUpdate(existingTeam);
+    }
+
     @Transactional(readOnly = true)
     public Authority findAuthorityByName(String role) {
         Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(Authority.class);
@@ -115,12 +139,20 @@ public class DBServiceImpl implements DBService {
     }
 
     @Override
-    public User findByUsername(String username) {
+    public User findUserByUsername(String username) {
         return (User) DBDao.getSessionFactory().getCurrentSession()
                 .createCriteria(User.class)
                 .add(Restrictions.eq("username", username))
                 .setCacheable(true)
                 .uniqueResult();
+    }
+
+    @Override
+    public User findUserByTelegramId(int telegramId) {
+        Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(User.class);
+        criteria.add(Restrictions.eq("telegramId", telegramId));
+        criteria.setCacheable(true);
+        return (User) criteria.uniqueResult();
     }
 
     @Transactional(readOnly = true)
@@ -155,8 +187,16 @@ public class DBServiceImpl implements DBService {
     }
 
     @Override
-    public Team getTeam(long id) {
+    public Team findTeamById(long id) {
         return (Team) DBDao.getSessionFactory().getCurrentSession().get(Team.class, id);
+    }
+
+    @Override
+    public Team findTeamByChatId(long telegramId) {
+        Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(Team.class);
+        criteria.add(Restrictions.eq("telegramId", telegramId));
+        criteria.setCacheable(true);
+        return (Team) criteria.uniqueResult();
     }
 
     @Override
@@ -182,9 +222,10 @@ public class DBServiceImpl implements DBService {
     }
 
     @Override
-    public List<TaskRun> findTaskHistory() {
+    public List<TaskRun> findTaskHistoryByTeam(long teamId) {
         Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskRun.class);
         criteria.setFetchSize(30);
+        criteria.add(Restrictions.eq("team.id", teamId));
         criteria.addOrder(Order.desc("id"));
         criteria.setMaxResults(30);
         criteria.setCacheable(true);

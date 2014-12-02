@@ -44,7 +44,7 @@
                 <#else >
                 <tr class="text-success"></#if>
                 <td>${taskHistory.id?string}</td>
-                <td><a href="../server/taskStepHistory/${taskHistory.id}">${taskHistory.name!?string}</a></td>
+                <td><a href="${rc.getContextPath()}/rest/server/taskStepHistory/${taskHistory.id}">${taskHistory.name!?string}</a></td>
                 <td>${taskHistory.comments!?string}</td>
                 <td><#if taskHistory.startTime??>${taskHistory.startTime?datetime?string("dd MMM, yyyy hh.mm aa")}</#if></td>
                 <td><#if taskHistory.finishTime??>${taskHistory.finishTime?datetime?string("dd MMM, yyyy hh.mm aa")}</#if></td>

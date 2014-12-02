@@ -1,8 +1,6 @@
 package org.shunya.server.controller;
 
-import org.shunya.server.model.Agent;
 import org.shunya.server.model.Authority;
-import org.shunya.server.model.Task;
 import org.shunya.server.model.User;
 import org.shunya.server.services.DBService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,16 +26,32 @@ public class UserController {
     }
 
     @RequestMapping(value = "register", method = RequestMethod.POST)
-    public String addAgentPOST(@ModelAttribute("user") User user) throws Exception {
+    public String registerUser(@ModelAttribute("user") User user) throws Exception {
         List<Authority> authorities = dbService.listAuthorities();
         user.setAuthorities(authorities);
         user.setEnabled(true);
         dbService.save(user);
-        return "redirect:../../rest/server/index";
+        return "redirect:/rest/server";
+    }
+
+    @RequestMapping(value = "update", method = RequestMethod.POST)
+    public String updateUser(@ModelAttribute("user") User user) throws Exception {
+        List<Authority> authorities = dbService.listAuthorities();
+        user.setAuthorities(authorities);
+        user.setEnabled(true);
+        dbService.save(user);
+        return "redirect:../../rest/server";
     }
 
     @RequestMapping(value = "login", method = RequestMethod.GET)
     public String login(@ModelAttribute("model") ModelMap model) {
         return "login";
+    }
+
+    @RequestMapping(value = "profile/{username}", method = RequestMethod.GET)
+    public String profile(@ModelAttribute("model") ModelMap model, @PathVariable("username") String username) {
+        User user = dbService.findUserByUsername(username);
+        model.addAttribute("user", user);
+        return "profile";
     }
 }

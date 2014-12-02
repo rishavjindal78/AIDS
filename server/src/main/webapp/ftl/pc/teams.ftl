@@ -20,8 +20,8 @@
             }
         }
 
-        function editAgent(id) {
-            $.get('/rest/server/editAgent/' + id, function (data) {
+        function updateTeam(id) {
+            $.get('/rest/admin/team/update/' + id, function (data) {
                 $('#spane_edit_agent').empty();
                 $('#spane_edit_agent').html(data);
 //                $('#span_expense_edit_'+id).empty();
@@ -93,7 +93,7 @@
             </tr>
             <#list model["teams"] as team>
                 <tr>
-                    <td>${team_index+1} &nbsp;<a href="#" onclick="editAgent('${team.id}')"><span
+                    <td>${team_index+1} &nbsp;<a href="#" onclick="updateTeam('${team.id}')"><span
                             class="glyphicon glyphicon-edit"/></a></td>
                     <td>${team.name?string}</td>
                     <td>${team.description?string}</td>

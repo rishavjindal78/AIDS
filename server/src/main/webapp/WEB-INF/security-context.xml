@@ -24,7 +24,7 @@
 
         <!-- Override default login and logout pages -->
         <security:form-login login-page="/rest/user/login"
-                             default-target-url="/rest/server/agents"
+                             default-target-url="/rest/server"
                              authentication-failure-url="/rest/user/login?login_error=1"
                 username-parameter="j_username"
                 password-parameter="j_password"/>

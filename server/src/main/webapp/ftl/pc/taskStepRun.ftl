@@ -56,7 +56,7 @@
     </div-->
     <br>
     <hr/>
-    <a href="../taskHistory/${model.taskHistory.task.id}"> << Back To Task History</a>
+    <a href="../team/${model.taskHistory.team.id}/taskHistory"> << Back To Task History</a>
     <div class="well">
         <table class="table table-striped">
             <tr>

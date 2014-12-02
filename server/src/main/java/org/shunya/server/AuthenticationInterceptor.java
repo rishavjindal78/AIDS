@@ -18,11 +18,13 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
         if (httpServletRequest.getSession().getAttribute("SPRING_SECURITY_CONTEXT") != null) {
             String username = ((SecurityContext) httpServletRequest.getSession().getAttribute("SPRING_SECURITY_CONTEXT")).getAuthentication().getName();
-            User byUsername = dbService.findByUsername(username);
-            httpServletRequest.getSession().setAttribute("LOGGED_USER", byUsername);
-            if (byUsername.getTeamList().size() > 0)
-                httpServletRequest.getSession().setAttribute("SELECTED_TEAM", byUsername.getTeamList().get(0));
-            System.out.println("Name of the user = " + byUsername.getName());
+            if (httpServletRequest.getSession().getAttribute("SELECTED_TEAM") == null) {
+                User byUsername = dbService.findUserByUsername(username);
+                httpServletRequest.getSession().setAttribute("LOGGED_USER", byUsername);
+                if (byUsername.getTeamList().size() > 0)
+                    httpServletRequest.getSession().setAttribute("SELECTED_TEAM", byUsername.getTeamList().get(0));
+                System.out.println("Name of the user = " + byUsername.getName());
+            }
         }
         return true;
     }

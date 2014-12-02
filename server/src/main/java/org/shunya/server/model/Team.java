@@ -18,7 +18,7 @@ public class Team {
     private String description;
     private String phone;
     private String email;
-    private String telegramId;
+    private int telegramId;
     @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
     @JsonBackReference
@@ -91,11 +91,11 @@ public class Team {
         this.email = email;
     }
 
-    public String getTelegramId() {
+    public int getTelegramId() {
         return telegramId;
     }
 
-    public void setTelegramId(String telegramId) {
+    public void setTelegramId(int telegramId) {
         this.telegramId = telegramId;
     }
 }

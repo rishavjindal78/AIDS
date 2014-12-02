@@ -23,8 +23,6 @@
     </div>-->
     <br/>
     <hr/>
-    <a href="../view/${model.taskId}"> << back To All Tasks</a>
-    <div class="well">
         <legend>Task Run History</legend>
         <table class="table table-striped table-condensed">
             <tr>
@@ -68,7 +66,6 @@
             </tr>
             </#list>
         </table>
-    </div>
     <script type="text/javascript">
     </script>
     </@com.page>

@@ -15,7 +15,7 @@
 
 <div>
     <fieldset>
-        <form class="form-horizontal" name="user" action="/rest/server/addTask/${model.task.id!?string}" method="post">
+        <form class="form-horizontal" name="user" action="/rest/server/team/${model.team.id}/addTask/${model.task.id!?string}" method="post">
             <div class="form-group">
             <#--<label class="col-lg-2 control-label">Amount</label>-->
                 <div class="col-lg-2">

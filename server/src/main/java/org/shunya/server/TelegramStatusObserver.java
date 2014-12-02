@@ -20,17 +20,18 @@ public class TelegramStatusObserver implements StatusObserver {
     @Autowired
     private TelegramService telegramService;
 
-    public void register(String callbackUrl){
+    public void register(String callbackUrl) {
         observerUrls.add(callbackUrl);
     }
 
-    public void unregister(String callbackUrl){
+    public void unregister(String callbackUrl) {
         observerUrls.remove(callbackUrl);
     }
 
     @Override
     public void notifyStatus(int chatId, String message) {
-        telegramService.sendMessage(new PeerState(chatId, false), message);
+        if (chatId != 0)
+            telegramService.sendMessage(new PeerState(chatId, false), message);
 //        restClient.ping();
 //        restClient.sendStatus(callbackUrl, status);
     }
