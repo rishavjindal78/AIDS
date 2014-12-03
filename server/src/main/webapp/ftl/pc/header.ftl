@@ -39,7 +39,7 @@
             </@security.authorize>
             <@security.authorize ifAllGranted="ROLE_ADMIN">
                 <li id="teams"><a href="/rest/admin/team/index">Teams</a></li>
-                <li id="settings"><a href="/rest/admin/index">Admin</a></li>
+                <li id="settings"><a href="/rest/admin/settings">Settings</a></li>
             </@security.authorize>
                 <li id="home"><a href='/rest/user/profile/${Session["SPRING_SECURITY_CONTEXT"].authentication.name}'>
                 <#if Session["LOGGED_USER"]?exists>

@@ -57,7 +57,7 @@
         }
 
         function addAgent(taskStepId) {
-            $.get('/rest/server/taskStep/addAgent/'+taskStepId, function (data) {
+            $.get('/rest/server/team/${model.task.team.id}/taskStep/addAgent/'+taskStepId, function (data) {
                 $('#span_task_agent').empty();
                 $('#span_task_agent').html(data);
             });

@@ -2,7 +2,6 @@ package org.shunya.server;
 
 import org.shunya.server.engine.PeerState;
 import org.shunya.server.services.RestClient;
-import org.shunya.server.model.TaskRun;
 import org.shunya.server.services.TelegramService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,8 +28,8 @@ public class TelegramStatusObserver implements StatusObserver {
     }
 
     @Override
-    public void notifyStatus(int chatId, String message) {
-        if (chatId != 0)
+    public void notifyStatus(int chatId, boolean notifyStatus, String message) {
+        if (chatId != 0 && notifyStatus)
             telegramService.sendMessage(new PeerState(chatId, false), message);
 //        restClient.ping();
 //        restClient.sendStatus(callbackUrl, status);

@@ -25,7 +25,7 @@
             <form id="user" class="form-horizontal" name="taskStepDTO" modelAttribute="taskStepDTO"
                   action="../addTaskStep/0" method="post">
                 <div class="row">
-                    <div class="col-lg-3">
+                    <div class="col-lg-2">
                         <input type="text" class="form-control" name="taskId" value="${model.taskId}"
                                readonly="true">
                     </div>
@@ -37,10 +37,10 @@
                             </#list>
                         </select>
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-2">
                         <input type="text" class="form-control" name="sequence" placeholder="sequence #">
                     </div>
-                    <div class="col-lg-3">
+                    <div class="col-lg-5">
                         <input type="text" class="form-control" placeholder="description" name="description"">
                     </div>
                 </div>

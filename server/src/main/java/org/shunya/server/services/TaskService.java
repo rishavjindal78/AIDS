@@ -56,8 +56,7 @@ public class TaskService {
     // if all task steps has completed, then do the cleanup
     @Async
     public void execute(TaskRun taskRun) {
-        if (taskRun.isNotifyStatus())
-            statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), "starting execution for - " + taskRun.getName());
+        statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "starting execution for - " + taskRun.getName());
         logger.info("starting execution for TaskRun {}", taskRun.getName());
         DBService.save(taskRun);
         TaskExecutionPlan executionPlan = taskExecutionPlanMap.computeIfAbsent(taskRun, k -> new TaskExecutionPlan(taskRun.getTask()));
@@ -89,8 +88,7 @@ public class TaskService {
         taskStepRun.setRunState(taskContext.getTaskStepRunDTO().getRunState());
         DBService.save(taskStepRun);
         TaskRun taskRun = DBService.getTaskRun(taskStepRun);
-        if (taskRun.isNotifyStatus())
-            statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), "Execution Completed for Step# " + taskContext.getStepDTO().getSequence() + ", Status = " + taskContext.getTaskStepRunDTO().getRunStatus());
+        statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Execution Completed for Step# " + taskContext.getStepDTO().getSequence() + ", Status = " + taskContext.getTaskStepRunDTO().getRunStatus());
         currentlyRunningTaskSteps.get(taskRun).remove(taskStepRun);
         TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);
         taskExecutionPlan.getSessionMap().putAll(taskContext.getSessionMap());
@@ -99,8 +97,7 @@ public class TaskService {
             if (!taskExecutionPlan.isTaskStatus() && taskExecutionPlan.isAbortOnFirstFailure()) {
                 logger.info("Aborting Task Execution after first failure");
                 saveTaskRun(taskRun, taskExecutionPlan, RunStatus.FAILURE);
-                if (taskRun.isNotifyStatus())
-                    statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), "Aborting Task Execution after first failure");
+                statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Aborting Task Execution after first failure");
                 return;
             }
             processNextStep(taskRun, taskExecutionPlan);
@@ -117,8 +114,7 @@ public class TaskService {
             currentlyRunningTaskSteps.remove(taskRun);
             saveTaskRun(taskRun, taskExecutionPlan, RunStatus.SUCCESS);
             logger.info("Task has no further steps, completing it now");
-            if (taskRun.isNotifyStatus())
-                statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), "Task has no further steps, completing it now");
+            statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Task has no further steps, completing it now");
         }
     }
 
@@ -146,11 +142,13 @@ public class TaskService {
                 taskStepRun.setTaskStep(stepData);
                 taskStepRun.setTaskRun(taskRun);
                 taskStepRun.setAgent(agent);
+                taskStepRun.setRunState(RunState.RUNNING);
+                taskStepRun.setRunStatus(RunStatus.RUNNING);
                 DBService.save(taskStepRun);
                 currentlyRunningTaskSteps.computeIfAbsent(taskRun, tsr -> new Vector<>()).add(taskStepRun);
             });
         });
-        if (currentlyRunningTaskSteps.get(taskRun) !=null && currentlyRunningTaskSteps.get(taskRun).size() > 0) {
+        if (currentlyRunningTaskSteps.get(taskRun) != null && currentlyRunningTaskSteps.get(taskRun).size() > 0) {
             logger.info("execution started for task step - " + taskStepDataList.get(0).getSequence());
             new CopyOnWriteArrayList<>(currentlyRunningTaskSteps.get(taskRun)).parallelStream().forEach(taskStepRun -> {
                 TaskContext executionContext = new TaskContext();
@@ -171,7 +169,7 @@ public class TaskService {
                     taskExecutionPlanMap.get(taskRun).setTaskStatus(false);
                     executionContext.getTaskStepRunDTO().setStatus(false);
                     if (e.getCause() != null && e.getCause() instanceof ConnectException) {
-                        statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), "Task Submission Failed, Agent not reachable - " + taskStepRun.getAgent().getName() + e.getMessage());
+                        statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Task Submission Failed, Agent not reachable - " + taskStepRun.getAgent().getName() + e.getMessage());
                         executionContext.getTaskStepRunDTO().setLogs("Task Submission Failed, Agent not reachable - " + taskStepRun.getAgent().getName() + "\r\n" + e);
                     } else {
                         executionContext.getTaskStepRunDTO().setLogs("Task Submission Failed - " + Utils.getStackTrace(e));

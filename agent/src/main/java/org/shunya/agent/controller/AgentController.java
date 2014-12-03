@@ -12,6 +12,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,6 +24,8 @@ import java.util.logging.Logger;
 @RequestMapping("/agent")
 public class AgentController {
     private static final Logger logger = Logger.getLogger(AgentController.class.getName());
+    @Autowired
+    private HttpServletRequest request;
 
     @Autowired
     private TaskProcessor taskProcessor;
