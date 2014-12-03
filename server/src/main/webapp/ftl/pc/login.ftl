@@ -3,14 +3,14 @@
 <html>
 <head>
     <title>AIDS Login</title>
-    <link href="${rc.getContextPath()}/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="${rc.getContextPath()}/resources/bootstrap/css/navbar-fixed-top.css" rel="stylesheet">
-    <script src="${rc.getContextPath()}/resources/js/jquery-2.1.0.min.js"></script>
-    <script src="${rc.getContextPath()}/resources/bootstrap/js/bootstrap.min.js"></script>
+    <link href="${rc.contextPath}/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="${rc.contextPath}/resources/bootstrap/css/navbar-fixed-top.css" rel="stylesheet">
+    <script src="${rc.contextPath}/resources/js/jquery-2.1.0.min.js"></script>
+    <script src="${rc.contextPath}/resources/bootstrap/js/bootstrap.min.js"></script>
 </head>
 <body onload="document.login_form.j_username.focus();">
 <div class="container">
-    <form name="login_form" class="form-horizontal" role="form" action="${rc.contextPath}/rest/j_spring_security_check"
+    <form name="login_form" class="form-horizontal" role="form" action="${rc.contextPath}/j_spring_security_check"
           method="POST">
         <h3 class="text-muted">Autonomous Integrated Deployment Software</h3>
         <br/>
@@ -42,7 +42,7 @@
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
                 <button type="submit" name="submit" class="btn btn-primary">Sign in</button>
-                <a class="btn btn-link" type="button" href="/rest/user/register">Register Here</a>
+                <a class="btn btn-link" type="button" href="${rc.contextPath}/user/register">Register Here</a>
             </div>
         </div>
     </form>

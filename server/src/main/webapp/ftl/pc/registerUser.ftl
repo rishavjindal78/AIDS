@@ -11,7 +11,7 @@
 <body onload="document.login_form.username.focus();">
 <div class="container">
     <fieldset>
-        <form name="login_form" class="form-horizontal" role="form" action="${rc.contextPath}/rest/user/register" method="POST">
+        <form name="login_form" class="form-horizontal" role="form" action="${rc.contextPath}/user/register" method="POST">
             <h3 class="text-muted">Registration Form</h3>
             <br/>
             <div class="form-group">
@@ -62,7 +62,7 @@
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                     <button type="submit" name="submit" class="btn btn-primary">Register</button>
-                    <a class="btn btn-link" type="button" href="/rest/user/login">Login</a>
+                    <a class="btn btn-link" type="button" href="${rc.contextPath}/user/login">Login</a>
                 </div>
             </div>
         </form>

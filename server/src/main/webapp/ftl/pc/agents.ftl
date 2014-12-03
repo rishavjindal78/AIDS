@@ -20,7 +20,7 @@
         }
 
         function editAgent(id) {
-            $.get('/rest/server/editAgent/' + id, function (data) {
+            $.get('${rc.contextPath}/server/editAgent/' + id, function (data) {
                 $('#spane_edit_agent').empty();
                 $('#spane_edit_agent').html(data);
 //                $('#span_expense_edit_'+id).empty();

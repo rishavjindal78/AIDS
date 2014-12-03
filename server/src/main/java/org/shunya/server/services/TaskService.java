@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -50,6 +51,9 @@ public class TaskService {
 
     @Autowired
     private TelegramStatusObserver statusObserver;
+
+    @Value("#{servletContext.contextPath}")
+    private String contextPath;
 
     // if task is not started at all - create execution plan and start it
     // if task has start but not completed - then execute rest of steps
@@ -113,8 +117,8 @@ public class TaskService {
         } else {
             currentlyRunningTaskSteps.remove(taskRun);
             saveTaskRun(taskRun, taskExecutionPlan, RunStatus.SUCCESS);
-            logger.info("Task has no further steps, " + taskRun.getName()+" Completed with status - "+ taskRun.getRunStatus());
-            statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Task has no further steps, " + taskRun.getName()+" Completed with status - "+ taskRun.getRunStatus());
+            logger.info("Task has no further steps, " + taskRun.getName() + " Completed with status - " + taskRun.getRunStatus());
+            statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Task has no further steps, " + taskRun.getName() + " Completed with status - " + taskRun.getRunStatus());
         }
     }
 
@@ -154,8 +158,8 @@ public class TaskService {
                 TaskContext executionContext = new TaskContext();
                 try {
                     String hostAddress = Inet4Address.getLocalHost().getHostAddress();
-                    executionContext.setCallbackURL("http://" + hostAddress + ":9290/rest/server/submitTaskStepResults");
-                    executionContext.setBaseUrl("http://" + hostAddress + ":9290/rest");
+                    executionContext.setCallbackURL("http://" + hostAddress + ":9290/server/submitTaskStepResults");
+                    executionContext.setBaseUrl("http://" + hostAddress + ":9290" + contextPath);
                     executionContext.setUsername("agent");
                     executionContext.setPassword("agent");
                     executionContext.setSessionMap(taskExecutionPlanMap.get(taskRun).getSessionMap());

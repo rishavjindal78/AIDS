@@ -59,9 +59,9 @@ public class ServerController {
     public String index(@ModelAttribute("model") ModelMap model) {
         Team team = (Team) request.getSession().getAttribute("SELECTED_TEAM");
         if (team != null) {
-            return "redirect:" + request.getContextPath() + "/rest/server/team/" + team.getId() + "/tasks";
+            return "redirect:/server/team/" + team.getId() + "/tasks";
         } else {
-            return "redirect:" + request.getContextPath() + "/rest/admin/team/index";
+            return "redirect:/admin/team/index";
         }
     }
 
@@ -369,7 +369,7 @@ public class ServerController {
         request.getSession().setAttribute("SELECTED_TEAM", team);
         final String referer = request.getHeader("referer");
         System.out.println("referer = " + referer);
-        return "redirect:" + request.getContextPath() + "/rest/user/profile/" + principal.getName();
+        return "redirect:/user/profile/" + principal.getName();
     }
 
     @RequestMapping(value = "submitTaskStepResults", method = RequestMethod.POST)

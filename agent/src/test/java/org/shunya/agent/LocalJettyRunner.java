@@ -15,7 +15,7 @@ public class LocalJettyRunner {
         context.setResourceBase("src/main/webapp");
         context.setLogUrlOnStart(true);
 //        context.setResourceBase(".");
-//        context.setContextPath("/");
+        context.setContextPath("/agent");
 
 //        ServletHandler handler = new ServletHandler();
 //        server.setHandler(handler);

@@ -21,7 +21,7 @@
         }
 
         function updateTeam(id) {
-            $.get('/rest/admin/team/update/' + id, function (data) {
+            $.get('/admin/team/update/' + id, function (data) {
                 $('#spane_edit_agent').empty();
                 $('#spane_edit_agent').html(data);
 //                $('#span_expense_edit_'+id).empty();
@@ -48,7 +48,7 @@
     </script>
     <div class="heading btn-link">Add New Team</div>
     <div class="content">
-        <form role="form" name="agent" action='<@spring.url "/rest/admin/team/create" />' method="POST">
+        <form role="form" name="agent" action='<@spring.url "/admin/team/create" />' method="POST">
             <div class="form-group">
                 <label for="exampleInputEmail1">Team Name</label>
                 <input type="text" class="form-control" id="exampleInputEmail1" name="name"
@@ -99,7 +99,7 @@
                     <td>${team.description?string}</td>
                     <td>${team.telegramId?string}</td>
                     <td>${team.email?string}</td>
-                    <td><a href="/rest/admin/team/${team.id}">view</a></td>
+                    <td><a href="${rc.contextPath}/admin/team/${team.id}">view</a></td>
                 <#--<td>${debt.comments?size}</td>-->
                 </tr>
             </#list>

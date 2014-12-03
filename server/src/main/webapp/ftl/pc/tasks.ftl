@@ -15,7 +15,7 @@
         }
 
         function editExpense(id) {
-            $.get('/rest/server/team/${model.team.id}/editTask/' + id, function (data) {
+            $.get('${rc.contextPath}/server/team/${model.team.id}/editTask/' + id, function (data) {
                 $('#span_task_edit').empty();
                 $('#span_task_edit').html(data);
 //                $('#span_expense_edit_'+id).empty();
@@ -24,14 +24,14 @@
         }
 
         function addAgent(id) {
-            $.get('${rc.getContextPath()}/rest/server/team/${model.team.id}/addAgent/' + id, function (data) {
+            $.get('${rc.getContextPath()}/server/team/${model.team.id}/addAgent/' + id, function (data) {
                 $('#span_task_agent').empty();
                 $('#span_task_agent').html(data);
             });
         }
 
         function removeAgent(agentId, taskId) {
-            $.post('/rest/server/removeAgent/' + taskId + '/' + agentId, function (data) {
+            $.post('${rc.contextPath}/server/removeAgent/' + taskId + '/' + agentId, function (data) {
                 $('#span_task_agent').empty();
                 $('#span_task_agent').html(data);
             });
@@ -48,7 +48,7 @@
     <#--<div class="container">-->
         <div class="heading btn-link">Add New Task</div>
         <div class="content">
-            <form role="form" name="agent" action="/rest/server/team/${model.team.id}/addTask/0" method="POST">
+            <form role="form" name="agent" action="${rc.contextPath}/server/team/${model.team.id}/addTask/0" method="POST">
                 <div class="form-group">
                     <label for="exampleInputEmail1">Task Name</label>
                     <input type="text" class="form-control" id="exampleInputEmail1" name="name" placeholder="Enter Task Name">
@@ -93,7 +93,7 @@
                         <td>
                             <#list td.agentList as agent>
                                 <form class="form-horizontal" name="agent"
-                                      action="/rest/server/removeAgent/${td.id?string}/${agent.id}" method="post">
+                                      action="${rc.contextPath}/server/removeAgent/${td.id?string}/${agent.id}" method="post">
                                     <span class="label label-primary">${agent.name}</span>
                                     <button type="submit" class="btn btn-link">X</button>
                                 </form>
@@ -105,13 +105,13 @@
                                         data-toggle="dropdown"> Action <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href="${rc.getContextPath()}/rest/server/task/${td.id}">view</a></li>
+                                    <li><a href="${rc.getContextPath()}/server/task/${td.id}">view</a></li>
                                     <li><a href="#" onclick="editExpense('${td.id}')">edit</a></li>
                                     <li><a href="#" onclick="addAgent('${td.id}')">add agent</a></li>
-                                    <li><a href="#" onclick="executeFunction('${rc.getContextPath()}/rest/server/run/${td.id}')">run</a></li>
-                                    <li><a href="${rc.getContextPath()}/rest/server/taskHistory/${td.id}">history</a></li>
+                                    <li><a href="#" onclick="executeFunction('${rc.getContextPath()}/server/run/${td.id}')">run</a></li>
+                                    <li><a href="${rc.getContextPath()}/server/taskHistory/${td.id}">history</a></li>
                                     <li class="divider"></li>
-                                    <li><a href="${rc.getContextPath()}/rest/server/delete/${td.id}">Delete</a></li>
+                                    <li><a href="${rc.getContextPath()}/server/delete/${td.id}">Delete</a></li>
                                 </ul>
                             </div>
                         </td>

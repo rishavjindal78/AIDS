@@ -13,12 +13,12 @@
         <!-- access denied page -->
         <access-denied-handler error-page="/403" />
         <!--<form-login
-                login-page="/rest/login"
+                login-page="/login"
                 default-target-url="/welcome"
                 authentication-failure-url="/login?error"
                 username-parameter="username"
                 password-parameter="password" />-->
-        <logout logout-success-url="/rest/login?logout"  />
+        <logout logout-success-url="/login?logout"  />
         <!-- enable csrf protection -->
         <csrf/>
     </http>

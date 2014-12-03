@@ -9,6 +9,7 @@ import org.shunya.shared.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,9 @@ public class TaskProcessor {
 
     @Autowired
     private TaskExecutor myExecutor;
+
+    @Value("#{servletContext.contextPath}")
+    private String contextPath;
 
     public void executeTask(TaskContext taskContext) throws InterruptedException {
         try {
@@ -85,6 +89,7 @@ public class TaskProcessor {
 
     @PostConstruct
     public void start() {
+        System.out.println("Context Path is - " + contextPath);
     }
 
     @PreDestroy

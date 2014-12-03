@@ -16,10 +16,9 @@ public class HelloController {
     private Map<String, DeferredResult> agentMap = new ConcurrentHashMap<>(10);
 
     @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
     public String printWelcome(ModelMap model) {
         model.addAttribute("message", "Hello world!");
-        return "hello";
+        return "redirect:server";
     }
 
     @RequestMapping(value = "ping", method = RequestMethod.GET)

@@ -68,14 +68,14 @@
                             <#if document.attachments??>
                                 <strong>Attachments</strong>
                                 <#list document.attachments as attachment>
-                                <li><a href="/rest/attachment/download/${attachment.id}">${attachment.title}</a></li>
+                                <li><a href="/attachment/download/${attachment.id}">${attachment.title}</a></li>
                             </#list>
                             </#if>
                             <br/>
                             <a class="hiddenLink" href="#"><strong>Attach Files</strong></a>
                             <span class="hid">
                                 <fieldset>
-                                    <form method="post" class="form-horizontal" action="/rest/documents/saveFiles/${document.id}"
+                                    <form method="post" class="form-horizontal" action="/documents/saveFiles/${document.id}"
                                           name="uploadForm"
                                           enctype="multipart/form-data" modelAttribute="uploadForm">
                                         <button type="button" class="btn btn-link addFile">Add More Files</button>

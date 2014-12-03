@@ -32,7 +32,7 @@ public class RestClient {
     }
 
     public void fileUpload(String baseUri, String localFilePath, String targetName, String targetFolder) throws Exception {
-        String uri = baseUri + "/rest/agent/upload";
+        String uri = baseUri + "/agent/upload";
         MultiValueMap<String, Object> mvm = new LinkedMultiValueMap<>();
         mvm.add("file", new FileSystemResource(localFilePath));
         mvm.add("name", targetName);

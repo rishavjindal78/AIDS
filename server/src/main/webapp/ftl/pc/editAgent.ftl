@@ -11,7 +11,7 @@
 
 <div>
     <fieldset>
-        <form class="form-horizontal" name="user" action="/rest/server/editAgent/${model.agent.id!?string}" method="post">
+        <form class="form-horizontal" name="user" action="${rc.contextPath}/server/editAgent/${model.agent.id!?string}" method="post">
             <div class="form-group">
                 <div class="col-lg-1">
                     <input type="text" class="form-control" placeholder="ID" name="id" value="${model.agent.id!?string}" readonly>

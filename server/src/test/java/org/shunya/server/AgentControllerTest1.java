@@ -40,7 +40,7 @@ public class AgentControllerTest1 {
 //        taskConfig.setTask(taskData);
 //        taskConfig.setAgent(agent);
 
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:9290/rest/agent/execute", taskContext, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:9290/agent/execute", taskContext, String.class);
         String body = responseEntity.getBody();
         System.out.println("body = " + body);
     }
@@ -70,7 +70,7 @@ public class AgentControllerTest1 {
 //        taskConfig.setTask(taskData);
 //        taskConfig.setAgent(agent);
 
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:9290/rest/agent/execute", taskContext, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:9290/agent/execute", taskContext, String.class);
         String body = responseEntity.getBody();
         System.out.println("body = " + body);
     }

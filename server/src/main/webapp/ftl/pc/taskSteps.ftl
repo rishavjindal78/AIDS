@@ -57,14 +57,14 @@
         }
 
         function addAgent(taskStepId) {
-            $.get('/rest/server/team/${model.task.team.id}/taskStep/addAgent/'+taskStepId, function (data) {
+            $.get('${rc.contextPath}/server/team/${model.task.team.id}/taskStep/addAgent/'+taskStepId, function (data) {
                 $('#span_task_agent').empty();
                 $('#span_task_agent').html(data);
             });
         }
 
         function removeAgent(agentId, taskId) {
-            $.post('/rest/server/taskStep/removeAgent/'+taskId+'/'+agentId, function (data) {
+            $.post('${rc.contextPath}/server/taskStep/removeAgent/'+taskId+'/'+agentId, function (data) {
                 $('#span_task_agent').empty();
                 $('#span_task_agent').html(data);
             });
@@ -98,7 +98,7 @@
                            <#if taskStep.active?? && taskStep.active?string=="true">checked="true"</#if></td>
                 <td>
                     <#list taskStep.agentList as agent>
-                        <form class="form-horizontal" name="agent" action="/rest/server/taskStep/removeAgent/${taskStep.id?string}/${agent.id}" method="post">
+                        <form class="form-horizontal" name="agent" action="${rc.contextPath}/server/taskStep/removeAgent/${taskStep.id?string}/${agent.id}" method="post">
                             <span class="label label-primary">${agent.name}</span><button type="submit" class="btn btn-link" id="save">X</button>
                         </form>
                     </#list>

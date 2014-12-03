@@ -11,7 +11,7 @@
 
 <div>
     <fieldset>
-        <form class="form-horizontal" name="user" action="/rest/admin/team/${model['teamId']?string}/addUser" method="POST">
+        <form class="form-horizontal" name="user" action="/admin/team/${model['teamId']?string}/addUser" method="POST">
             <div class="form-group">
                 <div class="col-lg-2">
                     <select id="agent" class="form-control" name="id">

@@ -11,7 +11,7 @@
 </script>
 
 <div class="content">
-    <form role="form" name="team" action='<@spring.url "/rest/admin/team/update" />' method="POST">
+    <form role="form" name="team" action='<@spring.url "/admin/team/update" />' method="POST">
         <input type="hidden" class="form-control" id="teamId" name="id" value="${model.team.id!?string}">
         <div class="form-group">
             <label for="exampleInputEmail1">Team Name</label>

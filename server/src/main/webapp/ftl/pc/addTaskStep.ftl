@@ -5,7 +5,7 @@
         $(document).ready(function () {
             /*onchange="this.form.submit()"*/
             $("#taskClassSelect").change(function () {
-                window.location = '/rest/server/addTaskStep/${model.taskId}?taskClass=' + this.value;
+                window.location = '${rc.contextPath}/server/addTaskStep/${model.taskId}?taskClass=' + this.value;
             });
         });
     </script>

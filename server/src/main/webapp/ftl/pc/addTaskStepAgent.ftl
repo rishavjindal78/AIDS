@@ -15,7 +15,7 @@
 
 <div>
     <fieldset>
-        <form class="form-horizontal" name="agent" action="/rest/server/taskStep/addAgent/${model['taskStepId']?string}" method="post">
+        <form class="form-horizontal" name="agent" action="${rc.contextPath}/server/taskStep/addAgent/${model['taskStepId']?string}" method="post">
             <div class="form-group">
                 <div class="col-lg-2">
                     <select id="agent" class="form-control" name="id">

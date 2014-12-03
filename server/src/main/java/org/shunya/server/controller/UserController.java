@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -23,6 +24,9 @@ public class UserController {
     @Autowired
     private DBService dbService;
 
+    @Autowired
+    private HttpServletRequest request;
+
     @RequestMapping(value = "register", method = RequestMethod.GET)
     public String registerUser() {
         return "registerUser";
@@ -33,13 +37,13 @@ public class UserController {
         user.setAuthorities(asList(dbService.findAuthorityByName(Role.ROLE_USER)));
         user.setEnabled(true);
         dbService.save(user);
-        return "redirect:/rest/server";
+        return "redirect:/server";
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
     public String updateUser(@ModelAttribute("user") User user) throws Exception {
         dbService.update(user);
-        return "redirect:../../rest/server";
+        return "redirect:../../server";
     }
 
     @RequestMapping(value = "login", method = RequestMethod.GET)
