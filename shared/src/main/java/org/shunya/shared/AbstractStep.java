@@ -48,8 +48,11 @@ public abstract class AbstractStep {
             public void close() throws SecurityException {
             }
         }, 2, loggingLevel);
+        cHandler = new ConsoleHandler();
+        cHandler.setFormatter(new SimpleFormatter());
+        cHandler.setLevel(Level.ALL);
         LOGGER.get().addHandler(mHandler);
-//	    LOGGER.get().addHandler(cHandler);
+	    LOGGER.get().addHandler(cHandler);
         LOGGER.get().setUseParentHandlers(false);
     }
 

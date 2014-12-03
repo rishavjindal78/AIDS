@@ -8,6 +8,7 @@ import org.shunya.shared.annotation.PunterTask;
 import org.shunya.shared.utils.RestClient;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static java.util.Arrays.asList;
 
@@ -28,13 +29,15 @@ public class FileUploadStep extends AbstractStep {
         boolean status = false;
         try {
             String[] split = server.split("[,;]");
+            final Logger logger = LOGGER.get();
             asList(split).parallelStream().filter(s -> s != null && !s.isEmpty()).forEach(singleServer -> {
                 try {
-                    LOGGER.get().log(Level.INFO, "Uploading File :" + filePath + " To Location : " + singleServer);
-                    restClient.fileUpload(server, filePath, name, remotePath);
-                    LOGGER.get().log(Level.INFO, "File Uploaded :" + filePath + " To Location : " + singleServer);
+                    logger.log(Level.INFO, "Uploading File :" + filePath + " To Location : " + singleServer);
+                    restClient.fileUpload(singleServer, filePath, name, remotePath);
+                    logger.log(Level.INFO, "File Uploaded :" + filePath + " To Location : " + singleServer);
                 } catch (Exception e) {
-                    LOGGER.get().log(Level.SEVERE, "Exception uploading file to server - " + singleServer, e);
+                    e.printStackTrace();
+                    logger.log(Level.SEVERE, "Exception uploading file to server - " + singleServer + "\n" + StringUtils.getExceptionStackTrace(e));
                 }
             });
             status = true;

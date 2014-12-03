@@ -37,7 +37,7 @@ public interface DBService {
     Task getTask(long id);
     Agent getAgent(long id);
     Team findTeamById(long id);
-    Team findTeamByChatId(long telegramId);
+    List<Team> findTeamByChatId(int telegramId);
     User getUser(long id);
     TaskStep getTaskStep(long id);
     List<TaskRun> findTaskHistoryForTaskId(long taskId);

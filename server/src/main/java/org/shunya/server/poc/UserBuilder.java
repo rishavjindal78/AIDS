@@ -13,7 +13,7 @@ public class UserBuilder {
     private String name;
     private String email;
     private String phone;
-    private String telegramId;
+    private int telegramId;
     private List<Team> teamList;
     private List<Authority> authorities;
 
@@ -54,7 +54,7 @@ public class UserBuilder {
         return this;
     }
 
-    public UserBuilder withTelegramId(String telegramId) {
+    public UserBuilder withTelegramId(int telegramId) {
         this.telegramId = telegramId;
         return this;
     }

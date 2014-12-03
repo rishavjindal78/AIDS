@@ -203,11 +203,11 @@ public class DBServiceImpl implements DBService {
     }
 
     @Override
-    public Team findTeamByChatId(long telegramId) {
+    public List<Team> findTeamByChatId(int telegramId) {
         Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(Team.class);
         criteria.add(Restrictions.eq("telegramId", telegramId));
         criteria.setCacheable(true);
-        return (Team) criteria.uniqueResult();
+        return criteria.list();
     }
 
     @Override

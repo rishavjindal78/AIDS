@@ -111,7 +111,7 @@
                                     <li><a href="#" onclick="executeFunction('${rc.getContextPath()}/rest/server/run/${td.id}')">run</a></li>
                                     <li><a href="${rc.getContextPath()}/rest/server/taskHistory/${td.id}">history</a></li>
                                     <li class="divider"></li>
-                                    <li><a href="delete/${td.id}">Delete</a></li>
+                                    <li><a href="${rc.getContextPath()}/rest/server/delete/${td.id}">Delete</a></li>
                                 </ul>
                             </div>
                         </td>

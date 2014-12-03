@@ -1,6 +1,6 @@
 <#import "common.ftl" as com>
 <#escape x as x?html>
-    <@com.page activeTab="tasks">
+    <@com.page activeTab="history">
 
     <style>
         .layer1 {

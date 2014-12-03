@@ -88,16 +88,16 @@ public class TaskService {
         taskStepRun.setRunState(taskContext.getTaskStepRunDTO().getRunState());
         DBService.save(taskStepRun);
         TaskRun taskRun = DBService.getTaskRun(taskStepRun);
-        statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Execution Completed for Step# " + taskContext.getStepDTO().getSequence() + ", Status = " + taskContext.getTaskStepRunDTO().getRunStatus());
+        statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), taskContext.getStepDTO().getSequence() + ". " + taskStepRun.getAgent().getName() + " - " + taskContext.getStepDTO().getDescription() + " - " + taskContext.getTaskStepRunDTO().getRunStatus());
         currentlyRunningTaskSteps.get(taskRun).remove(taskStepRun);
         TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);
         taskExecutionPlan.getSessionMap().putAll(taskContext.getSessionMap());
         taskExecutionPlan.setTaskStatus(taskExecutionPlan.isTaskStatus() & taskStepRun.isStatus());
         if (currentlyRunningTaskSteps.get(taskRun).isEmpty()) {
             if (!taskExecutionPlan.isTaskStatus() && taskExecutionPlan.isAbortOnFirstFailure()) {
-                logger.info("Aborting Task Execution after first failure");
+                logger.info("Aborting Task Execution after first failure, State = Complete");
                 saveTaskRun(taskRun, taskExecutionPlan, RunStatus.FAILURE);
-                statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Aborting Task Execution after first failure");
+                statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Aborting Task Execution after first failure, State = Complete");
                 return;
             }
             processNextStep(taskRun, taskExecutionPlan);
@@ -113,8 +113,8 @@ public class TaskService {
         } else {
             currentlyRunningTaskSteps.remove(taskRun);
             saveTaskRun(taskRun, taskExecutionPlan, RunStatus.SUCCESS);
-            logger.info("Task has no further steps, completing it now");
-            statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Task has no further steps, completing it now");
+            logger.info("Task has no further steps, " + taskRun.getName()+" Completed with status - "+ taskRun.getRunStatus());
+            statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Task has no further steps, " + taskRun.getName()+" Completed with status - "+ taskRun.getRunStatus());
         }
     }
 

@@ -23,7 +23,7 @@ public class User {
     private String name;
     private String email;
     private String phone;
-    private String telegramId;
+    private int telegramId;
     @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
     @JsonManagedReference
@@ -87,11 +87,11 @@ public class User {
         this.phone = phone;
     }
 
-    public String getTelegramId() {
+    public int getTelegramId() {
         return telegramId;
     }
 
-    public void setTelegramId(String telegramId) {
+    public void setTelegramId(int telegramId) {
         this.telegramId = telegramId;
     }
 
