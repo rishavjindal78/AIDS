@@ -19,11 +19,11 @@
         <servlet-name>helloServlet</servlet-name>
         <servlet-class>org.shunya.server.poc.HelloServlet</servlet-class>
     </servlet>
-    <servlet>
+    <!--<servlet>
         <servlet-name>asyncLongRunningServlet</servlet-name>
         <servlet-class>org.shunya.server.poc.AsyncLongRunningServlet</servlet-class>
         <async-supported>true</async-supported>
-    </servlet>
+    </servlet>-->
     <servlet>
         <servlet-name>MyServlet</servlet-name>
         <servlet-class>org.shunya.server.poc.MyServlet</servlet-class>
@@ -42,10 +42,10 @@
         <servlet-name>helloServlet</servlet-name>
         <url-pattern>/hello</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
+    <!--<servlet-mapping>
         <servlet-name>asyncLongRunningServlet</servlet-name>
-        <url-pattern>asyncServlet</url-pattern>
-    </servlet-mapping>
+        <url-pattern>/asyncServlet</url-pattern>
+    </servlet-mapping>-->
 
     <listener>
         <listener-class>org.shunya.server.AppContextListener</listener-class>
