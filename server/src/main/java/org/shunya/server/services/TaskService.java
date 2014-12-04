@@ -25,10 +25,7 @@ import javax.annotation.PreDestroy;
 import javax.xml.bind.JAXBException;
 import java.net.ConnectException;
 import java.net.Inet4Address;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -43,7 +40,7 @@ public class TaskService {
     private RestClient restClient;
 
     @Autowired
-    private DBService DBService;
+    private DBService dbService;
 
     @Autowired
     @Qualifier("myExecutor")
@@ -62,19 +59,20 @@ public class TaskService {
     public void execute(TaskRun taskRun) {
         statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "starting execution for - " + taskRun.getName());
         logger.info("starting execution for TaskRun {}", taskRun.getName());
-        DBService.save(taskRun);
+        dbService.save(taskRun);
         TaskExecutionPlan executionPlan = taskExecutionPlanMap.computeIfAbsent(taskRun, k -> new TaskExecutionPlan(taskRun.getTask()));
         Map.Entry<Integer, List<TaskStep>> next = executionPlan.next();
         if (next != null) {
             taskRun.setRunState(RunState.RUNNING);
             taskRun.setRunStatus(RunStatus.RUNNING);
-            DBService.save(taskRun);
+            dbService.save(taskRun);
+            executionPlan.getSessionMap().putAll(loadAgentVariables(taskRun.getTeam().getId()));
             delegateStepToAgents(next.getValue(), taskRun);
         } else {
             taskRun.setRunState(RunState.COMPLETED);
             taskRun.setFinishTime(new Date());
             taskRun.setRunStatus(RunStatus.NOT_RUN);
-            DBService.save(taskRun);
+            dbService.save(taskRun);
             taskExecutionPlanMap.remove(taskRun);
             logger.info("Task has no steps, completing it now");
         }
@@ -83,15 +81,15 @@ public class TaskService {
     @Async
     public void consumeStepResult(TaskContext taskContext) {
         logger.info("Execution Completed for Step - " + taskContext.getStepDTO().getSequence() + ", Status = " + taskContext.getTaskStepRunDTO().getRunStatus());
-        TaskStepRun taskStepRun = DBService.getTaskStepRun(taskContext.getTaskStepRunDTO().getId());
+        TaskStepRun taskStepRun = dbService.getTaskStepRun(taskContext.getTaskStepRunDTO().getId());
         taskStepRun.setStartTime(taskContext.getTaskStepRunDTO().getStartTime());
         taskStepRun.setFinishTime(taskContext.getTaskStepRunDTO().getFinishTime());
         taskStepRun.setLogs(taskContext.getTaskStepRunDTO().getLogs());
         taskStepRun.setStatus(taskContext.getTaskStepRunDTO().isStatus());
         taskStepRun.setRunStatus(taskContext.getTaskStepRunDTO().getRunStatus());
         taskStepRun.setRunState(taskContext.getTaskStepRunDTO().getRunState());
-        DBService.save(taskStepRun);
-        TaskRun taskRun = DBService.getTaskRun(taskStepRun);
+        dbService.save(taskStepRun);
+        TaskRun taskRun = dbService.getTaskRun(taskStepRun);
         statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), taskContext.getStepDTO().getSequence() + ". " + taskStepRun.getAgent().getName() + " - " + taskContext.getStepDTO().getDescription() + " - " + taskContext.getTaskStepRunDTO().getRunStatus());
         currentlyRunningTaskSteps.get(taskRun).remove(taskStepRun);
         TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);
@@ -108,6 +106,13 @@ public class TaskService {
         } else {
             logger.info("Waiting for other parallel steps to complete for sequence - " + taskStepRun.getTaskStep().getSequence());
         }
+    }
+
+    private Map<String, String> loadAgentVariables(long teamId) {
+        List<Agent> agents = dbService.listAgentsByTeam(teamId);
+        Map<String, String> variables = new HashMap<>();
+        agents.forEach(agent -> variables.put(agent.getName(), agent.getBaseUrl()));
+        return variables;
     }
 
     private void processNextStep(TaskRun taskRun, TaskExecutionPlan taskExecutionPlan) {
@@ -128,7 +133,7 @@ public class TaskService {
             taskRun.setFinishTime(new Date());
             taskRun.setStatus(taskExecutionPlan.isTaskStatus());
             taskRun.setRunStatus(success);
-            DBService.save(taskRun);
+            dbService.save(taskRun);
         }
     }
 
@@ -148,7 +153,7 @@ public class TaskService {
                 taskStepRun.setAgent(agent);
                 taskStepRun.setRunState(RunState.RUNNING);
                 taskStepRun.setRunStatus(RunStatus.RUNNING);
-                DBService.save(taskStepRun);
+                dbService.save(taskStepRun);
                 currentlyRunningTaskSteps.computeIfAbsent(taskRun, tsr -> new Vector<>()).add(taskStepRun);
             });
         });
@@ -158,7 +163,7 @@ public class TaskService {
                 TaskContext executionContext = new TaskContext();
                 try {
                     String hostAddress = Inet4Address.getLocalHost().getHostAddress();
-                    executionContext.setCallbackURL("http://" + hostAddress + ":9290/server/submitTaskStepResults");
+                    executionContext.setCallbackURL("http://" + hostAddress + ":9290" + contextPath + "/server/submitTaskStepResults");
                     executionContext.setBaseUrl("http://" + hostAddress + ":9290" + contextPath);
                     executionContext.setUsername("agent");
                     executionContext.setPassword("agent");
