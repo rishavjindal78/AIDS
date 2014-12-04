@@ -21,6 +21,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.xml.bind.JAXBException;
 import java.net.ConnectException;
@@ -51,6 +52,9 @@ public class TaskService {
 
     @Value("#{servletContext.contextPath}")
     private String contextPath;
+
+    @Value("${server.port}")
+    private String serverPort;
 
     // if task is not started at all - create execution plan and start it
     // if task has start but not completed - then execute rest of steps
@@ -137,6 +141,11 @@ public class TaskService {
         }
     }
 
+    @PostConstruct
+    public void start() {
+        System.out.println("serverPort = " + serverPort);
+    }
+
     @PreDestroy
     public void dispose() {
         logger.info("Destroying the Task Service context");
@@ -163,8 +172,8 @@ public class TaskService {
                 TaskContext executionContext = new TaskContext();
                 try {
                     String hostAddress = Inet4Address.getLocalHost().getHostAddress();
-                    executionContext.setCallbackURL("http://" + hostAddress + ":9290" + contextPath + "/server/submitTaskStepResults");
-                    executionContext.setBaseUrl("http://" + hostAddress + ":9290" + contextPath);
+                    executionContext.setCallbackURL("http://" + hostAddress + ":" + serverPort + contextPath + "/server/submitTaskStepResults");
+                    executionContext.setBaseUrl("http://" + hostAddress + ":" + serverPort + contextPath);
                     executionContext.setUsername("agent");
                     executionContext.setPassword("agent");
                     executionContext.setSessionMap(taskExecutionPlanMap.get(taskRun).getSessionMap());
