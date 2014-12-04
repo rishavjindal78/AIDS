@@ -23,6 +23,8 @@ public class Team {
     @LazyCollection(LazyCollectionOption.FALSE)
     @JsonBackReference
     private List<User> userList;
+    @OneToOne
+    private TeamProperties teamProperties;
 
     public Team() {}
 
@@ -97,5 +99,13 @@ public class Team {
 
     public void setTelegramId(int telegramId) {
         this.telegramId = telegramId;
+    }
+
+    public TeamProperties getTeamProperties() {
+        return teamProperties;
+    }
+
+    public void setTeamProperties(TeamProperties teamProperties) {
+        this.teamProperties = teamProperties;
     }
 }

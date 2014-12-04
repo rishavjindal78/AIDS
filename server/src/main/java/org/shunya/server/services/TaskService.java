@@ -80,7 +80,6 @@ public class TaskService {
 
     @Async
     public void consumeStepResult(TaskContext taskContext) {
-        logger.info("Execution Completed for Step - " + taskContext.getStepDTO().getSequence() + ", Status = " + taskContext.getTaskStepRunDTO().getRunStatus());
         TaskStepRun taskStepRun = dbService.getTaskStepRun(taskContext.getTaskStepRunDTO().getId());
         taskStepRun.setStartTime(taskContext.getTaskStepRunDTO().getStartTime());
         taskStepRun.setFinishTime(taskContext.getTaskStepRunDTO().getFinishTime());
@@ -90,6 +89,7 @@ public class TaskService {
         taskStepRun.setRunState(taskContext.getTaskStepRunDTO().getRunState());
         dbService.save(taskStepRun);
         TaskRun taskRun = dbService.getTaskRun(taskStepRun);
+        logger.info(taskContext.getStepDTO().getSequence() + ". " + taskStepRun.getAgent().getName() + " - " + taskContext.getStepDTO().getDescription() + " - " + taskContext.getTaskStepRunDTO().getRunStatus());
         statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), taskContext.getStepDTO().getSequence() + ". " + taskStepRun.getAgent().getName() + " - " + taskContext.getStepDTO().getDescription() + " - " + taskContext.getTaskStepRunDTO().getRunStatus());
         currentlyRunningTaskSteps.get(taskRun).remove(taskStepRun);
         TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);

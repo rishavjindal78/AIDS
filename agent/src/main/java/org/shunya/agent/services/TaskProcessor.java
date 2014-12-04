@@ -31,8 +31,11 @@ public class TaskProcessor {
     @Autowired
     private TaskExecutor myExecutor;
 
-    @Value("#{servletContext.contextPath}")
+    @Value("#{servletContext.contextPath?:'/'}")
     private String contextPath;
+
+    @Value("${app.name}")
+    private String appName;
 
     public void executeTask(TaskContext taskContext) throws InterruptedException {
         try {
@@ -90,6 +93,7 @@ public class TaskProcessor {
     @PostConstruct
     public void start() {
         System.out.println("Context Path is - " + contextPath);
+        System.out.println("App Name is - " + appName);
     }
 
     @PreDestroy

@@ -12,10 +12,13 @@ import org.shunya.shared.model.RunState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.HashMap;
 
@@ -24,8 +27,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
+@WebAppConfiguration
 public class SpringAppTests {
     @Configuration
+    @PropertySource("classpath:test-config.properties")
     static class SpringAppTestsTestContextConfiguration {
         @Bean
         public TaskProcessor taskProcessor() {
@@ -40,6 +45,13 @@ public class SpringAppTests {
         @Bean
         public TaskExecutor taskExecutor() {
             return new ConcurrentTaskExecutor();
+        }
+
+        @Bean
+        public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+            PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
+            propertySourcesPlaceholderConfigurer.setIgnoreUnresolvablePlaceholders(true);
+            return propertySourcesPlaceholderConfigurer;
         }
     }
 
