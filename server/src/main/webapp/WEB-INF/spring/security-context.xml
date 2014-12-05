@@ -26,6 +26,7 @@
         <security:form-login login-page="/user/login"
                              default-target-url="/server"
                              authentication-failure-url="/user/login?login_error=1"
+                             always-use-default-target="false"
                 username-parameter="j_username"
                 password-parameter="j_password"/>
         <!--<security:logout logout-url="/server/logout" logout-success-url="/server/logoutSuccess" />-->

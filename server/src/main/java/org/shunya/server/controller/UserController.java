@@ -43,7 +43,7 @@ public class UserController {
     @RequestMapping(value = "update", method = RequestMethod.POST)
     public String updateUser(@ModelAttribute("user") User user) throws Exception {
         dbService.update(user);
-        return "redirect:../../server";
+        return "redirect:/server";
     }
 
     @RequestMapping(value = "login", method = RequestMethod.GET)
