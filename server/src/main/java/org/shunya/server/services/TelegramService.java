@@ -1,11 +1,15 @@
 package org.shunya.server.services;
 
+import org.shunya.server.StatusObserver;
 import org.shunya.server.engine.JavaSerializer;
 import org.shunya.server.engine.MemoryApiState;
 import org.shunya.server.engine.PeerState;
 import org.shunya.server.model.Task;
 import org.shunya.server.model.TaskRun;
+import org.shunya.server.model.Team;
+import org.shunya.server.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.api.*;
 import org.telegram.api.auth.TLAuthorization;
@@ -37,7 +41,7 @@ Todo:
     3.5: Track task run status
 */
 @Service
-public class TelegramService {
+public class TelegramService implements StatusObserver {
     private HashMap<Integer, PeerState> userStates = new HashMap<>();
     private HashMap<Integer, PeerState> chatStates = new HashMap<>();
     private MemoryApiState apiState;
@@ -52,10 +56,19 @@ public class TelegramService {
     @Autowired
     private TaskService taskService;
 
+    @Autowired
+    private TelegramStatusObserver telegramStatusObserver;
+
+    @Value("${telegram.api.key.location}")
+    private String telegramApiLocation;
+
     @PostConstruct
     public void start() throws IOException {
+        System.out.println("telegramApiLocation = " + telegramApiLocation);
+        telegramStatusObserver.register(this);
         disableLogging();
-        apiState = JavaSerializer.load();
+//        apiState = JavaSerializer.load(FileSystems.getDefault().getPath(System.getProperty("user.home")).toString());
+        apiState = JavaSerializer.load(telegramApiLocation);
         createApi();
 //        login();
 //        workLoop();
@@ -177,11 +190,43 @@ public class TelegramService {
         PeerState peerState = getUserPeer(uid);
         if (message.startsWith("bot")) {
             sendMessageUser(uid, "Received: " + message);
-            processCommand(message.trim().substring(3).trim(), peerState, fromId);
+            processCommandUser(message.trim().substring(3).trim(), peerState, fromId);
+
         } else {
             if (peerState.isForwardingEnabled()) {
                 sendMessageUser(uid, "FW: " + message);
             }
+        }
+    }
+
+    private void processCommandUser(String message, PeerState peerState, int fromId) {
+        try {
+            String[] args = message.split(" ");
+            if (args.length == 0) {
+                sendMessage(peerState, "Unknown command");
+            }
+            long taskId = Long.parseLong(args[0]);
+            String comments = "process run by ChatId - " + fromId;
+            if (args.length > 1) {
+                comments = fromId + args[1];
+            }
+            Task task = dbService.getTask(taskId);
+            TaskRun taskRun = new TaskRun();
+            taskRun.setTask(task);
+            taskRun.setName(task.getName());
+            taskRun.setStartTime(new Date());
+            taskRun.setComments(comments);
+            taskRun.setNotifyStatus(true);
+            taskRun.setTeam(task.getTeam());
+            User user = dbService.findUserByTelegramId(fromId);
+            if (user != null) {
+                taskRun.setRunBy(user);
+            }
+            taskService.execute(taskRun);
+            sendMessage(peerState, "Command Sent to Server - " + task.getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendMessage(peerState, "Unknown command '");
         }
     }
 
@@ -193,7 +238,13 @@ public class TelegramService {
         if (message.toLowerCase().startsWith("bot")) {
             processCommand(message.trim().substring(3).trim(), getChatPeer(chatId), fromId);
         } else if (message.toLowerCase().contains("bot")) {
-            sendMessageChat(chatId, "Are you talking about me ? type bot help !");
+            try {
+                User user = dbService.findUserByTelegramId(fromId);
+                sendMessageChat(chatId, "Hey " + user.getName() + ", are you talking about me ? type <bot help>");
+            } catch (Exception e) {
+                e.printStackTrace();
+                sendMessageChat(chatId, "Are you talking about me ? type <bot help>");
+            }
         } else {
             if (peerState.isForwardingEnabled()) {
                 sendMessageChat(chatId, "FW: " + message);
@@ -273,14 +324,33 @@ public class TelegramService {
         } else if (command.equals("war2")) {
             sendMessage(peerState, "WarAndPeace.TEXT");
         } else if (command.equals("help")) {
-            List<Task> tasks = dbService.listTasks();
-            StringBuilder helpMessage = new StringBuilder("Bot commands:\n");
-            for (Task task : tasks) {
-                long id = task.getId();
-                String name = task.getName();
-                helpMessage.append("bot " + id + " <" + name + ">\n");
+            User user = null;
+            try {
+                user = dbService.findUserByTelegramId(fromId);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            sendMessage(peerState, helpMessage.toString());
+            int teamChatId = peerState.getId();
+            List<Team> teams = dbService.findTeamByChatId(teamChatId);
+            if (teams == null || teams.isEmpty()) {
+                sendMessage(peerState, "No Team bound to this Chat Channel");
+            } else {
+                List<Task> availableTasks = new ArrayList<>();
+                for (Team team : teams) {
+                    availableTasks.addAll(dbService.listTasksByTeam(team.getId()));
+                }
+                StringBuilder helpMessage = new StringBuilder();
+                if (user != null) {
+                    helpMessage.append("hey " + user.getName() + ", ");
+                }
+                helpMessage.append("here are bot commands:\n");
+                for (Task task : availableTasks) {
+                    long id = task.getId();
+                    String name = task.getName();
+                    helpMessage.append("bot " + id + " <" + name + ">\n");
+                }
+                sendMessage(peerState, helpMessage.toString());
+            }
             /*sendMessage(peerState, "Bot commands:\n" +
                     "bot enable_forward/disable_forward - forwarding of incoming messages\n" +
                     "bot start_flood [delay] - Start flood with [delay] sec (default = 15)\n" +
@@ -306,14 +376,23 @@ public class TelegramService {
                     comments = fromId + args[1];
                 }
                 Task task = dbService.getTask(taskId);
-                TaskRun taskRun = new TaskRun();
-                taskRun.setTask(task);
-                taskRun.setName(task.getName());
-                taskRun.setStartTime(new Date());
-                taskRun.setComments(comments);
-                taskRun.setNotifyStatus(true);
-                taskService.execute(taskRun);
-                sendMessage(peerState, "Command Sent to Server - " + task.getName());
+                if (task.getTeam().getTelegramId() == peerState.getId()) {
+                    TaskRun taskRun = new TaskRun();
+                    taskRun.setTask(task);
+                    taskRun.setName(task.getName());
+                    taskRun.setStartTime(new Date());
+                    taskRun.setComments(comments);
+                    taskRun.setNotifyStatus(true);
+                    taskRun.setTeam(task.getTeam());
+                    User user = dbService.findUserByTelegramId(fromId);
+                    if (user != null) {
+                        taskRun.setRunBy(user);
+                    }
+                    taskService.execute(taskRun);
+                    sendMessage(peerState, "Command Sent to Server - " + task.getName());
+                } else {
+                    sendMessage(peerState, "You are not part of Team - " + task.getTeam().getName());
+                }
             } catch (Exception e) {
                 sendMessage(peerState, "Unknown command '" + args[0] + "'");
             }
@@ -450,12 +529,18 @@ public class TelegramService {
         System.out.print("Loading Initial State...");
         TLState state = api.doRpcCall(new TLRequestUpdatesGetState());
         System.out.println("loaded.");
-        JavaSerializer.save(apiState);
+        JavaSerializer.save(apiState, telegramApiLocation);
     }
 
     private void activateBot(String phone, TLSentCode sentCode, String code) throws IOException {
         TLAuthorization auth = api.doRpcCallNonAuth(new TLRequestAuthSignIn(phone, sentCode.getPhoneCodeHash(), code));
         apiState.setAuthenticated(apiState.getPrimaryDc(), true);
         System.out.println("Activation Complete.");
+    }
+
+    @Override
+    public void notifyStatus(int chatId, boolean notifyStatus, String message) {
+        if (chatId != 0 && notifyStatus)
+            sendMessage(new PeerState(chatId, false), message);
     }
 }
