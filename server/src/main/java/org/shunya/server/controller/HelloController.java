@@ -1,4 +1,4 @@
-package org.shunya.server.poc;
+package org.shunya.server.controller;
 
 import org.shunya.server.model.Agent;
 import org.springframework.stereotype.Controller;
@@ -40,7 +40,6 @@ public class HelloController {
         Agent agent = new Agent();
         agent.setName("First");
 //        agent.setId("1000");
-        ((AgentContextListner) request.getServletContext().getAttribute("listner")).runTaskOnAgent(null, agent);
         return "submitted";
     }
 

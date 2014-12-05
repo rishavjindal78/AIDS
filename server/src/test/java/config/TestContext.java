@@ -1,6 +1,6 @@
 package config;
 
-import org.shunya.server.TelegramStatusObserver;
+import org.shunya.server.services.TelegramStatusObserver;
 import org.shunya.server.services.*;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -33,7 +33,7 @@ public class TestContext {
     }
 
     @Bean
-    public DBService agentService() {
+    public DBService dbService() {
         return mock(DBService.class);
     }
 

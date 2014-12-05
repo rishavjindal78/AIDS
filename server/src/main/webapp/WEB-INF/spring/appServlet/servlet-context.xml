@@ -10,17 +10,6 @@
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-    <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
-    <task:executor id="myExecutor" pool-size="5-10" queue-capacity="100"/>
-    <task:scheduler id="myScheduler" pool-size="5"/>
-
-    <context:component-scan base-package="org.shunya.server"/>
-    <context:annotation-config />
-
-    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-        <property name="maxUploadSize" value="1000000000"/>
-    </bean>
-
     <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
         <property name="locations">
             <list>
@@ -31,6 +20,17 @@
         </property>
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="ignoreResourceNotFound" value="true"/>
+    </bean>
+
+    <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
+    <task:executor id="myExecutor" pool-size="5-10" queue-capacity="100"/>
+    <task:scheduler id="myScheduler" pool-size="5"/>
+
+    <context:component-scan base-package="org.shunya.server"/>
+    <context:annotation-config />
+
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="1000000000"/>
     </bean>
 
     <mvc:resources mapping="/resources/**" location="/resources/" />
@@ -46,8 +46,6 @@
             </list>
         </property>
     </bean>
-
-    <!--<import resource="DataSources.xml"/>-->
 
     <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>

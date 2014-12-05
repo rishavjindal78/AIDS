@@ -1,4 +1,4 @@
-package org.shunya.server.poc;
+package org.shunya.server;
 
 import org.shunya.server.model.Authority;
 import org.shunya.server.model.Team;

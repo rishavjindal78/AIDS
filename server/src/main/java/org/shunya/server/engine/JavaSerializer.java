@@ -4,15 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.nio.file.FileSystems;
 
 public class JavaSerializer {
     private static final Logger logger = LoggerFactory.getLogger(JavaSerializer.class);
-    public static void save(MemoryApiState apiState) {
+    public static void save(MemoryApiState apiState, String folder) {
         FileOutputStream fos;
         ObjectOutputStream out;
         try {
-            File file = new File(FileSystems.getDefault().getPath(System.getProperty("user.home")).toString(), "telegram.api");
+            File file = new File(folder, "telegram.api");
             logger.info("Saving Telegram API Key to Path = " + file.getAbsolutePath());
             fos = new FileOutputStream(file);
             out = new ObjectOutputStream(fos);
@@ -24,11 +23,11 @@ public class JavaSerializer {
         }
     }
 
-    public static MemoryApiState load() {
+    public static MemoryApiState load(String folder) {
         FileInputStream fis;
         ObjectInputStream in;
         try {
-            File file = new File(FileSystems.getDefault().getPath(System.getProperty("user.home")).toString(), "telegram.api");
+            File file = new File(folder, "telegram.api");
             logger.info("Loading Telegram API Key from Path = " + file.getAbsolutePath());
             fis = new FileInputStream(file);
             in = new ObjectInputStream(fis);

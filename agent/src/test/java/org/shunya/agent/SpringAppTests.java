@@ -30,7 +30,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 @WebAppConfiguration
 public class SpringAppTests {
     @Configuration
-    @PropertySource("classpath:test-config.properties")
+    @PropertySource(value = {"classpath:test-config.properties"}, ignoreResourceNotFound = true)
     static class SpringAppTestsTestContextConfiguration {
         @Bean
         public TaskProcessor taskProcessor() {
@@ -49,9 +49,7 @@ public class SpringAppTests {
 
         @Bean
         public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-            PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
-            propertySourcesPlaceholderConfigurer.setIgnoreUnresolvablePlaceholders(true);
-            return propertySourcesPlaceholderConfigurer;
+            return new PropertySourcesPlaceholderConfigurer();
         }
     }
 

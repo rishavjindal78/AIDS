@@ -3,7 +3,7 @@ package org.shunya.server.services;
 import org.shunya.server.Role;
 import org.shunya.server.model.Authority;
 import org.shunya.server.model.User;
-import org.shunya.server.poc.UserBuilder;
+import org.shunya.server.UserBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

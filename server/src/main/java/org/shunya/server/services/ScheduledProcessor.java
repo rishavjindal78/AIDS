@@ -1,5 +1,7 @@
-package org.shunya.server.poc;
+package org.shunya.server.services;
 
+import org.shunya.server.Processor;
+import org.shunya.server.Worker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;

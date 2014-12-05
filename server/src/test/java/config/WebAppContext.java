@@ -2,6 +2,7 @@ package config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -33,7 +34,7 @@ public class WebAppContext extends WebMvcConfigurerAdapter {
 
         Properties exceptionMappings = new Properties();
 
-        exceptionMappings.put("org.shunya.server.config.TodoNotFoundException", "error/404");
+        exceptionMappings.put("org.shunya.server.org.shunya.server.config.TodoNotFoundException", "error/404");
         exceptionMappings.put("java.lang.Exception", "error/error");
         exceptionMappings.put("java.lang.RuntimeException", "error/error");
 

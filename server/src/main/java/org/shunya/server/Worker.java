@@ -1,4 +1,4 @@
-package org.shunya.server.poc;
+package org.shunya.server;
 
 public interface Worker {
   
