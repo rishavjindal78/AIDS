@@ -31,6 +31,7 @@ public class TaskService {
 
     Map<TaskRun, TaskExecutionPlan> taskExecutionPlanMap = new ConcurrentHashMap<>(100);
     Map<TaskRun, List<TaskStepRun>> currentlyRunningTaskSteps = new ConcurrentHashMap<>(100);
+    Set<Long> currentlyRunningTasks = new HashSet<>();
 
     @Autowired
     private RestClient restClient;
@@ -56,6 +57,12 @@ public class TaskService {
     // if all task steps has completed, then do the cleanup
     @Async
     public void execute(TaskRun taskRun) {
+        if (currentlyRunningTasks.contains(taskRun.getTask().getId())) {
+            statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Another instance of this Task is already running, cancelling execution - " + taskRun.getName());
+            logger.info("Another instance of this Task is already running, cancelling execution - ", taskRun.getName());
+            return;
+        }
+        onStart(taskRun);
         statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "starting execution for - " + taskRun.getName());
         logger.info("starting execution for TaskRun {}", taskRun.getName());
         dbService.save(taskRun);
@@ -68,13 +75,19 @@ public class TaskService {
             executionPlan.getSessionMap().putAll(loadAgentVariables(taskRun.getTeam().getId()));
             delegateStepToAgents(next.getValue(), taskRun);
         } else {
-            taskRun.setRunState(RunState.COMPLETED);
-            taskRun.setFinishTime(new Date());
-            taskRun.setRunStatus(RunStatus.NOT_RUN);
-            dbService.save(taskRun);
-            taskExecutionPlanMap.remove(taskRun);
+            handleCompletion(taskRun, executionPlan, RunStatus.NOT_RUN);
             logger.info("Task has no steps, completing it now");
         }
+    }
+
+    protected void onStart(TaskRun taskRun) {
+        currentlyRunningTasks.add(taskRun.getTask().getId());
+    }
+
+    protected void handleCompletion(TaskRun taskRun, TaskExecutionPlan taskExecutionPlan, RunStatus runStatus) {
+        saveTaskRun(taskRun, taskExecutionPlan, runStatus);
+        taskExecutionPlanMap.remove(taskRun);
+        currentlyRunningTasks.remove(taskRun.getTask().getId());
     }
 
     @Async
@@ -95,11 +108,11 @@ public class TaskService {
         taskExecutionPlan.getSessionMap().putAll(taskContext.getSessionMap());
         taskExecutionPlan.setTaskStatus(taskExecutionPlan.isTaskStatus() & (taskStepRun.isStatus() || taskStepRun.getTaskStep().isIgnoreFailure()));
         if (currentlyRunningTaskSteps.get(taskRun).isEmpty()) {
-            if(taskStepRun.getTaskStep().isIgnoreFailure() && taskStepRun.isStatus()){
+            if (taskStepRun.getTaskStep().isIgnoreFailure() && taskStepRun.isStatus()) {
                 logger.info("Ignoring Step failure, as it is set Optional");
             } else if (!taskExecutionPlan.isTaskStatus() && taskExecutionPlan.isAbortOnFirstFailure()) {
                 logger.info("Aborting Task Execution after first failure, State = Complete");
-                saveTaskRun(taskRun, taskExecutionPlan, RunStatus.FAILURE);
+                handleCompletion(taskRun, taskExecutionPlan, RunStatus.FAILURE);
                 statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Aborting Task Execution after first failure, State = Complete");
                 return;
             }
@@ -122,7 +135,7 @@ public class TaskService {
             delegateStepToAgents(next.getValue(), taskRun);
         } else {
             currentlyRunningTaskSteps.remove(taskRun);
-            saveTaskRun(taskRun, taskExecutionPlan, RunStatus.SUCCESS);
+            handleCompletion(taskRun, taskExecutionPlan, RunStatus.SUCCESS);
             logger.info("Task has no further steps, " + taskRun.getName() + " Completed with status - " + taskRun.getRunStatus());
             statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Task has no further steps, " + taskRun.getName() + " Completed with status - " + taskRun.getRunStatus());
         }

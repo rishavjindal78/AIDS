@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class HelloController {
     private Map<String, DeferredResult> agentMap = new ConcurrentHashMap<>(10);
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value = {"", "index"}, method = RequestMethod.GET)
     public String printWelcome(ModelMap model) {
         model.addAttribute("message", "Hello world!");
         return "redirect:server";
@@ -45,7 +45,7 @@ public class HelloController {
 
     @RequestMapping(value = "getTask/{id}", method = RequestMethod.GET)
     @ResponseBody
-    public DeferredResult<Agent> getTask(@PathVariable("id") String id){
+    public DeferredResult<Agent> getTask(@PathVariable("id") String id) {
         DeferredResult<Agent> deferredResult = new DeferredResult<>();
         agentMap.put(id, deferredResult);
         return deferredResult;
@@ -53,7 +53,7 @@ public class HelloController {
 
     @RequestMapping(value = "execute/{id}", method = RequestMethod.GET)
     @ResponseBody
-    public String execute(@PathVariable("id") String id){
+    public String execute(@PathVariable("id") String id) {
         DeferredResult deferredResult = agentMap.get(id);
         Agent agent = new Agent();
 //        agent.setId("100");
