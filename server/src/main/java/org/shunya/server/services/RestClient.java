@@ -33,6 +33,4 @@ public class RestClient {
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(agent.getBaseUrl() + "/agent/submitTaskStep", httpEntity, String.class);
         logger.fine(() -> "TaskStep sent to Agent for execution " + responseEntity.getBody());
     }
-
-
 }
