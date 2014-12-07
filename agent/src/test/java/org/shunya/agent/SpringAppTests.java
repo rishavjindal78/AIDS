@@ -8,7 +8,7 @@ import org.shunya.agent.services.TaskProcessor;
 import org.shunya.shared.TaskContext;
 import org.shunya.shared.TaskStepDTO;
 import org.shunya.shared.TaskStepRunDTO;
-import org.shunya.shared.model.RunState;
+import org.shunya.shared.RunState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

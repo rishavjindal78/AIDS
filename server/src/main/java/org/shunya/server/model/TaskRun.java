@@ -1,8 +1,8 @@
 package org.shunya.server.model;
 
 import org.hibernate.annotations.*;
-import org.shunya.shared.model.RunState;
-import org.shunya.shared.model.RunStatus;
+import org.shunya.shared.RunState;
+import org.shunya.shared.RunStatus;
 
 import javax.persistence.*;
 import javax.persistence.Entity;

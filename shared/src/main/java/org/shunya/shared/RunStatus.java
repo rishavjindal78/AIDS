@@ -1,4 +1,4 @@
-package org.shunya.shared.model;
+package org.shunya.shared;
 
 public enum RunStatus {
 NOT_RUN,

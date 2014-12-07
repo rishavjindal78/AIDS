@@ -1,8 +1,8 @@
 package org.shunya.server.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.shunya.shared.model.RunState;
-import org.shunya.shared.model.RunStatus;
+import org.shunya.shared.RunState;
+import org.shunya.shared.RunStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;

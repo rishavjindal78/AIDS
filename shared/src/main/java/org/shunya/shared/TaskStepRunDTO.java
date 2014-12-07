@@ -1,8 +1,5 @@
 package org.shunya.shared;
 
-import org.shunya.shared.model.RunState;
-import org.shunya.shared.model.RunStatus;
-
 import java.util.Date;
 
 public class TaskStepRunDTO {
