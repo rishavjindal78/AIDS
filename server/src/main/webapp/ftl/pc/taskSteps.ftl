@@ -98,31 +98,31 @@
 
     <table class="table table-striped">
         <tr>
-            <th>Sequence</th>
+            <th>#</th>
             <th>Task Step</th>
             <th>Description</th>
             <th>Active</th>
-            <th>Ignore Failure</th>
+            <th>Optional</th>
             <th>Agents</th>
             <th>Operation</th>
         </tr>
         <#list model.task.stepDataList as taskStep>
             <tr>
-                <td>${taskStep.sequence?string}</td>
-                <td>${taskStep.taskClass?string}</td>
-                <td>${taskStep.description!?string}</td>
-                <td><input class="activeCheckBox" type="checkbox" id="${taskStep.id}"
+                <td width="5%">${taskStep.sequence?string}</td>
+                <td width="12%">${taskStep.taskClass?string}</td>
+                <td width="40%">${taskStep.description!?string}</td>
+                <td width="5%"><input class="activeCheckBox" type="checkbox" id="${taskStep.id}"
                            <#if taskStep.active?? && taskStep.active?string=="true">checked="true"</#if></td>
-                <td><input class="ignoreFailureCheckBox" type="checkbox" id="${taskStep.id}"
+                <td width="5%"><input class="ignoreFailureCheckBox" type="checkbox" id="${taskStep.id}"
                            <#if taskStep.ignoreFailure?? && taskStep.ignoreFailure?string=="true">checked="true"</#if></td>
-                <td>
+                <td width="10%">
                     <#list taskStep.agentList as agent>
                         <form class="form-horizontal" name="agent" action="${rc.contextPath}/server/taskStep/removeAgent/${taskStep.id?string}/${agent.id}" method="post">
                             <span class="label label-primary">${agent.name}</span><button type="submit" class="btn btn-link" id="save">X</button>
                         </form>
                     </#list>
                 </td>
-                <td><a class="taskStepEdit" id="${taskStep.id?string}">edit</a>
+                <td width="10%"><a class="taskStepEdit" id="${taskStep.id?string}">edit</a>
                     <a href="../deleteStep/${taskStep.id}">delete</a>
                     <a href="#" onclick="addAgent('${taskStep.id}')">+agent</a>
                 </td>

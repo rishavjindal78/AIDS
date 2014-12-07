@@ -27,7 +27,7 @@
         <h3 class="text-muted">Task Run History</h3>
         <table class="table table-striped table-condensed">
             <tr>
-                <th>Id</th>
+                <th>#</th>
                 <th>Task Title</th>
                 <th>Comments</th>
                 <th>Updated</th>

@@ -111,11 +111,11 @@
         <div class="table-responsive">
             <table class="table table-striped">
                 <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Base URL</th>
-                    <th>Status</th>
+                    <th width="5%">#</th>
+                    <th width="30%">Name</th>
+                    <th width="40%">Description</th>
+                    <th width="15%">Base URL</th>
+                    <th width="10%">Status</th>
                 <#--<th>Comments</th>-->
                 </tr>
                 <#list model["agents"] as agent>
