@@ -4,6 +4,7 @@ import org.shunya.server.StatusObserver;
 import org.shunya.server.engine.JavaSerializer;
 import org.shunya.server.engine.MemoryApiState;
 import org.shunya.server.engine.PeerState;
+import org.shunya.server.engine.TelegramTaskRunner;
 import org.shunya.server.model.Task;
 import org.shunya.server.model.TaskRun;
 import org.shunya.server.model.Team;
@@ -26,6 +27,8 @@ import org.telegram.mtproto.log.Logger;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -49,6 +52,7 @@ public class TelegramService implements StatusObserver {
     private Random rnd = new Random();
     private long lastOnline = System.currentTimeMillis();
     private Executor mediaSender = Executors.newSingleThreadExecutor();
+    private ConcurrentMap<PeerState, TelegramTaskRunner> userStateMap = new ConcurrentHashMap<>();
 
     @Autowired
     private DBService dbService;
@@ -269,6 +273,7 @@ public class TelegramService implements StatusObserver {
     }
 
     private void processCommand(String message, final PeerState peerState, int fromId) {
+        TelegramTaskRunner userTaskRunner = userStateMap.computeIfAbsent(peerState, peerState1 -> new TelegramTaskRunner(dbService, taskService, peerState1, fromId));
         String[] args = message.split(" ");
         if (args.length == 0) {
             sendMessage(peerState, "Unknown command");
@@ -324,33 +329,7 @@ public class TelegramService implements StatusObserver {
         } else if (command.equals("war2")) {
             sendMessage(peerState, "WarAndPeace.TEXT");
         } else if (command.equals("help")) {
-            User user = null;
-            try {
-                user = dbService.findUserByTelegramId(fromId);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            int teamChatId = peerState.getId();
-            List<Team> teams = dbService.findTeamByChatId(teamChatId);
-            if (teams == null || teams.isEmpty()) {
-                sendMessage(peerState, "No Team bound to this Chat Channel");
-            } else {
-                List<Task> availableTasks = new ArrayList<>();
-                for (Team team : teams) {
-                    availableTasks.addAll(dbService.listTasksByTeam(team.getId()));
-                }
-                StringBuilder helpMessage = new StringBuilder();
-                if (user != null) {
-                    helpMessage.append("hey " + user.getName() + ", ");
-                }
-                helpMessage.append("here are bot commands:\n");
-                for (Task task : availableTasks) {
-                    long id = task.getId();
-                    String name = task.getName();
-                    helpMessage.append("bot " + id + " <" + name + ">\n");
-                }
-                sendMessage(peerState, helpMessage.toString());
-            }
+            sendMessage(peerState, userTaskRunner.help());
             /*sendMessage(peerState, "Bot commands:\n" +
                     "bot enable_forward/disable_forward - forwarding of incoming messages\n" +
                     "bot start_flood [delay] - Start flood with [delay] sec (default = 15)\n" +
@@ -369,33 +348,7 @@ public class TelegramService implements StatusObserver {
                 mediaSender.execute(() -> sendMedia(peerState, "demo.jpg"));
             }
         } else {
-            try {
-                long taskId = Long.parseLong(args[0]);
-                String comments = "process run by ChatId - " + fromId;
-                if (args.length > 1) {
-                    comments = fromId + args[1];
-                }
-                Task task = dbService.getTask(taskId);
-                if (task.getTeam().getTelegramId() == peerState.getId()) {
-                    TaskRun taskRun = new TaskRun();
-                    taskRun.setTask(task);
-                    taskRun.setName(task.getName());
-                    taskRun.setStartTime(new Date());
-                    taskRun.setComments(comments);
-                    taskRun.setNotifyStatus(true);
-                    taskRun.setTeam(task.getTeam());
-                    User user = dbService.findUserByTelegramId(fromId);
-                    if (user != null) {
-                        taskRun.setRunBy(user);
-                    }
-                    taskService.execute(taskRun);
-                    sendMessage(peerState, "Command Sent to Server - " + task.getName());
-                } else {
-                    sendMessage(peerState, "You are not part of Team - " + task.getTeam().getName());
-                }
-            } catch (Exception e) {
-                sendMessage(peerState, "Unknown command '" + args[0] + "'");
-            }
+            sendMessage(peerState, userTaskRunner.process(args[0]));
         }
     }
 
