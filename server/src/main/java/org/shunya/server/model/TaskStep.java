@@ -20,6 +20,7 @@ import java.util.List;
         "author",
         "active",
         "failOver",
+        "ignoreFailure",
         "inputParams",
         "outputParams"
 })
@@ -48,6 +49,7 @@ public class TaskStep implements Serializable {
     private User author;
     private boolean active = true;
     private boolean failOver = false;
+    private boolean ignoreFailure = false;
     @Lob
     @Basic(fetch = FetchType.EAGER)
     private String inputParams;
@@ -186,4 +188,11 @@ public class TaskStep implements Serializable {
     }
 
 
+    public boolean isIgnoreFailure() {
+        return ignoreFailure;
+    }
+
+    public void setIgnoreFailure(boolean ignoreFailure) {
+        this.ignoreFailure = ignoreFailure;
+    }
 }

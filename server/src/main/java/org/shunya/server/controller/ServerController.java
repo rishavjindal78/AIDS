@@ -236,6 +236,15 @@ public class ServerController {
         dbService.save(dbTaskStepData);
     }
 
+    @RequestMapping(value = "updateTaskStep2", method = RequestMethod.POST)
+    @ResponseBody
+    //we can also use this @RequestParam("active") String valueOne  ,  @ModelAttribute("active") String valueOne
+    public void updateTaskStep2(@ModelAttribute("taskStepData") TaskStep taskStepData) throws IOException {
+        TaskStep dbTaskStepData = dbService.getTaskStep(taskStepData.getId());
+        dbTaskStepData.setIgnoreFailure(taskStepData.isIgnoreFailure());
+        dbService.save(dbTaskStepData);
+    }
+
     @RequestMapping(value = "task/{id}", method = RequestMethod.GET)
     public String viewTaskDetails(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id, final HttpServletRequest request) {
         Task task = dbService.getTask(id);

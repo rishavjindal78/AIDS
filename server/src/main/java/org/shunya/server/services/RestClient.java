@@ -14,7 +14,7 @@ public class RestClient {
     private RestTemplate restTemplate = new RestTemplate();
 
     public boolean ping(Agent agent) {
-        ResponseEntity<String> entity = restTemplate.getForEntity(agent.getBaseUrl() + "agent/ping", String.class);
+        ResponseEntity<String> entity = restTemplate.getForEntity(agent.getBaseUrl() + "/agent/ping", String.class);
 //        String body = entity.getBody();
         if(entity.getStatusCode() == HttpStatus.ACCEPTED){
             return true;
@@ -30,7 +30,7 @@ public class RestClient {
         headers.set("Content-Type", "application/json; charset=utf-8");
         headers.set("Accept", "application/json; charset=utf-8");
         HttpEntity httpEntity = new HttpEntity<>(taskContext, headers);
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(agent.getBaseUrl() + "agent/submitTaskStep", httpEntity, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(agent.getBaseUrl() + "/agent/submitTaskStep", httpEntity, String.class);
         logger.fine(() -> "TaskStep sent to Agent for execution " + responseEntity.getBody());
     }
 

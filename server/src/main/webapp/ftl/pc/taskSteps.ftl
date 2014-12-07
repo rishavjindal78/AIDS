@@ -28,7 +28,7 @@
                 $(this).slideUp();
             });
 
-            $("input:checkbox").change(function () {
+            $(".activeCheckBox").change(function () {
                 if ($(this).is(":checked")) {
                     $.ajax({
                         url: '../updateTaskStep',
@@ -40,6 +40,22 @@
                         url: '../updateTaskStep',
                         type: 'POST',
                         data: { id: $(this).attr("id"), active: "0" }
+                    });
+                }
+            });
+
+            $(".ignoreFailureCheckBox").change(function () {
+                if ($(this).is(":checked")) {
+                    $.ajax({
+                        url: '../updateTaskStep2',
+                        type: 'POST',
+                        data: { id: $(this).attr("id"), ignoreFailure: "1" }
+                    });
+                } else {
+                    $.ajax({
+                        url: '../updateTaskStep2',
+                        type: 'POST',
+                        data: { id: $(this).attr("id"), ignoreFailure: "0" }
                     });
                 }
             });
@@ -86,6 +102,7 @@
             <th>Task Step</th>
             <th>Description</th>
             <th>Active</th>
+            <th>Ignore Failure</th>
             <th>Agents</th>
             <th>Operation</th>
         </tr>
@@ -94,8 +111,10 @@
                 <td>${taskStep.sequence?string}</td>
                 <td>${taskStep.taskClass?string}</td>
                 <td>${taskStep.description!?string}</td>
-                <td><input type="checkbox" id="${taskStep.id}"
+                <td><input class="activeCheckBox" type="checkbox" id="${taskStep.id}"
                            <#if taskStep.active?? && taskStep.active?string=="true">checked="true"</#if></td>
+                <td><input class="ignoreFailureCheckBox" type="checkbox" id="${taskStep.id}"
+                           <#if taskStep.ignoreFailure?? && taskStep.ignoreFailure?string=="true">checked="true"</#if></td>
                 <td>
                     <#list taskStep.agentList as agent>
                         <form class="form-horizontal" name="agent" action="${rc.contextPath}/server/taskStep/removeAgent/${taskStep.id?string}/${agent.id}" method="post">

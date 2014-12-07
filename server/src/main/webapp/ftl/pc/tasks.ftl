@@ -87,7 +87,7 @@
                     <tr>
                         <td>${td_index+1} &nbsp;<a href="#" onclick="editExpense('${td.id}')"><span
                                 class="glyphicon glyphicon-edit"/></a></td>
-                        <td>${td.name?string}</td>
+                        <td><a href="${rc.getContextPath()}/server/task/${td.id}">${td.name?string}</a></td>
                         <td>${td.description?string}</td>
                         <td>${td.tags?string}</td>
                         <td>

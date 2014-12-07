@@ -98,9 +98,11 @@ public class TaskService {
         currentlyRunningTaskSteps.get(taskRun).remove(taskStepRun);
         TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);
         taskExecutionPlan.getSessionMap().putAll(taskContext.getSessionMap());
-        taskExecutionPlan.setTaskStatus(taskExecutionPlan.isTaskStatus() & taskStepRun.isStatus());
+        taskExecutionPlan.setTaskStatus(taskExecutionPlan.isTaskStatus() & (taskStepRun.isStatus() || taskStepRun.getTaskStep().isIgnoreFailure()));
         if (currentlyRunningTaskSteps.get(taskRun).isEmpty()) {
-            if (!taskExecutionPlan.isTaskStatus() && taskExecutionPlan.isAbortOnFirstFailure()) {
+            if(taskStepRun.getTaskStep().isIgnoreFailure() && taskStepRun.isStatus()){
+                logger.info("Ignoring Step failure, as it is set Optional");
+            } else if (!taskExecutionPlan.isTaskStatus() && taskExecutionPlan.isAbortOnFirstFailure()) {
                 logger.info("Aborting Task Execution after first failure, State = Complete");
                 saveTaskRun(taskRun, taskExecutionPlan, RunStatus.FAILURE);
                 statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Aborting Task Execution after first failure, State = Complete");
