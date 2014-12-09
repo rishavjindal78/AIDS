@@ -403,7 +403,7 @@ public class ServerController {
                 logsVO.setStatus("FINISHED");
             }
         } else {
-            logs = taskStepRun.getLogs();
+            logs = taskStepRun.getLogs().substring((int) Math.min(taskStepRun.getLogs().length(), start));;
             logsVO.setStatus("FINISHED");
         }
         logsVO.setLogs(logs);
