@@ -16,14 +16,14 @@ public class RestClient {
     public boolean ping(Agent agent) {
         ResponseEntity<String> entity = restTemplate.getForEntity(agent.getBaseUrl() + "/agent/ping", String.class);
 //        String body = entity.getBody();
-        if(entity.getStatusCode() == HttpStatus.ACCEPTED){
+        if (entity.getStatusCode() == HttpStatus.ACCEPTED) {
             return true;
         }
         return false;
     }
 
-    public void submitTaskToAgent(TaskContext taskContext , Agent agent) {
-        if(agent.getBaseUrl()==null || agent.getBaseUrl().isEmpty())
+    public void submitTaskToAgent(TaskContext taskContext, Agent agent) {
+        if (agent.getBaseUrl() == null || agent.getBaseUrl().isEmpty())
             throw new RuntimeException("No Host Configured for this Agent " + agent.getName());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -32,5 +32,14 @@ public class RestClient {
         HttpEntity httpEntity = new HttpEntity<>(taskContext, headers);
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(agent.getBaseUrl() + "/agent/submitTaskStep", httpEntity, String.class);
         logger.fine(() -> "TaskStep sent to Agent for execution " + responseEntity.getBody());
+    }
+
+    public String getMemoryLogs(long stepRunId, Agent agent, long start) {
+        if (agent.getBaseUrl() == null || agent.getBaseUrl().isEmpty())
+            throw new RuntimeException("No Host Configured for this Agent " + agent.getName());
+        ResponseEntity<String> entity = restTemplate.getForEntity(agent.getBaseUrl() + "/agent/getMemoryLogs/{taskRunId}?start={start}", String.class, stepRunId, start);
+        String body = entity.getBody();
+        logger.fine(() -> "Logs fetched from the Agent");
+        return body;
     }
 }

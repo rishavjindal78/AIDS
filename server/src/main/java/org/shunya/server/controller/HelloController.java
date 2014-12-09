@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class HelloController {
     private Map<String, DeferredResult> agentMap = new ConcurrentHashMap<>(10);
 
-    @RequestMapping(value = {"", "index"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/", "/index"}, method = RequestMethod.GET)
     public String printWelcome(ModelMap model) {
         model.addAttribute("message", "Hello world!");
         return "redirect:server";

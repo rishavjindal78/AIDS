@@ -17,7 +17,7 @@ public class UserTaskSelectionState implements TelegramUserState {
             int randInt = Utils.randInt(100, 999);
             taskRunner.setRandomNumber(randInt);
             taskRunner.setState(taskRunner.getConfirmState());
-            return "To confirm please type " + randInt;
+            return "To confirm please type : bot " + randInt;
         } catch (Exception e) {
             e.printStackTrace();
             return "Invalid TaskId specified, please try again";

@@ -43,16 +43,16 @@ public class TaskProcessor {
                 preProcess();
                 TaskStepDTO taskStepDTO = taskContext.getStepDTO();
                 taskContext.getTaskStepRunDTO().setStartTime(new Date());
-                AbstractStep task = AbstractStep.getTask(taskStepDTO);
-                task.setTaskStepData(taskStepDTO);
-                task.setSessionMap(taskContext.getSessionMap());
-                cache.putIfAbsent(taskContext.getTaskStepRunDTO().getId(), task);
+                AbstractStep taskStep = AbstractStep.getTask(taskStepDTO);
+                taskStep.setTaskStepData(taskStepDTO);
+                taskStep.setSessionMap(taskContext.getSessionMap());
+                cache.putIfAbsent(taskContext.getTaskStepRunDTO().getId(), taskStep);
                 try {
-                    task.beforeTaskStart();
-                    boolean status = task.execute();
+                    taskStep.beforeTaskStart();
+                    boolean status = taskStep.execute();
                     taskContext.getTaskStepRunDTO().setStatus(status);
                     taskContext.getTaskStepRunDTO().setFinishTime(new Date());
-                    taskContext.getTaskStepRunDTO().setLogs(task.getMemoryLogs());
+                    taskContext.getTaskStepRunDTO().setLogs(taskStep.getMemoryLogs());
                     if (status)
                         taskContext.getTaskStepRunDTO().setRunStatus(RunStatus.SUCCESS);
                     else
@@ -60,10 +60,10 @@ public class TaskProcessor {
                 } catch (Exception e) {
                     taskContext.getTaskStepRunDTO().setRunStatus(RunStatus.FAILURE);
                     taskContext.getTaskStepRunDTO().setLogs(Utils.getStackTrace(e) + "\n");
-                    logger.warn("Error executing the task : " + taskContext.getTaskStepRunDTO().getId(), e);
+                    logger.warn("Error executing the taskStep : " + taskContext.getTaskStepRunDTO().getId(), e);
                 } finally {
                     taskContext.getTaskStepRunDTO().setRunState(RunState.COMPLETED);
-                    task.afterTaskFinish();
+                    taskStep.afterTaskFinish();
                     postProcess();
                     restClient.postResultToServer(taskContext);
                     cache.remove(taskContext.getTaskStepRunDTO().getId());
@@ -79,7 +79,7 @@ public class TaskProcessor {
         if (abstractStep != null) {
             return abstractStep.getMemoryLogs().substring((int) Math.min(abstractStep.getMemoryLogs().length(), start));
         }
-        return "";
+        return "FINISHED";
     }
 
     private void postProcess() {

@@ -23,6 +23,7 @@ public abstract class AbstractStep {
     private transient ConsoleHandler cHandler = null;
     private transient MemoryHandler mHandler = null;
     private transient Level loggingLevel = Level.FINE;
+    private LogListener logListener;
 
     public static final ThreadLocal<Logger> LOGGER = new ThreadLocal<Logger>() {
         @Override
@@ -34,10 +35,14 @@ public abstract class AbstractStep {
 
     public void beforeTaskStart() {
         strLogger = new StringBuilder();
-        mHandler = new MemoryHandler(new Handler() {
+        Handler logHandler = new Handler() {
             public void publish(LogRecord record) {
                 //                    String msg = new Date(record.getMillis()) + " [" + record.getLevel() + "] " + record.getMessage();
                 strLogger.append(record.getMessage() + "\n");
+                if (logListener != null) {
+                    logListener.publish(record.getMessage() + "\n");
+                }
+                System.out.println(record.getMessage());
             }
 
             @Override
@@ -47,12 +52,13 @@ public abstract class AbstractStep {
             @Override
             public void close() throws SecurityException {
             }
-        }, 2, loggingLevel);
+        };
+        mHandler = new MemoryHandler(logHandler, 2, loggingLevel);
         cHandler = new ConsoleHandler();
         cHandler.setFormatter(new SimpleFormatter());
         cHandler.setLevel(Level.ALL);
         LOGGER.get().addHandler(mHandler);
-	    LOGGER.get().addHandler(cHandler);
+//        LOGGER.get().addHandler(cHandler);
         LOGGER.get().setUseParentHandlers(false);
     }
 
@@ -64,20 +70,20 @@ public abstract class AbstractStep {
         }
     }
 
-    public static FieldPropertiesMap listInputParams(Class<? extends Object> task, Map<String,String> values) {
+    public static FieldPropertiesMap listInputParams(Class<? extends Object> task, Map<String, String> values) {
         Field[] fields = task.getDeclaredFields();
         Map<String, FieldProperties> fieldPropertiesMap = new HashMap<>();
         for (Field field : fields) {
             if (field.isAnnotationPresent(InputParam.class)) {
                 InputParam ann = field.getAnnotation(InputParam.class);
 //				System.out.println(ann.required()==true?"*"+field.getName():""+field.getName());
-                fieldPropertiesMap.put(field.getName(), new FieldProperties(field.getName(),ann.displayName(), values.get(field.getName()), ann.description(), ann.required(), ann.type()));
+                fieldPropertiesMap.put(field.getName(), new FieldProperties(field.getName(), ann.displayName(), values.get(field.getName()), ann.description(), ann.required(), ann.type()));
             }
         }
         return new FieldPropertiesMap(fieldPropertiesMap);
     }
 
-    public static FieldPropertiesMap listOutputParams(Class<? extends Object> task, Map<String,String> values) {
+    public static FieldPropertiesMap listOutputParams(Class<? extends Object> task, Map<String, String> values) {
         Field[] fields = task.getDeclaredFields();
 //		System.out.println("Listing output params");
         Map<String, FieldProperties> fieldPropertiesMap = new HashMap<>();
@@ -280,4 +286,11 @@ public abstract class AbstractStep {
         return taskStepData;
     }
 
+    public void addLogListener(LogListener logListener) {
+        this.logListener = logListener;
+    }
+
+    public void removeLogListener(LogListener logListener) {
+        this.logListener = null;
+    }
 }

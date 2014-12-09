@@ -113,8 +113,8 @@
                 <tr>
                     <th width="5%">#</th>
                     <th width="30%">Name</th>
-                    <th width="40%">Description</th>
-                    <th width="15%">Base URL</th>
+                    <th width="35%">Description</th>
+                    <th width="20%">Base URL</th>
                     <th width="10%">Status</th>
                 <#--<th>Comments</th>-->
                 </tr>

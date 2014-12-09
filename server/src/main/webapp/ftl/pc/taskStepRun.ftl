@@ -35,9 +35,6 @@
                 $('#content_' + this.id).slideToggle(300);
 //                $(this).next('.content').slideToggle(300);
             })
-
-//            prettyPrint();
-
         });
     </script>
 
@@ -58,7 +55,7 @@
     <hr/>
     <a href="../team/${model.taskHistory.team.id}/taskHistory"> << Back To Task History</a>
     <div class="well">
-        <table class="table table-striped">
+        <table class="table table-striped table-condensed">
             <tr>
                 <th>Id</th>
                 <th>Seq</th>
@@ -68,30 +65,41 @@
                 <th>Status</th>
                 <th>Operation</th>
             </tr>
-            <#list model.taskHistory.taskStepRuns as taskStepHistory>
-                <#if taskStepHistory.runStatus?string == 'FAILURE'>
+            <#list model.taskHistory.taskStepRuns as taskStepRun>
+                <#if taskStepRun.runStatus?string == 'FAILURE'>
                 <tr class="text-danger">
-                <#elseif taskStepHistory.runStatus?string == 'NOT_RUN'>
+                <#elseif taskStepRun.runStatus?string == 'NOT_RUN'>
                 <tr class="text-warning">
                 <#else >
                 <tr class="text-success"></#if>
-                <td>${taskStepHistory.id?string}</td>
-                <td>${taskStepHistory.sequence?string}</td>
-                <td>${taskStepHistory.taskStep.description!?string}</td>
-                <td>${taskStepHistory.agent.name!?string}</td>
-                <td><#if taskStepHistory.finishTime??>${taskStepHistory.finishTime?datetime?string("dd MMM, yyyy hh.mm aa")}</#if></td>
-                <#if taskStepHistory.runStatus?string == 'FAILURE'>
-                <td><button type="button" class="btn btn-danger">${taskStepHistory.runStatus!?string}</button></td>
+                <td>${taskStepRun.id?string}</td>
+                <td>${taskStepRun.sequence?string}</td>
+                <td>${taskStepRun.taskStep.description!?string}</td>
+                <td>${taskStepRun.agent.name!?string}</td>
+                <td><#if taskStepRun.finishTime??>${taskStepRun.finishTime?datetime?string("dd MMM, yyyy hh.mm aa")}</#if></td>
+                <#if taskStepRun.runStatus?string == 'FAILURE'>
+                    <td>
+                        <button type="button" class="btn btn-danger">${taskStepRun.runStatus!?string}</button>
+                    </td>
                 <#else >
-                    <td><button type="button" class="btn btn-success">${taskStepHistory.runStatus!?string}</button></td>
+                    <td>
+                        <button type="button" class="btn btn-success">${taskStepRun.runStatus!?string}</button>
+                    </td>
                 </#if>
                 <td>
-                    <a class="btn btn-small btn-primary viewTaskLogs heading" id="${taskStepHistory.id}" href="#">logs</a>
-                    <a class="btn btn-small btn-warning" href="delete/${taskStepHistory.id}">delete</a>
+                    <#if taskStepRun.runStatus!?string == 'RUNNING'>
+                        <a id="${taskStepRun.id}" href="${rc.contextPath}/server/getMemoryLogs/view/${taskStepRun.id}" target="_blank">tail logs</a>
+                    <#else>
+                        <a class="btn btn-small btn-primary viewTaskLogs heading" id="${taskStepRun.id}"
+                           href="#">logs</a>
+                        <a class="btn btn-small btn-warning" href="delete/${taskStepRun.id}">delete</a>
+                    </#if>
                 </td>
-                </tr>
-                <tr class="content" id='content_${taskStepHistory.id}'>
-                    <td colspan="7"><pre><span id='span_${taskStepHistory.id}'>test</span></pre></td>
+            </tr>
+                <tr class="content" id='content_${taskStepRun.id}'>
+                    <td colspan="7">
+                        <span><pre id='span_${taskStepRun.id}'>loading..</pre></span>
+                    </td>
                 </tr>
             </#list>
         </table>

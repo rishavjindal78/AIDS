@@ -2,16 +2,11 @@ package org.shunya.server.controller;
 
 import org.shunya.server.Role;
 import org.shunya.server.model.*;
-import org.shunya.server.services.AgentStatusService;
-import org.shunya.server.services.TaskService;
-import org.shunya.server.services.DBService;
-import org.shunya.server.services.MyJobScheduler;
+import org.shunya.server.services.*;
 import org.shunya.server.vo.AgentVO;
 import org.shunya.server.vo.AgentVOBuilder;
-import org.shunya.shared.AbstractStep;
-import org.shunya.shared.FieldPropertiesMap;
-import org.shunya.shared.TaskContext;
-import org.shunya.shared.TaskStepDTO;
+import org.shunya.server.vo.LogsVO;
+import org.shunya.shared.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +40,9 @@ public class ServerController {
 
     @Autowired
     private AgentStatusService agentStatusService;
+
+    @Autowired
+    private RestClient restClient;
 
     @Autowired
     private MyJobScheduler myJobScheduler;
@@ -388,6 +386,35 @@ public class ServerController {
         logger.info("Successfully received Task results {} ", taskContext.getStepDTO().getSequence());
         taskService.consumeStepResult(taskContext);
         return "success";
+    }
+
+    @RequestMapping(value = "getMemoryLogs/{stepRunId}", method = RequestMethod.GET)
+    @ResponseBody
+    public LogsVO getStepLogs(@ModelAttribute("model") ModelMap model, @PathVariable("stepRunId") long taskRunId, @RequestParam("start") long start) throws Exception {
+        TaskStepRun taskStepRun = dbService.getTaskStepRun(taskRunId);
+        String logs = "";
+        LogsVO logsVO = new LogsVO();
+        if (taskStepRun.getRunState() == RunState.RUNNING) {
+            logs = restClient.getMemoryLogs(taskStepRun.getId(), taskStepRun.getAgent(), start);
+            if(logs == null)
+                logs = "";
+            if (logs.equalsIgnoreCase("finished")) {
+                logs = taskStepRun.getLogs();
+                logsVO.setStatus("FINISHED");
+            }
+        } else {
+            logs = taskStepRun.getLogs();
+            logsVO.setStatus("FINISHED");
+        }
+        logsVO.setLogs(logs);
+        return logsVO;
+    }
+
+    @RequestMapping(value = "getMemoryLogs/view/{stepRunId}", method = RequestMethod.GET)
+    public String getStepLogView(@ModelAttribute("model") ModelMap model, @PathVariable("stepRunId") long stepRunId) throws Exception {
+        TaskStepRun taskStepRun = dbService.getTaskStepRun(stepRunId);
+        model.addAttribute("taskStepRun", taskStepRun);
+        return "tailLogs";
     }
 
     @RequestMapping(value = "schedule", method = RequestMethod.GET)

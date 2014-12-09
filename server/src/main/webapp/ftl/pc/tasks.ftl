@@ -77,10 +77,10 @@
             <table class="table table-striped">
                 <tr>
                     <th width="5%">#</th>
-                    <th width="30%">Name</th>
+                    <th width="25%">Name</th>
                     <th width="30%">Description</th>
                     <th width="20%">Tags</th>
-                    <th width="10%">Agents</th>
+                    <th width="15%">Agents</th>
                     <th width="5%">Operation</th>
                 </tr>
                 <#list model["tasks"] as td>
