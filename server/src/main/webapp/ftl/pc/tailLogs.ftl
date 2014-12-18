@@ -12,7 +12,10 @@
         $.get('${rc.contextPath}/server/getMemoryLogs/${model.taskStepRun.id}', {start: start}, function (logVO) {
             if (logVO.logs.length > 4) {
                 start = start + logVO.logs.length;
-                $("#logOutputDiv").append(logVO.logs);
+                $("#logOutputDiv").append(logVO.logs)
+                        .delay(50)
+                        .scrollTop($("#logOutputDiv")[0].scrollHeight);
+
             }
             if (logVO.status != 'FINISHED') {
                 setTimeout("doUpdate()", 2000);
