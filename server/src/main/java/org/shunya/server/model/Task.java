@@ -59,6 +59,8 @@ public class Task implements Serializable {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Agent> agentList;
     private boolean notifyStatus = false;
+    @OneToOne
+    private TaskProperties taskProperties;
 
     public long getId() {
         return id;
@@ -184,5 +186,13 @@ public class Task implements Serializable {
 
     public void setNotifyStatus(boolean notifyStatus) {
         this.notifyStatus = notifyStatus;
+    }
+
+    public TaskProperties getTaskProperties() {
+        return taskProperties;
+    }
+
+    public void setTaskProperties(TaskProperties taskProperties) {
+        this.taskProperties = taskProperties;
     }
 }

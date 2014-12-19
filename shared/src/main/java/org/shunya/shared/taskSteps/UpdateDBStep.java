@@ -14,11 +14,11 @@ import java.util.logging.Level;
 public class UpdateDBStep extends AbstractStep {
     @InputParam(required = true, type = "text", description = "jdbc:jtds:sqlserver://10.66.4.47/test;sendStringParametersAsUnicode=false")
     private String conURL;
-    @InputParam(required = false, description = "username")
+    @InputParam(required = false, type = "text", description = "username")
     private String username;
-    @InputParam(required = false, description = "password")
+    @InputParam(required = false, type = "text", description = "password")
     private String password;
-    @InputParam(required = false, description = "sql strings line delimited")
+    @InputParam(required = false,  type = "textarea", displayName = "Line Delimited SQL Strings", description = "sql strings line delimited")
     private String sql;
     @OutputParam
     private String output = "";
