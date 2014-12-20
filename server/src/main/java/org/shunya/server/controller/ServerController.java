@@ -132,6 +132,7 @@ public class ServerController {
             dbAgent.setName(agentDTO.getName());
             dbAgent.setDescription(agentDTO.getDescription());
             dbAgent.setBaseUrl(agentDTO.getBaseUrl());
+            dbAgent.setAgentProperties(agentDTO.getAgentProperties());
             dbService.save(dbAgent);
         }
         final String referer = request.getHeader("referer");

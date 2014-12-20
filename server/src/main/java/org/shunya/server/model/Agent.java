@@ -1,6 +1,14 @@
 package org.shunya.server.model;
 
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import javax.persistence.*;
+
+import static org.hibernate.annotations.CascadeType.DELETE;
+import static org.hibernate.annotations.CascadeType.SAVE_UPDATE;
 
 @Entity
 @Table(name="AGENT")
@@ -16,6 +24,10 @@ public class Agent {
     private String name;
     private String description;
     private String baseUrl;
+    @Cascade({SAVE_UPDATE, DELETE})
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToOne
+    private AgentProperties agentProperties;
 
     public Boolean getPrivateAccess() {
         return privateAccess;
@@ -92,5 +104,13 @@ public class Agent {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public AgentProperties getAgentProperties() {
+        return agentProperties;
+    }
+
+    public void setAgentProperties(AgentProperties agentProperties) {
+        this.agentProperties = agentProperties;
     }
 }

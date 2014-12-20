@@ -1,10 +1,7 @@
 package org.shunya.server.services;
 
 import org.shunya.server.TaskExecutionPlan;
-import org.shunya.server.model.Agent;
-import org.shunya.server.model.TaskRun;
-import org.shunya.server.model.TaskStep;
-import org.shunya.server.model.TaskStepRun;
+import org.shunya.server.model.*;
 import org.shunya.shared.*;
 import org.shunya.shared.utils.Utils;
 import org.slf4j.Logger;
@@ -19,6 +16,9 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.xml.bind.JAXBException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.ConnectException;
 import java.net.Inet4Address;
 import java.util.*;
@@ -72,7 +72,7 @@ public class TaskService {
             taskRun.setRunState(RunState.RUNNING);
             taskRun.setRunStatus(RunStatus.RUNNING);
             dbService.save(taskRun);
-            executionPlan.getSessionMap().putAll(loadAgentVariables(taskRun.getTeam().getId()));
+            executionPlan.getSessionMap().putAll(loadAgentNames(taskRun.getTeam().getId()));
             delegateStepToAgents(next.getValue(), taskRun);
         } else {
             handleCompletion(taskRun, executionPlan, RunStatus.NOT_RUN);
@@ -122,11 +122,25 @@ public class TaskService {
         }
     }
 
-    private Map<String, String> loadAgentVariables(long teamId) {
+    private Map<String, String> loadAgentNames(long teamId) {
         List<Agent> agents = dbService.listAgentsByTeam(teamId);
         Map<String, String> variables = new HashMap<>();
         agents.forEach(agent -> variables.put(agent.getName(), agent.getBaseUrl()));
         return variables;
+    }
+
+    private Map<String, String> loadAgentProperties(AgentProperties agentProperties) {
+        try {
+            if (agentProperties != null && agentProperties.getProperties() != null) {
+                InputStream is = new ByteArrayInputStream(agentProperties.getProperties().getBytes());
+                Properties prop = new Properties();
+                prop.load(is);
+                return (Map) prop;
+            }
+        } catch (Exception e) {
+            logger.error("Error loading Agent properties while execution", e);
+        }
+        return Collections.emptyMap();
     }
 
     private void processNextStep(TaskRun taskRun, TaskExecutionPlan taskExecutionPlan) {
@@ -190,6 +204,7 @@ public class TaskService {
                     executionContext.setTaskStepRunDTO(convertToDTO(taskStepRun));
                     TaskStep taskStep = taskStepRun.getTaskStep();
                     executionContext.setStepDTO(convertToDTO(taskStep));
+                    executionContext.getSessionMap().putAll(loadAgentProperties(taskStepRun.getAgent().getAgentProperties()));
                     restClient.submitTaskToAgent(executionContext, taskStepRun.getAgent());
                     logger.info("task submitted - " + taskStep.getDescription());
                 } catch (Exception e) {

@@ -27,6 +27,11 @@
                     <input type="text" class="form-control input" placeholder="Base Url e.g. http://localhost:9291/" name="baseUrl"
                            value="${model.agent.baseUrl!?string}">
                 </div>
+                <div class="col-lg-6">
+                    <#--<label for="agentPropertiesTextArea">Agent Properties</label>-->
+                    <textarea id="agentPropertiesTextArea" type="text" class="form-control input-sm" placeholder="Agent properties to override" name="agentProperties.properties"
+                           rows="5">${(model.agent.agentProperties.properties)!?string}</textarea>
+                </div>
                 <div class="control-group">
                     <button type="submit" class="btn btn-primary" id="save">Save</button>
                     <button class="btn cancel btn-default" id="cancel">Cancel</button>

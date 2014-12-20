@@ -21,7 +21,7 @@ public class EmailStep extends AbstractStep {
     private String subject;
     @InputParam(required = true, description = "from Address")
     private String fromAddress;
-    @InputParam(required = true, description = "html body")
+    @InputParam(required = true,  type = "textarea", description = "html body")
     private String body;
     @InputParam(required = true, description = "Comma Separated File Names")
     private String attachments;

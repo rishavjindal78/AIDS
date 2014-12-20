@@ -84,12 +84,12 @@
         <div class="content">
             <form role="form" name="agent" action="register" method="POST">
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Task Name</label>
+                    <label for="exampleInputEmail1">Agent Name</label>
                     <input type="text" class="form-control" id="exampleInputEmail1" name="name"
                            placeholder="Enter Agent Name e.g. Build Machine Agent">
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputPassword1">Task Description</label>
+                    <label for="exampleInputPassword1">Agent Description</label>
                     <input type="text" class="form-control" id="exampleInputPassword1" name="description"
                            placeholder="Enter Agent Description e.g. Dev Server">
                 </div>
@@ -100,10 +100,10 @@
                 </div>
                 <div class="checkbox">
                     <label>
-                        <input type="checkbox"> Enable Me
+                        <input type="checkbox"> Enable It
                     </label>
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary">Save</button>
             </form>
         </div>
         <h2 class="sub-header text-muted">Agents</h2>

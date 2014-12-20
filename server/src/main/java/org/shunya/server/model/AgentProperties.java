@@ -11,8 +11,6 @@ public class AgentProperties {
     private long id;
     @Lob
     private String properties;
-    @OneToOne
-    private TeamProperties teamProperties;
 
     public long getId() {
         return id;
@@ -28,13 +26,5 @@ public class AgentProperties {
 
     public void setProperties(String properties) {
         this.properties = properties;
-    }
-
-    public TeamProperties getTeamProperties() {
-        return teamProperties;
-    }
-
-    public void setTeamProperties(TeamProperties teamProperties) {
-        this.teamProperties = teamProperties;
     }
 }
