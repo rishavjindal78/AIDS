@@ -11,6 +11,9 @@ import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.List;
 
+import static org.hibernate.annotations.CascadeType.DELETE;
+import static org.hibernate.annotations.CascadeType.SAVE_UPDATE;
+
 @Entity
 @Table(name = "TASK")
 @TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "TASK_DATA", allocationSize = 10)
@@ -60,6 +63,8 @@ public class Task implements Serializable {
     private List<Agent> agentList;
     private boolean notifyStatus = false;
     @OneToOne
+    @Cascade({SAVE_UPDATE, DELETE})
+    @LazyCollection(LazyCollectionOption.FALSE)
     private TaskProperties taskProperties;
 
     public long getId() {

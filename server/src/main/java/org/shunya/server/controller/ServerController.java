@@ -214,6 +214,7 @@ public class ServerController {
             existingTask.setName(task.getName());
             existingTask.setDescription(task.getDescription());
             existingTask.setTags(task.getTags());
+            existingTask.setTaskProperties(task.getTaskProperties());
             dbService.save(existingTask);
         } else if (null != task && null != task.getName() && !task.getDescription().isEmpty()) {
             task.setAuthor(dbService.findUserByUsername(principal.getName()));
