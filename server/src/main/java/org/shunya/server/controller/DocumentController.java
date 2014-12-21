@@ -43,16 +43,26 @@ public class DocumentController {
     }*/
 
     @RequestMapping(value = "search", method = RequestMethod.GET)
-    public String searchDocs(@ModelAttribute("model") ModelMap model, @RequestParam(value = "query", required = false, defaultValue = "") String query) {
+    public String searchDocs(@ModelAttribute("model") ModelMap model,
+                                @RequestParam(value = "query", required = false, defaultValue = "") String query,
+                             @RequestParam(value = "message", required = false, defaultValue = "") String message) {
         model.addAttribute("documents", documentService.searchPaginated(0, 50, query));
         model.addAttribute("query", query);
+        model.addAttribute("message", message);
         return "documents";
+    }
+
+    @RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)
+    public String editAgent(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id) throws Exception {
+        Document document = documentService.findById(id);
+        model.addAttribute("document", document);
+        return "editDocument";
     }
 
     @RequestMapping(value = "delete/{id}", method = RequestMethod.POST)
     public String delete(@ModelAttribute("model") ModelMap model, @PathVariable("id") Long id) {
         documentService.delete(id);
-        return "redirect:/rest/search";
+        return "redirect:../search";
     }
 
     @RequestMapping(value = "upload2", method = RequestMethod.POST)
@@ -84,6 +94,31 @@ public class DocumentController {
         }
         documentService.save(document);
         return "redirect:search";
+    }
+
+    @RequestMapping(value = "upload/{documentId}", method = RequestMethod.POST)
+    public String processUploadUpdate(@ModelAttribute FileUploadDTO file, Model model, @PathVariable("documentId") long documentId) throws IOException {
+        model.addAttribute("message", "File '" + file.getDescription() + "' updated successfully");
+        Document document = documentService.findById(documentId);
+        document.setName(file.getFile().getOriginalFilename());
+        document.setDescription(file.getDescription());
+        document.setTags(file.getTags());
+        document.setLength(file.getFile().getSize());
+        document.setUploadDate(new Date());
+        if(file.getFile().getSize() > 10*1024*1024){
+            //store it in FS
+            Path target = Paths.get(uploadFolder, file.getFile().getOriginalFilename());
+            Files.copy(file.getFile().getInputStream(), target);
+            document.setLocalPath(target.toAbsolutePath().toString());
+            document.setStorage(DocumentStorage.FS);
+            file.getFile().getInputStream().close();
+        }else {
+            //store it in DB
+            document.setStorage(DocumentStorage.DB);
+            document.setContent(file.getFile().getBytes());
+        }
+        documentService.save(document);
+        return "redirect:../search";
     }
 
     @RequestMapping(value = "/files/{file_name}", method = RequestMethod.GET)

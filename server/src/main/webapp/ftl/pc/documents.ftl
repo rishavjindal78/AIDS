@@ -22,6 +22,14 @@
                 return false;
             });
         });
+
+        function editDocument(id) {
+            $.get('${rc.contextPath}/documents/edit/' + id, function (data) {
+                $('#edit_document_' + id).empty();
+                $('#edit_document_' + id).html(data);
+            });
+        }
+
     </script>
 
     <BR>
@@ -57,7 +65,7 @@
             </form>
         </fieldset>
     </div>
-    <div>${model.message!''}</div>
+    <br/>
     <br/>
     <table class="table table-striped table-responsive">
         <tbody>
@@ -66,7 +74,6 @@
                 <td width="3%">${doc_index+1}</td>
                 <td>
                     <a href="#" class="button-expand"><b>${doc.description!''}</b></a>
-
                     <div style="display: none;">
                         <p> FileID : ${doc.id!''}<BR>
                             FileName : ${doc.name!''}<BR>
@@ -74,18 +81,33 @@
                             ]<BR>
                             Total downloads : ${doc.downloads!''}
 
-                        <form action="${rc.contextPath}/documents/delete/${doc.id}" method="POST"><input type="submit" class="btn btn-xs"
-                                                                                   value="Delete"
-                                                                                   onclick="return confirm('Please click on to confirm ?')"/>
+                        <form action="${rc.contextPath}/documents/delete/${doc.id}" method="POST"><input type="submit"
+                                                                                                         class="btn btn-xs"
+                                                                                                         value="Delete"
+                                                                                                         onclick="return confirm('Please click on to confirm ?')"/>
                         </form>
                         </p>
                     </div>
+                    <span id="edit_document_${doc.id!''}"></span>
                 </td>
-                <td width="10%"><a href="${rc.contextPath}/documents/download/${doc.id}" class="btn btn-success btn-sm">Download</a></td>
+                <td width="150">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-info dropdown-toggle"
+                                data-toggle="dropdown"> Action <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="${rc.contextPath}/documents/download/${doc.id}">Download</a></li>
+                            <li><a href="#" onclick="editDocument('${doc.id}')">Edit</a></li>
+                            <#--<li class="divider"></li>-->
+                            <#--<li><a href="${rc.getContextPath()}/server/delete/${td.id}">Delete</a></li>-->
+                        </ul>
+                    </div>
+                </td>
             </tr>
             </#list>
         </tbody>
     </table>
     </div>
+    <span id="message" style="color: green">${model.message!''}</span>
     </@com.page>
 </#escape>

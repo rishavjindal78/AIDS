@@ -14,7 +14,7 @@
             }
         }
 
-        function editExpense(id) {
+        function editTask(id) {
             $.get('${rc.contextPath}/server/team/${model.team.id}/editTask/' + id, function (data) {
                 $('#span_task_edit').empty();
                 $('#span_task_edit').html(data);
@@ -85,7 +85,7 @@
                 </tr>
                 <#list model["tasks"] as td>
                     <tr>
-                        <td>${td_index+1} &nbsp;<a href="#" onclick="editExpense('${td.id}')"><span
+                        <td>${td_index+1} &nbsp;<a href="#" onclick="editTask('${td.id}')"><span
                                 class="glyphicon glyphicon-edit"/></a></td>
                         <td><a href="${rc.getContextPath()}/server/task/${td.id}">${td.name?string}</a></td>
                         <td>${td.description?string}</td>
@@ -106,7 +106,7 @@
                                 </button>
                                 <ul class="dropdown-menu" role="menu">
                                     <li><a href="${rc.getContextPath()}/server/task/${td.id}">view</a></li>
-                                    <li><a href="#" onclick="editExpense('${td.id}')">edit</a></li>
+                                    <li><a href="#" onclick="editTask('${td.id}')">edit</a></li>
                                     <li><a href="#" onclick="addAgent('${td.id}')">add agent</a></li>
                                     <li><a href="#" onclick="executeFunction('${rc.getContextPath()}/server/run/${td.id}')">run</a></li>
                                     <li><a href="${rc.getContextPath()}/server/taskHistory/${td.id}">history</a></li>
