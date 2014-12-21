@@ -33,7 +33,7 @@
     </script>
 
     <BR>
-    <form name="search" action="${rc.contextPath}/documents/search" method="GET">
+    <form name="search" action="${rc.contextPath}/documents/team/${Session['SELECTED_TEAM'].id}/search" method="GET">
         <div class="row">
             <div class="col-xs-7">
                 <input type="text" name="query" placeholder="search criteria" class="form-control"
@@ -47,20 +47,36 @@
     <a href="#" class="button-expand btn btn-info btn-xs">+ Add New Documents</a>
     <div style="display: none;">
         <fieldset>
-            <form name="upload" action="${rc.contextPath}/documents/upload" method="post" enctype="multipart/form-data">
-                <div class="row">
-                    <div class="col-xs-4">
-                        <input type="text" name="description" placeholder="description" class="form-control"/>
+            <form class="form-horizontal" name="upload"
+                  action="${rc.contextPath}/documents/team/${Session['SELECTED_TEAM'].id}/upload"
+                  method="post"
+                  enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="documentDescriptionId" class="col-sm-2 control-label">Description</label>
+
+                    <div class="col-sm-6">
+                        <input id="documentDescriptionId" type="text" name="description" placeholder="description"
+                               class="form-control"/>
                     </div>
-                    <div class="col-xs-3">
-                        <input type="text" name="tags" placeholder="tags" class="form-control"/>
+                </div>
+                <div class="form-group">
+                    <label for="documentTagsId" class="col-sm-2 control-label">Tags</label>
+
+                    <div class="col-sm-6">
+                        <input id="documentTagsId" type="text" name="tags" placeholder="tags" class="form-control"/>
                     </div>
-                    <div class="col-xs-3">
-                        <input type="file" name="file" placeholder="FilePath" class="form-sm"/>
+                </div>
+                <div class="form-group">
+                    <label for="documentFileId" class="col-sm-2 control-label">Tags</label>
+
+                    <div class="col-sm-6">
+                        <input id="documentFileId" type="file" name="file" placeholder="FilePath" class="form-sm"/>
                     </div>
-                    <div class="col-xs-2">
-                        <input type="submit" class="btn btn-primary" value="Upload"/>
-                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"></label>
+                    <input type="submit" class="btn btn-primary" value="Save"/>
+                    <button class="btn cancel btn-default" id="cancel">Cancel</button>
                 </div>
             </form>
         </fieldset>
@@ -81,7 +97,7 @@
                             ]<BR>
                             Total downloads : ${doc.downloads!''}
 
-                        <form action="${rc.contextPath}/documents/delete/${doc.id}" method="POST"><input type="submit"
+                        <form action="${rc.contextPath}/documents/team/${Session['SELECTED_TEAM'].id}/delete/${doc.id}" method="POST"><input type="submit"
                                                                                                          class="btn btn-xs"
                                                                                                          value="Delete"
                                                                                                          onclick="return confirm('Please click on to confirm ?')"/>

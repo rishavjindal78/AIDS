@@ -37,7 +37,7 @@
                         href='<@spring.url "/server/team/${Session['SELECTED_TEAM'].id}/taskHistory" />'>History</a>
                 </li>
                 <li id="documents"><a
-                        href='<@spring.url "/documents/search" />'>Docs</a>
+                        href='<@spring.url "/documents/team/${Session['SELECTED_TEAM'].id}/search" />'>Docs</a>
                 </li>
             </@security.authorize>
             <@security.authorize ifAllGranted="ROLE_ADMIN">

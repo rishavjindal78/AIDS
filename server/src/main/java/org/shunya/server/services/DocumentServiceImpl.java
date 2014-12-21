@@ -41,8 +41,8 @@ public class DocumentServiceImpl extends GenericServiceImpl<Document, Long> impl
     }
 
     @Override
-    public List<Document> searchPaginated(int page, int size, String query) {
-        return documentDao.findAllPaginated(page, size, Order.desc("uploadDate"), Restrictions.or(Restrictions.ilike("name", "%" + query + "%", MatchMode.ANYWHERE), Restrictions.ilike("description", "%" + query + "%", MatchMode.ANYWHERE), Restrictions.ilike("tags", "%" + query + "%", MatchMode.ANYWHERE)));
+    public List<Document> searchPaginated(int page, int size, String query, long teamId) {
+        return documentDao.findAllPaginated(page, size, Order.desc("uploadDate"), Restrictions.and(Restrictions.eq("team.id", teamId), Restrictions.or(Restrictions.ilike("name", "%" + query + "%", MatchMode.ANYWHERE), Restrictions.ilike("description", "%" + query + "%", MatchMode.ANYWHERE), Restrictions.ilike("tags", "%" + query + "%", MatchMode.ANYWHERE))));
     }
 
     @Override

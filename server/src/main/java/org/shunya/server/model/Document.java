@@ -31,6 +31,10 @@ public class Document {
     @OneToOne
     private Category category;
     private boolean archived = false;
+    @OneToOne
+    private User author;
+    @ManyToOne
+    private Team team;
 
     public String getTags() {
         return tags;
@@ -142,5 +146,21 @@ public class Document {
 
     public void setLength(long length) {
         this.length = length;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
     }
 }

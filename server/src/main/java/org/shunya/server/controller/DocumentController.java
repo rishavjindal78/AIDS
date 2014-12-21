@@ -3,6 +3,7 @@ package org.shunya.server.controller;
 import org.apache.commons.io.IOUtils;
 import org.shunya.server.model.Document;
 import org.shunya.server.model.DocumentStorage;
+import org.shunya.server.services.DBService;
 import org.shunya.server.services.DocumentService;
 import org.shunya.server.vo.FileUploadDTO;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Principal;
 import java.util.Date;
 
 @Controller
@@ -35,6 +37,9 @@ public class DocumentController {
     @Autowired
     private DocumentService documentService;
 
+    @Autowired
+    private DBService dbService;
+
     /*@RequestMapping(value = "documents", method = RequestMethod.GET)
     public String listDocs(@ModelAttribute("model") ModelMap model) {
         logger.info("Total Rows in database are - {}", documentService.countRows());
@@ -42,25 +47,27 @@ public class DocumentController {
         return "documents";
     }*/
 
-    @RequestMapping(value = "search", method = RequestMethod.GET)
+    @RequestMapping(value = "team/{teamId}/search", method = RequestMethod.GET)
     public String searchDocs(@ModelAttribute("model") ModelMap model,
-                                @RequestParam(value = "query", required = false, defaultValue = "") String query,
-                             @RequestParam(value = "message", required = false, defaultValue = "") String message) {
-        model.addAttribute("documents", documentService.searchPaginated(0, 50, query));
+                             @RequestParam(value = "query", required = false, defaultValue = "") String query,
+                             @RequestParam(value = "message", required = false, defaultValue = "") String message,
+                             @PathVariable("teamId") long teamId) {
+        model.addAttribute("documents", documentService.searchPaginated(0, 50, query, teamId));
         model.addAttribute("query", query);
         model.addAttribute("message", message);
         return "documents";
     }
 
-    @RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "edit/{id}", method = RequestMethod.GET)
     public String editAgent(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id) throws Exception {
         Document document = documentService.findById(id);
         model.addAttribute("document", document);
         return "editDocument";
     }
 
-    @RequestMapping(value = "delete/{id}", method = RequestMethod.POST)
-    public String delete(@ModelAttribute("model") ModelMap model, @PathVariable("id") Long id) {
+    @RequestMapping(value = "team/{teamId}/delete/{id}", method = RequestMethod.POST)
+    public String delete(@ModelAttribute("model") ModelMap model, @PathVariable("id") Long id,
+                         @PathVariable("teamId") long teamId) {
         documentService.delete(id);
         return "redirect:../search";
     }
@@ -71,8 +78,8 @@ public class DocumentController {
         return "documents";
     }
 
-    @RequestMapping(value = "upload", method = RequestMethod.POST)
-    public String processUpload2(@ModelAttribute FileUploadDTO file, Model model) throws IOException {
+    @RequestMapping(value = "team/{teamId}/upload", method = RequestMethod.POST)
+    public String processUpload2(@ModelAttribute FileUploadDTO file, Model model, Principal principal, @PathVariable("teamId") long teamId) throws IOException {
         model.addAttribute("message", "File '" + file.getDescription() + "' uploaded successfully");
         Document document = new Document();
         document.setName(file.getFile().getOriginalFilename());
@@ -80,14 +87,16 @@ public class DocumentController {
         document.setTags(file.getTags());
         document.setLength(file.getFile().getSize());
         document.setUploadDate(new Date());
-        if(file.getFile().getSize() > 10*1024*1024){
+        document.setAuthor(dbService.findUserByUsername(principal.getName()));
+        document.setTeam(dbService.findTeamById(teamId));
+        if (file.getFile().getSize() > 10 * 1024 * 1024) {
             //store it in FS
             Path target = Paths.get(uploadFolder, file.getFile().getOriginalFilename());
             Files.copy(file.getFile().getInputStream(), target);
             document.setLocalPath(target.toAbsolutePath().toString());
             document.setStorage(DocumentStorage.FS);
             file.getFile().getInputStream().close();
-        }else {
+        } else {
             //store it in DB
             document.setStorage(DocumentStorage.DB);
             document.setContent(file.getFile().getBytes());
@@ -96,8 +105,9 @@ public class DocumentController {
         return "redirect:search";
     }
 
-    @RequestMapping(value = "upload/{documentId}", method = RequestMethod.POST)
-    public String processUploadUpdate(@ModelAttribute FileUploadDTO file, Model model, @PathVariable("documentId") long documentId) throws IOException {
+    @RequestMapping(value = "team/{teamId}/upload/{documentId}", method = RequestMethod.POST)
+    public String processUploadUpdate(@ModelAttribute FileUploadDTO file, Model model, @PathVariable("documentId") long documentId,
+                                      @PathVariable("teamId") long teamId) throws IOException {
         model.addAttribute("message", "File '" + file.getDescription() + "' updated successfully");
         Document document = documentService.findById(documentId);
         document.setName(file.getFile().getOriginalFilename());
@@ -105,14 +115,14 @@ public class DocumentController {
         document.setTags(file.getTags());
         document.setLength(file.getFile().getSize());
         document.setUploadDate(new Date());
-        if(file.getFile().getSize() > 10*1024*1024){
+        if (file.getFile().getSize() > 10 * 1024 * 1024) {
             //store it in FS
             Path target = Paths.get(uploadFolder, file.getFile().getOriginalFilename());
             Files.copy(file.getFile().getInputStream(), target);
             document.setLocalPath(target.toAbsolutePath().toString());
             document.setStorage(DocumentStorage.FS);
             file.getFile().getInputStream().close();
-        }else {
+        } else {
             //store it in DB
             document.setStorage(DocumentStorage.DB);
             document.setContent(file.getFile().getBytes());
@@ -134,12 +144,12 @@ public class DocumentController {
             // get your file as InputStream
             Document byId = documentService.findById(id);
             fileName = byId.getName();
-            response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName  + "\"");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
             response.setHeader("Content-Length", String.valueOf(byId.getLength()));
             response.setContentType("application/octet-stream");
-            if(byId.getStorage()==DocumentStorage.DB){
+            if (byId.getStorage() == DocumentStorage.DB) {
                 response.getOutputStream().write(byId.getContent());
-            }else{
+            } else {
                 FileInputStream fileInputStream = new FileInputStream(byId.getLocalPath());
                 IOUtils.copy(fileInputStream, response.getOutputStream());
                 fileInputStream.close();

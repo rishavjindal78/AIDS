@@ -11,7 +11,9 @@
 
 <div>
     <fieldset>
-        <form class="form-horizontal" name="upload" action="${rc.contextPath}/documents/upload/${model.document.id}" method="post"
+        <form class="form-horizontal" name="upload"
+              action="${rc.contextPath}/documents/team/${Session['SELECTED_TEAM'].id}/upload/${model.document.id}"
+              method="post"
               enctype="multipart/form-data">
             <div class="form-group">
                 <label for="documentDescriptionId" class="col-sm-2 control-label">Description</label>
@@ -26,7 +28,7 @@
 
                 <div class="col-sm-6">
                     <input id="documentTagsId" type="text" name="tags" placeholder="tags" class="form-control"
-                            value="${model.document.tags!''}"/>
+                           value="${model.document.tags!''}"/>
                 </div>
             </div>
             <div class="form-group">
@@ -41,8 +43,7 @@
                 <input type="submit" class="btn btn-primary" value="Save"/>
                 <button class="btn cancel btn-default" id="cancel">Cancel</button>
             </div>
-</div>
-</form>
-</fieldset>
+        </form>
+    </fieldset>
 </div>
 </#escape>

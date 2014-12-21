@@ -9,7 +9,7 @@ import java.util.List;
 public interface DocumentService extends GenericService<Document, Long>{
     void increaseDownloadCounter(Long id);
 
-    List<Document> searchPaginated(int page, int size, String query);
+    List<Document> searchPaginated(int page, int size, String query, long teamId);
 
     @Transactional(readOnly = false, isolation = Isolation.READ_COMMITTED)
     void delete(Long id);
