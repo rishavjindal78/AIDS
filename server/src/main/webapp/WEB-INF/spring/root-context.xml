@@ -17,6 +17,10 @@
         <property name="ignoreResourceNotFound" value="true"/>
     </bean>
 
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="1000000000"/>
+    </bean>
+
     <import resource="DataSources.xml"/>
     <import resource="security-context.xml"/>
 </beans>

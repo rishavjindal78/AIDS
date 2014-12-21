@@ -52,5 +52,4 @@
                                        "select username, role from USER a, AUTHORITY B, USER_AUTHORITY c where a.id=c.user_id and b.id=c.authorities_id and username=?" />
         </security:authentication-provider>
     </security:authentication-manager>
-
 </beans>
