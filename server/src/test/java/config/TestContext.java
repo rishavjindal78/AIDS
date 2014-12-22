@@ -61,4 +61,9 @@ public class TestContext {
     public AgentStatusService agentStatusService() {
         return mock(AgentStatusService.class);
     }
+
+    @Bean
+    public DocumentService documentService() {
+        return mock(DocumentService.class);
+    }
 }

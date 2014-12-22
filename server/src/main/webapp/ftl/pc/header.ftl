@@ -45,7 +45,7 @@
             </@security.authorize>
             <@security.authorize ifAllGranted="ROLE_ADMIN">
                 <li id="teams"><a href='<@spring.url "/admin/team/index" />'>Teams</a></li>
-                <li id="settings"><a href="${rc.contextPath}/admin/settings">Settings</a></li>
+                <#--<li id="settings"><a href="${rc.contextPath}/admin/settings">Settings</a></li>-->
             </@security.authorize>
                 <#--<li id="home"><a href='${rc.contextPath}/user/profile/${Session["SPRING_SECURITY_CONTEXT"].authentication.name}'>-->
                 <#--<#if Session["LOGGED_USER"]?exists>-->
