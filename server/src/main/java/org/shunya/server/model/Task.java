@@ -1,5 +1,6 @@
 package org.shunya.server.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.OrderBy;
@@ -12,34 +13,27 @@ import java.io.Serializable;
 import java.util.List;
 
 import static org.hibernate.annotations.CascadeType.DELETE;
+import static org.hibernate.annotations.CascadeType.REMOVE;
 import static org.hibernate.annotations.CascadeType.SAVE_UPDATE;
 
 @Entity
 @Table(name = "TASK")
 @TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "TASK_DATA", allocationSize = 10)
-@XmlRootElement()
-//@XmlAccessorOrder(value=XmlAccessOrder.ALPHABETICAL)
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-        "author",
-        "name",
-        "description",
-        "inputParams",
-        "stepDataList"
-})
 public class Task implements Serializable {
     private static final long serialVersionUID = 3450975996342231267L;
     @Id
-    @XmlTransient
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")
     private long id;
     @OneToOne
+    @JsonIgnore
     private User author;
     private String name;
     @Column(length = 500)
     private String description;
     private String tags;
     @ManyToOne
+    @JsonIgnore
     private Team team;
     /*@Column(length = 500)
     private String comments;*/
@@ -47,7 +41,7 @@ public class Task implements Serializable {
     @Lob
     @Basic(fetch = FetchType.EAGER)
     private String inputParams;
-    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE})
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.REMOVE})
     @LazyCollection(LazyCollectionOption.FALSE)
     @BatchSize(size = 10)
     @OrderBy(clause = "sequence asc")
@@ -58,12 +52,13 @@ public class Task implements Serializable {
     @LazyCollection(LazyCollectionOption.TRUE)
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE})
     private List<TaskRun> taskRuns;
-    */@ManyToMany
+    */
+    @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Agent> agentList;
     private boolean notifyStatus = false;
     @OneToOne
-    @Cascade({SAVE_UPDATE, DELETE})
+    @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.REMOVE})
     @LazyCollection(LazyCollectionOption.FALSE)
     private TaskProperties taskProperties;
 

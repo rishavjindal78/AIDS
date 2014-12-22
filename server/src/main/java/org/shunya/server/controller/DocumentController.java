@@ -72,12 +72,6 @@ public class DocumentController {
         return "redirect:../search";
     }
 
-    @RequestMapping(value = "upload2", method = RequestMethod.POST)
-    public String processUpload(@RequestParam MultipartFile file, Model model) throws IOException {
-        model.addAttribute("message", "File '" + file.getOriginalFilename() + "' uploaded successfully");
-        return "documents";
-    }
-
     @RequestMapping(value = "team/{teamId}/upload", method = RequestMethod.POST)
     public String processUpload2(@ModelAttribute FileUploadDTO file, Model model, Principal principal, @PathVariable("teamId") long teamId) throws IOException {
         model.addAttribute("message", "File '" + file.getDescription() + "' uploaded successfully");

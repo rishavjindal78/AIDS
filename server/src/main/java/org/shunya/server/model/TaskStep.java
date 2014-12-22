@@ -12,23 +12,10 @@ import java.util.List;
 @Entity
 @Table(name = "TASK_STEP")
 @TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "TASK_STEP_DATA", allocationSize = 10)
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-        "sequence",
-        "name",
-        "description",
-        "author",
-        "active",
-        "failOver",
-        "ignoreFailure",
-        "inputParams",
-        "outputParams"
-})
-@XmlRootElement
 public class TaskStep implements Serializable {
     private static final long serialVersionUID = 1907841119637052268L;
     @Id
-    @XmlTransient
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")
     private long id;
     private int sequence;
@@ -46,6 +33,7 @@ public class TaskStep implements Serializable {
     @Column(length = 500)
     private String description;
     @OneToOne
+    @JsonIgnore
     private User author;
     private boolean active = true;
     private boolean failOver = false;
@@ -57,11 +45,9 @@ public class TaskStep implements Serializable {
     @Basic(fetch = FetchType.EAGER)
     private String outputParams;
     @ManyToOne
-    @XmlTransient
     @JsonIgnore
     private Task task;//TODO : To keep till we get better redirection strategy
     @OneToMany(cascade = {CascadeType.REMOVE}, mappedBy = "taskStep", fetch = FetchType.LAZY)
-    @XmlTransient
     @JsonIgnore
     @LazyCollection(LazyCollectionOption.TRUE)
     private List<TaskStepRun> taskStepRuns;

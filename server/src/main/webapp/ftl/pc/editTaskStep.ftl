@@ -60,7 +60,7 @@
                                 <#elseif fieldProperties.type == 'date'>
 
                                  <#else>
-                                    <label for="inputParamsMap['${fieldProperties.name?string}']">${fieldProperties.name!?string}</label>
+                                    <label for="inputParamsMap['${fieldProperties.name?string}']">${fieldProperties.displayName!fieldProperties.name!?string}</label>
                                     <input type="text" id="inputParamsMap['${fieldProperties.name?string}']" class="form-control" name="inputParamsMap['${fieldProperties.name?string}']" value="${fieldProperties.value?string}"/>
                                 </#if>
                             </td>

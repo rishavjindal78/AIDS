@@ -1,5 +1,6 @@
 package org.shunya.server.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
@@ -18,8 +19,10 @@ public class Agent {
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")
     private long id;
     @OneToOne
+    @JsonIgnore
     private User createdBy;
     @ManyToOne
+    @JsonIgnore
     private Team team;
     private String name;
     private String description;

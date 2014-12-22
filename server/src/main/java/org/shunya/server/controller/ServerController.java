@@ -1,5 +1,7 @@
 package org.shunya.server.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.IOUtils;
 import org.shunya.server.Role;
 import org.shunya.server.model.*;
 import org.shunya.server.services.*;
@@ -13,10 +15,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
@@ -253,6 +261,43 @@ public class ServerController {
         model.addAttribute("task", task);
         model.addAttribute("referer", referer);
         return "taskSteps";
+    }
+
+    @RequestMapping(value = "export/task/{id}", method = RequestMethod.GET)
+    public void downloadTaskAsJson(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id, HttpServletResponse response) {
+        try {
+            Task task = dbService.getTask(id);
+            ObjectMapper mapper = new ObjectMapper();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            mapper.writeValue(baos, task);
+            IOUtils.copy(new ByteArrayInputStream(baos.toByteArray()),response.getOutputStream());
+            response.setContentType("application/json");
+
+            // set headers for the response
+            String headerKey = "Content-Disposition";
+            String headerValue = String.format("attachment; filename=\"%s\"", task.getName()+".json");
+            response.setHeader(headerKey, headerValue);
+            response.flushBuffer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @RequestMapping(value = "team/{teamId}/taskUpload", method = RequestMethod.POST)
+    public String importTaskAsJson(@RequestParam MultipartFile file, ModelMap model, @PathVariable("teamId") long teamId, Principal principal) throws IOException {
+        model.addAttribute("message", "File '" + file.getOriginalFilename() + "' uploaded successfully");
+        //2. Convert JSON to Java object
+        ObjectMapper mapper = new ObjectMapper();
+        Task task = mapper.readValue(file.getInputStream(), Task.class);
+        task.setAuthor(dbService.findUserByUsername(principal.getName()));
+        task.setTeam(dbService.findTeamById(teamId));
+        List<TaskStep> stepDataList = task.getStepDataList();
+        for (TaskStep taskStep : stepDataList) {
+            taskStep.setTask(task);
+        }
+        dbService.save(task);
+        System.out.println("task = " + task);
+        return "redirect:tasks";
     }
 
     @RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)

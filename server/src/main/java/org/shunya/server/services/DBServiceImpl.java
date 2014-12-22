@@ -69,12 +69,13 @@ public class DBServiceImpl implements DBService {
         DBDao.getSessionFactory().getCurrentSession().delete(taskStepData);
     }
 
-    @Override
+    @Transactional(readOnly = false)
     public void deleteTask(long id) {
         Task task = getTask(id);
         List taskData1 = DBDao.getSessionFactory().getCurrentSession().createQuery("select id from TaskRun tr where tr.task = :task").setEntity("task", task).list();
         DBDao.getSessionFactory().getCurrentSession().createQuery("delete from TaskStepRun tr where tr.taskRun.id in (:taskRunIds)").setParameterList("taskRunIds", taskData1).executeUpdate();
         DBDao.getSessionFactory().getCurrentSession().createQuery("delete from TaskRun tr where tr.task = :task").setEntity("task", task).executeUpdate();
+        task.setTaskProperties(null);
         DBDao.getSessionFactory().getCurrentSession().delete(task);
     }
 
