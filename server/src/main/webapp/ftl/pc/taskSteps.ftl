@@ -110,12 +110,12 @@
             <tr>
                 <td width="5%">${taskStep.sequence?string}</td>
                 <td width="12%">${taskStep.taskClass?string}</td>
-                <td width="40%">${taskStep.description!?string}</td>
+                <td width="30%">${taskStep.description!?string}</td>
                 <td width="5%"><input class="activeCheckBox" type="checkbox" id="${taskStep.id}"
                            <#if taskStep.active?? && taskStep.active?string=="true">checked="true"</#if></td>
                 <td width="5%"><input class="ignoreFailureCheckBox" type="checkbox" id="${taskStep.id}"
                            <#if taskStep.ignoreFailure?? && taskStep.ignoreFailure?string=="true">checked="true"</#if></td>
-                <td width="10%">
+                <td width="15%">
                     <#list taskStep.agentList as agent>
                         <form class="form-horizontal" name="agent" action="${rc.contextPath}/server/taskStep/removeAgent/${taskStep.id?string}/${agent.id}" method="post">
                             <span class="label label-primary">${agent.name}</span><button type="submit" class="btn btn-link" id="save">X</button>

@@ -39,20 +39,23 @@
                 <li id="documents"><a
                         href='<@spring.url "/documents/team/${Session['SELECTED_TEAM'].id}/search" />'>Docs</a>
                 </li>
+                <li id="settings"><a
+                        href='<@spring.url "/server/team/${Session['SELECTED_TEAM'].id}/settings" />'>Settings</a>
+                </li>
             </@security.authorize>
             <@security.authorize ifAllGranted="ROLE_ADMIN">
                 <li id="teams"><a href='<@spring.url "/admin/team/index" />'>Teams</a></li>
                 <li id="settings"><a href="${rc.contextPath}/admin/settings">Settings</a></li>
             </@security.authorize>
-                <li id="home"><a href='${rc.contextPath}/user/profile/${Session["SPRING_SECURITY_CONTEXT"].authentication.name}'>
-                <#if Session["LOGGED_USER"]?exists>
-                ${Session["LOGGED_USER"].name}
-                <#elseif Session["SPRING_SECURITY_CONTEXT"]?exists>
-                ${Session["SPRING_SECURITY_CONTEXT"].authentication.name}
-                <#else>
-                    Anonymous
-                </#if></a>
-                </li>
+                <#--<li id="home"><a href='${rc.contextPath}/user/profile/${Session["SPRING_SECURITY_CONTEXT"].authentication.name}'>-->
+                <#--<#if Session["LOGGED_USER"]?exists>-->
+                <#--${Session["LOGGED_USER"].name}-->
+                <#--<#elseif Session["SPRING_SECURITY_CONTEXT"]?exists>-->
+                <#--${Session["SPRING_SECURITY_CONTEXT"].authentication.name}-->
+                <#--<#else>-->
+                    <#--Anonymous-->
+                <#--</#if></a>-->
+                <#--</li>-->
             <@security.authorize ifAllGranted="ROLE_USER">
                 <li><select id="selectedTeam" class="form-control" name="teamId" onchange="submit()">
                     <#list Session["LOGGED_USER"].teamList as team>

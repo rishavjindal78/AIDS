@@ -73,6 +73,7 @@ public class TaskService {
             taskRun.setRunStatus(RunStatus.RUNNING);
             dbService.save(taskRun);
             executionPlan.getSessionMap().putAll(loadAgentNames(taskRun.getTeam().getId()));
+            executionPlan.getSessionMap().putAll(loadTeamProperties(taskRun.getTeam().getTeamProperties()));
             executionPlan.getSessionMap().putAll(loadTaskProperties(taskRun.getTask().getTaskProperties()));
             delegateStepToAgents(next.getValue(), taskRun);
         } else {
@@ -148,6 +149,20 @@ public class TaskService {
         try {
             if (taskProperties != null && taskProperties.getProperties() != null) {
                 InputStream is = new ByteArrayInputStream(taskProperties.getProperties().getBytes());
+                Properties prop = new Properties();
+                prop.load(is);
+                return (Map) prop;
+            }
+        } catch (Exception e) {
+            logger.error("Error loading Agent properties while execution", e);
+        }
+        return Collections.emptyMap();
+    }
+
+    private Map<String, String> loadTeamProperties(TeamProperties teamProperties) {
+        try {
+            if (teamProperties != null && teamProperties.getProperties() != null) {
+                InputStream is = new ByteArrayInputStream(teamProperties.getProperties().getBytes());
                 Properties prop = new Properties();
                 prop.load(is);
                 return (Map) prop;

@@ -131,7 +131,6 @@
                             <#else>
                                 <span class="label label-danger" id="${agent.id}">${agent.status!'N/A'?string}</span>
                             </#if>
-
                         </td>
                     <#--<td>${debt.comments?size}</td>-->
                     </tr>

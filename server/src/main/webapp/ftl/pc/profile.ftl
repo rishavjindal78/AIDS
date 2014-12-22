@@ -10,25 +10,6 @@
         }
     </style>
     <script type="text/javascript">
-        function executeFunction(url) {
-            var userComment = prompt("Please enter comments for the run .. ?", "Test Run");
-            if (userComment != null) {
-                $("#results").empty();
-                $.post(url, { comment: userComment}, function (data) {
-                    $("#results").html('<div class="alert alert-success">Job Submitted Successfully - ' + url + '</div>');
-                });
-            }
-        }
-
-        function editAgent(id) {
-            $.get('${rc.contextPath}/server/editAgent/' + id, function (data) {
-                $('#spane_edit_agent').empty();
-                $('#spane_edit_agent').html(data);
-//                $('#span_expense_edit_'+id).empty();
-//                $('#span_expense_edit_'+id).html(data);
-            });
-        }
-
         $(document).ready(function () {
             $(".content").hide();
 //            $(".content").css("display", "none");

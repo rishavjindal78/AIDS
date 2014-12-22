@@ -381,6 +381,24 @@ public class ServerController {
         return "redirect:/user/profile/" + principal.getName();
     }
 
+    @RequestMapping(value = "team/{teamId}/settings", method = RequestMethod.GET)
+    public String teamSettings(@ModelAttribute("model") ModelMap model, @PathVariable("teamId") long teamId, Principal principal) {
+        model.addAttribute("team", dbService.findTeamById(teamId));
+        model.addAttribute("user", dbService.findUserByUsername(principal.getName()));
+        return "teamSettings";
+    }
+
+    @RequestMapping(value = "team/{teamId}/settings", method = RequestMethod.POST)
+    public String updateTeamSettings(@ModelAttribute("team") Team team, @PathVariable("teamId") long teamId, Principal principal) {
+        Team teamById = dbService.findTeamById(teamId);
+        teamById.setName(team.getName());
+        teamById.setDescription(team.getDescription());
+        teamById.setTelegramId(team.getTelegramId());
+        teamById.setTeamProperties(team.getTeamProperties());
+        dbService.save(teamById);
+        return "redirect:settings";
+    }
+
     @RequestMapping(value = "submitTaskStepResults", method = RequestMethod.POST)
     @ResponseBody
     @Secured({Role.ROLE_AGENT})

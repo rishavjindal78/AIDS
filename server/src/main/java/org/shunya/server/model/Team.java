@@ -1,11 +1,15 @@
 package org.shunya.server.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.List;
+
+import static org.hibernate.annotations.CascadeType.DELETE;
+import static org.hibernate.annotations.CascadeType.SAVE_UPDATE;
 
 @Entity
 @Table(name="TEAM")
@@ -24,6 +28,8 @@ public class Team {
     @JsonBackReference
     private List<User> userList;
     @OneToOne
+    @Cascade({SAVE_UPDATE, DELETE})
+    @LazyCollection(LazyCollectionOption.FALSE)
     private TeamProperties teamProperties;
 
     public Team() {}

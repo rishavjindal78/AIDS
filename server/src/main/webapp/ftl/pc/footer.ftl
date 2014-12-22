@@ -2,5 +2,8 @@
 <div class="footer">
     <p>&copy; Shunya.org 2014</p>
 </div>
-<#--<script src="${rc.getContextPath()}/resources/js/jquery-2.1.0.min.js"></script>-->
-<#--<script src="${rc.getContextPath()}/resources/bootstrap/js/bootstrap.min.js"></script>-->
+<#--<footer class="footer">
+    <div class="container">
+        <p class="text-muted">Place sticky footer content here.</p>
+    </div>
+</footer>-->
