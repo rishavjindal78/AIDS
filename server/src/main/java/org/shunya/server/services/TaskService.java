@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -21,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.ConnectException;
 import java.net.Inet4Address;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -51,6 +54,21 @@ public class TaskService {
 
     @Value("${server.port}")
     private String serverPort;
+
+    private int maxSystemFailureTimeInHours = 3;
+
+    @Scheduled(cron = "0 0/2 * * * ?")
+    public void checkSystemFailures() {
+        logger.info("Running System Failures of Agents");
+        taskExecutionPlanMap.forEach((taskRun, taskExecutionPlan) -> {
+            if (LocalDateTime.ofInstant(taskRun.getStartTime().toInstant(), ZoneId.systemDefault()).isBefore(LocalDateTime.now().minusHours(maxSystemFailureTimeInHours))) {
+                logger.warn("System Failures Detected for TaskRun - " + taskRun.getName());
+                handleCompletion(taskRun, taskExecutionPlan, RunStatus.FAILURE);
+                currentlyRunningTaskSteps.remove(taskRun);
+                logger.warn("Task Kicked due to System Failures, TaskRun - " + taskRun.getName());
+            }
+        });
+    }
 
     // if task is not started at all - create execution plan and start it
     // if task has start but not completed - then execute rest of steps
