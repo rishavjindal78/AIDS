@@ -1,6 +1,6 @@
 <hr>
 <div class="footer">
-    <p>&copy; Shunya.org 2014</p>
+    <h6 class="text-muted">&copy; Shunya.org 2014 build.version - <@spring.message code="build.timestamp"/></h6>
 </div>
 <#--<footer class="footer">
     <div class="container">

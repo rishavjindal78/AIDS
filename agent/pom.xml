@@ -15,6 +15,7 @@
     </parent>-->
 
     <properties>
+        <timestamp>${maven.build.timestamp}</timestamp>
         <jetty.version>9.2.2.v20140723</jetty.version>
         <spring.version>4.1.2.RELEASE</spring.version>
     </properties>
@@ -134,14 +135,21 @@
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
                 <excludes>
-                    <exclude>**/*.txt</exclude>
+                    <exclude>**/*.properties</exclude>
                 </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
             </resource>
             <resource>
                 <directory>src/main/webapp/WEB-INF</directory>
                 <filtering>false</filtering>
                 <excludes>
-                    <exclude>**/*.txt</exclude>
+                    <exclude>**/*.properties</exclude>
                 </excludes>
             </resource>
         </resources>

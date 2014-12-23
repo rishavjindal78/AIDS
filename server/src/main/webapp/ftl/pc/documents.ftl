@@ -123,7 +123,6 @@
             </#list>
         </tbody>
     </table>
-    </div>
     <span id="message" style="color: green">${model.message!''}</span>
     </@com.page>
 </#escape>

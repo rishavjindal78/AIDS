@@ -32,6 +32,7 @@ public class Task implements Serializable {
     @Column(length = 500)
     private String description;
     private String tags;
+    private String schedule;
     @ManyToOne
     @JsonIgnore
     private Team team;
@@ -194,5 +195,13 @@ public class Task implements Serializable {
 
     public void setTaskProperties(TaskProperties taskProperties) {
         this.taskProperties = taskProperties;
+    }
+
+    public String getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(String schedule) {
+        this.schedule = schedule;
     }
 }

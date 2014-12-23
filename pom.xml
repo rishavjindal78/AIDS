@@ -15,6 +15,7 @@
     <properties>
         <skip.integration.tests>true</skip.integration.tests>
         <skip.unit.tests>true</skip.unit.tests>
+        <timestamp>${maven.build.timestamp}</timestamp>
     </properties>
 
     <dependencies>

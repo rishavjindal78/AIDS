@@ -14,6 +14,18 @@
             }
         }
 
+        function deleteTask(taskId) {
+            var option = confirm("Are you sure to delete the Task ?");
+            if (option == true) {
+                var url = '${rc.getContextPath()}/server/delete/'+taskId;
+                $("#results").empty();
+                $.post(url, {}, function (data) {
+                    $("table#tasksTable tr#table_row_"+taskId).remove();
+                    $("#results").html('<div class="alert alert-success">Task Deleted Successfully - ' + url + '</div>');
+                });
+            }
+        }
+
         function editTask(id) {
             $.get('${rc.contextPath}/server/team/${model.team.id}/editTask/' + id, function (data) {
                 $('#span_task_edit').empty();
@@ -96,7 +108,7 @@
     <h2 class="sub-header text-muted">Tasks</h2>
 
     <div class="table-responsive">
-        <table class="table table-striped">
+        <table id="tasksTable" class="table table-striped">
             <tr>
                 <th width="5%">#</th>
                 <th width="25%">Name</th>
@@ -106,7 +118,7 @@
                 <th width="5%">Operation</th>
             </tr>
             <#list model["tasks"] as td>
-                <tr>
+                <tr id="table_row_${td.id}">
                     <td>${td_index+1} &nbsp;<a href="#" onclick="editTask('${td.id}')"><span
                             class="glyphicon glyphicon-edit"/></a></td>
                     <td><a href="${rc.getContextPath()}/server/task/${td.id}">${td.name?string}</a></td>
@@ -136,7 +148,7 @@
                                 <li><a href="${rc.getContextPath()}/server/taskHistory/${td.id}">history</a></li>
                                 <li><a href="${rc.getContextPath()}/server/export/task/${td.id}">Download</a></li>
                                 <li class="divider"></li>
-                                <li><a href="${rc.getContextPath()}/server/delete/${td.id}">Delete</a></li>
+                                <li><a href="#" onclick="deleteTask('${td.id}')">Delete</a></li>
                             </ul>
                         </div>
                     </td>
@@ -145,6 +157,7 @@
         </table>
         <span id="span_task_agent"></span>
         <span id="span_task_edit"></span>
+        <span id="results"></span>
     </div>
     <#--</div>-->
     </@com.page>

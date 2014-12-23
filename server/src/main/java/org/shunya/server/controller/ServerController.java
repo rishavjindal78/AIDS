@@ -270,12 +270,12 @@ public class ServerController {
             ObjectMapper mapper = new ObjectMapper();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             mapper.writeValue(baos, task);
-            IOUtils.copy(new ByteArrayInputStream(baos.toByteArray()),response.getOutputStream());
+            IOUtils.copy(new ByteArrayInputStream(baos.toByteArray()), response.getOutputStream());
             response.setContentType("application/json");
 
             // set headers for the response
             String headerKey = "Content-Disposition";
-            String headerValue = String.format("attachment; filename=\"%s\"", task.getName()+".json");
+            String headerValue = String.format("attachment; filename=\"%s\"", task.getName() + ".json");
             response.setHeader(headerKey, headerValue);
             response.flushBuffer();
         } catch (IOException e) {
@@ -362,8 +362,8 @@ public class ServerController {
         return "redirect:" + referer;
     }
 
-    @RequestMapping(value = "delete/{id}", method = RequestMethod.GET)
-    public String deleteTask(@PathVariable("id") long id, @ModelAttribute("taskData") Task taskData) throws IOException {
+    @RequestMapping(value = "delete/{id}", method = RequestMethod.POST)
+    public String deleteTask(@PathVariable("id") long id, @ModelAttribute("model") ModelMap model) throws IOException {
         if (id != 0) {
             dbService.deleteTask(id);
         }
@@ -461,14 +461,14 @@ public class ServerController {
         LogsVO logsVO = new LogsVO();
         if (taskStepRun.getRunState() == RunState.RUNNING) {
             logs = restClient.getMemoryLogs(taskStepRun.getId(), taskStepRun.getAgent(), start);
-            if(logs == null)
+            if (logs == null)
                 logs = "";
             if (logs.equalsIgnoreCase("finished")) {
                 logs = taskStepRun.getLogs();
                 logsVO.setStatus("FINISHED");
             }
         } else {
-            logs = taskStepRun.getLogs().substring((int) Math.min(taskStepRun.getLogs().length(), start));;
+            logs = taskStepRun.getLogs().substring((int) Math.min(taskStepRun.getLogs().length(), start));
             logsVO.setStatus("FINISHED");
         }
         logsVO.setLogs(logs);
