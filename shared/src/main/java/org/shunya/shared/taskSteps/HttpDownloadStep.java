@@ -16,13 +16,13 @@ import java.util.logging.Level;
 
 @PunterTask(author = "munishc", name = "HttpGetTask", description = "Plays HTTP GET Request on the given URL.", documentation = "src/main/resources/docs/TextSamplerDemoHelp.html")
 public class HttpDownloadStep extends AbstractStep {
-    @InputParam(required = false, description = "enter httpUrl here")
+    @InputParam(required = false, displayName = "Http Url", description = "enter httpUrl here")
     private String httpUrl;
-    @InputParam(required = false, description = "enter httpsUrl here")
+    @InputParam(required = false, displayName = "Https Url", description = "enter httpsUrl here")
     private String httpsUrl;
-    @InputParam(required = true)
+    @InputParam(required = true, displayName = "Local Path", description = "Local Folder Path")
     private String localPath;
-    @InputParam(required = false)
+    @InputParam(required = false, displayName = "File Name", description = "file name")
     private String fileName;
 
     @OutputParam
@@ -42,15 +42,17 @@ public class HttpDownloadStep extends AbstractStep {
         try (FileOutputStream fileOutputStream = new FileOutputStream(new File(localPath, fileName));) {
             if (httpsUrl != null && !httpsUrl.isEmpty()) {
                 // Create a trust manager that does not validate certificate chains
-                TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+                TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
                     public X509Certificate[] getAcceptedIssuers() {
                         return null;
                     }
+
                     public void checkClientTrusted(X509Certificate[] certs, String authType) {
                     }
+
                     public void checkServerTrusted(X509Certificate[] certs, String authType) {
                     }
-                } };
+                }};
                 // Install the all-trusting trust manager
                 final SSLContext sc = SSLContext.getInstance("SSL");
                 sc.init(null, trustAllCerts, new java.security.SecureRandom());

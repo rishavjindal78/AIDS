@@ -18,9 +18,9 @@ import java.util.logging.Logger;
 public class SystemCommandStep extends AbstractStep {
     @InputParam(required = true, displayName = "System Command", type = "textarea", description = "any systemCommand")
     public String systemCommand;
-    @InputParam(required = false, displayName = "Success message", type = "text", description = "Import terminated successfully")
+    @InputParam(required = false, displayName = "Success Message", type = "text", description = "Import terminated successfully")
     public String successMessage;
-    @InputParam(required = false, displayName = "waitForTerminate",type = "text", description = "Should wait for the Process termination or not ?")
+    @InputParam(required = false, displayName = "Wait For Terminate",type = "text", description = "Should wait for the Process termination or not ?")
     public boolean waitForTerminate = true;
 
     @Override

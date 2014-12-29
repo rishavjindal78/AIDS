@@ -13,25 +13,25 @@ import java.util.logging.Level;
 
 @PunterTask(author = "munishc", name = "EmailTask", description = "Email Task", documentation = "src/main/resources/docs/EmailTask.html")
 public class EmailStep extends AbstractStep {
-    @InputParam(required = true, description = "comma separated to addresses")
+    @InputParam(required = true, displayName = "To Address", description = "comma separated to addresses")
     private String toAddress;
-    @InputParam(required = true, description = "comma separated to addresses")
+    @InputParam(required = true, displayName = "CC Address", description = "comma separated CC addresses")
     private String ccAddress;
-    @InputParam(required = true, description = "Subject of Email")
+    @InputParam(required = true, displayName = "Email Subject", description = "Subject of Email")
     private String subject;
-    @InputParam(required = true, description = "from Address")
+    @InputParam(required = true, displayName = "From Address", description = "from Address")
     private String fromAddress;
-    @InputParam(required = true,  type = "textarea", description = "html body")
+    @InputParam(required = true, displayName = "Email Body", type = "textarea", description = "html body")
     private String body;
-    @InputParam(required = true, description = "Comma Separated File Names")
+    @InputParam(required = true, displayName = "Comma Separated File Paths", description = "Comma Separated File Names")
     private String attachments;
-    @InputParam(required = false, description = "Username if Auth is required")
+    @InputParam(required = false, displayName = "Username", description = "Username if Auth is required")
     private String username;
-    @InputParam(required = false, description = "Password if Auth is required")
+    @InputParam(required = false, displayName = "Display Name", description = "Password if Auth is required")
     private String password;
-    @InputParam(required = false, description = "Input String for matching")
+    @InputParam(required = false, displayName = "Input String for matching", description = "Input String for matching")
     private String inputString;
-    @InputParam(required = false, description = "Line separated expected messages")
+    @InputParam(required = false, displayName = "Line Separated Expected Messages", description = "Line separated expected messages")
     private String expectedMessages;
 
     @Override

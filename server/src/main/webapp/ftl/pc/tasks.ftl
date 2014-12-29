@@ -30,8 +30,6 @@
             $.get('${rc.contextPath}/server/team/${model.team.id}/editTask/' + id, function (data) {
                 $('#span_task_edit').empty();
                 $('#span_task_edit').html(data);
-//                $('#span_expense_edit_'+id).empty();
-//                $('#span_expense_edit_'+id).html(data);
             });
         }
 
