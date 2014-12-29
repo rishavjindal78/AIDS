@@ -24,10 +24,10 @@ public class UnZipStep extends AbstractStep {
     @Override
     public boolean run() {
         LOGGER.get().log(Level.INFO, "unzipping File " + inputFile + " to location - " + outputFolder);
-        return extractFolder(inputFile, outputFolder);
+        return extractFolder(inputFile, outputFolder, false);
     }
 
-    public boolean extractFolder(String zipFile, String outputFolder) {
+    public boolean extractFolder(String zipFile, String outputFolder, boolean recursive) {
         try {
             File folder = new File(outputFolder);
             if (!folder.exists()) {
@@ -42,6 +42,7 @@ public class UnZipStep extends AbstractStep {
             while (zipFileEntries.hasMoreElements()) {
                 // grab a zip file entry
                 ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
+                LOGGER.get().log(Level.INFO, entry.getName());
                 String currentEntry = entry.getName();
                 File destFile = new File(folder, currentEntry);
                 //destFile = new File(newPath, destFile.getName());
@@ -69,8 +70,8 @@ public class UnZipStep extends AbstractStep {
                     is.close();
                 }
 
-                if (currentEntry.endsWith(".zip")) {
-                    return extractFolder(destFile.getAbsolutePath(), outputFolder);
+                if (recursive && currentEntry.endsWith(".zip")) {
+                    extractFolder(destFile.getAbsolutePath(), outputFolder, recursive);
                 }
             }
             return true;
@@ -82,6 +83,6 @@ public class UnZipStep extends AbstractStep {
 
     public static void main(String[] args) throws IOException {
         UnZipStep unZipStep = new UnZipStep();
-        unZipStep.extractFolder("C:\\aids_home\\test.zip", "C:\\aids_home\\testMe");
+        unZipStep.extractFolder("C:\\TDM\\dist\\tdm-dist-8.3.0.2-SNAPSHOT.zip", "C:\\TDM\\dist\\tdm-dist-8.3.0.2-SNAPSHOT", false);
     }
 }
