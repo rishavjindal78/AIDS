@@ -18,7 +18,7 @@ public class FileUploadStep extends AbstractStep {
     private String server;
     @InputParam(required = false, displayName = "Local File Path", description = "Path of the file to upload e:/test.mp3")
     private String filePath;
-    @InputParam(required = false, displayName = "Target FIle Name", description = "Name of the file")
+    @InputParam(required = false, displayName = "Target File Name", description = "Name of the file")
     private String name;
     @InputParam(required = false, displayName = "Target Folder", description = "Remote Path for the file")
     private String remotePath;

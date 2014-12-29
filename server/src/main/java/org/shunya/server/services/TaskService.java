@@ -248,11 +248,13 @@ public class TaskService {
                     executionContext.setBaseUrl("http://" + hostAddress + ":" + serverPort + contextPath);
                     executionContext.setUsername("agent");
                     executionContext.setPassword("agent");
-                    executionContext.setSessionMap(taskExecutionPlanMap.get(taskRun).getSessionMap());
+                    executionContext.setSessionMap(new HashMap(taskExecutionPlanMap.get(taskRun).getSessionMap()));
                     executionContext.setTaskStepRunDTO(convertToDTO(taskStepRun));
                     TaskStep taskStep = taskStepRun.getTaskStep();
                     executionContext.setStepDTO(convertToDTO(taskStep));
-                    executionContext.getSessionMap().putAll(loadAgentProperties(taskStepRun.getAgent().getAgentProperties()));
+                    Map<String, String> agentProperties = loadAgentProperties(taskStepRun.getAgent().getAgentProperties());
+                    executionContext.getSessionMap().putAll(agentProperties);
+                    logger.info("executionContext.getSessionMap() = " + executionContext.getSessionMap());
                     restClient.submitTaskToAgent(executionContext, taskStepRun.getAgent());
                     logger.info("task submitted - " + taskStep.getDescription());
                 } catch (Exception e) {
