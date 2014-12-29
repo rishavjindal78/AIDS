@@ -29,7 +29,9 @@ public class SystemCommandStep extends AbstractStep {
         try {
             String[] commands = systemCommand.split("[\n]");
             final Process child = Runtime.getRuntime().exec("cmd /k");
-
+            /*final ProcessBuilder pb = new ProcessBuilder("cmd", "/k");
+            pb.redirectErrorStream(true);
+            final Process child = pb.start();*/
             final Logger logger = LOGGER.get();
             Thread captureProcessStreams = new Thread(() -> {
                 try {
