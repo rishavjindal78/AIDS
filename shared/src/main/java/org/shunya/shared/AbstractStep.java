@@ -188,14 +188,21 @@ public abstract class AbstractStep {
 
     private String substituteVariables(String inputString, Map<String, Object> variables) {
         List<String> vars = getVariablesFromString(inputString);
-        for (String string : vars) {
-            String variable = "#{" + string + "}";
-            if (null == variables.get(string)) {
+        for (String key : vars) {
+            String variable = "#{" + key + "}";
+            if (null != variables.get(key)) {
+                String variableBinding = variables.get(key).toString();
+                inputString = inputString.replace(variable, variableBinding);
+            } else if (null != System.getenv(key)) {
+                String variableBinding = System.getenv(key);
+                inputString = inputString.replace(variable, variableBinding);
+            } else if (null != System.getProperty(key)) {
+                String variableBinding = System.getProperty(key);
+                inputString = inputString.replace(variable, variableBinding);
+            } else {
                 LOGGER.get().severe(() -> "Variable Binding not Found :" + variable + " TaskStepName : " + taskStepData.getName());
                 throw new RuntimeException("Variable Binding not Found :" + variable + " TaskStepName : " + taskStepData.getName());
             }
-            String variableBinding = variables.get(string).toString();
-            inputString = inputString.replace(variable, variableBinding);
         }
         return inputString;
     }
