@@ -228,9 +228,9 @@ public class DBServiceImpl implements DBService {
         criteria.setFetchSize(30);
         criteria.add(Restrictions.eq("task.id", taskId));
         criteria.addOrder(Order.desc("id"));
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         criteria.setMaxResults(30);
         criteria.setCacheable(true);
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return criteria.list();
     }
 
@@ -240,9 +240,9 @@ public class DBServiceImpl implements DBService {
         criteria.setFetchSize(30);
         criteria.add(Restrictions.eq("team.id", teamId));
         criteria.addOrder(Order.desc("id"));
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         criteria.setMaxResults(30);
         criteria.setCacheable(true);
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return criteria.list();
     }
 }

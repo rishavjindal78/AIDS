@@ -47,7 +47,7 @@
                 <td><a href="${rc.getContextPath()}/server/taskStepHistory/${taskHistory.id}">${taskHistory.name!?string}</a></td>
                 <td>${taskHistory.comments!?string}</td>
                 <td><#if taskHistory.startTime??>${taskHistory.startTime?datetime?string("dd MMM, yyyy hh.mm aa")}</#if></td>
-                <td><#if taskHistory.finishTime??>${taskHistory.finishTime?datetime?string("dd MMM, yyyy hh.mm aa")}</#if></td>
+                <td><#if taskHistory.finishTime??>${((taskHistory.finishTime?datetime?long - taskHistory.startTime?datetime?long)/1000)?int} sec</#if></td>
                 <#if taskHistory.runStatus?string == 'FAILURE'>
                     <td>
                         <button type="button" class="btn btn-danger btn-sm">${taskHistory.runStatus!?string}</button>

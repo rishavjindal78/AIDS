@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.util.Date;
 
@@ -85,8 +87,10 @@ public class DocumentController {
         document.setTeam(dbService.findTeamById(teamId));
         if (file.getFile().getSize() > 10 * 1024 * 1024) {
             //store it in FS
+            if (!Paths.get(uploadFolder).toFile().exists())
+                Paths.get(uploadFolder).toFile().mkdirs();
             Path target = Paths.get(uploadFolder, file.getFile().getOriginalFilename());
-            Files.copy(file.getFile().getInputStream(), target);
+            Files.copy(file.getFile().getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
             document.setLocalPath(target.toAbsolutePath().toString());
             document.setStorage(DocumentStorage.FS);
             file.getFile().getInputStream().close();
@@ -111,8 +115,10 @@ public class DocumentController {
         document.setUploadDate(new Date());
         if (file.getFile().getSize() > 10 * 1024 * 1024) {
             //store it in FS
+            if (!Paths.get(uploadFolder).toFile().exists())
+                Paths.get(uploadFolder).toFile().mkdirs();
             Path target = Paths.get(uploadFolder, file.getFile().getOriginalFilename());
-            Files.copy(file.getFile().getInputStream(), target);
+            Files.copy(file.getFile().getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
             document.setLocalPath(target.toAbsolutePath().toString());
             document.setStorage(DocumentStorage.FS);
             file.getFile().getInputStream().close();
