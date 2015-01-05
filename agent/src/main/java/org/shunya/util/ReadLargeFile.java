@@ -4,13 +4,21 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
 
 public class ReadLargeFile {
-    public static void main(String[] args) throws IOException {
-        final Path path = Paths.get("C:\\temp");
-        final Stream<Path> files = Files.list(path);
-        files.forEach((t) -> extractErrors(t.toFile().getAbsolutePath()));
+    public static void main(String[] args) throws IOException, InterruptedException {
+        Instant start = Instant.now();
+        Thread.sleep(6553);
+        Instant end = Instant.now();
+        System.out.println(Duration.between(start, end)); // prints PT1M3.553S
+
+//        final Path path = Paths.get("C:\\temp");
+//        final Stream<Path> files = Files.list(path);
+//        files.forEach((t) -> extractErrors(t.toFile().getAbsolutePath()));
 //      extractErrors("C:\\temp\\tomcat7-stdout.2014-03-05.log");
     }
 

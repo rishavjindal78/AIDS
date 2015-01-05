@@ -415,6 +415,18 @@ public class ServerController {
         return taskRun;
     }
 
+    @RequestMapping(value = "cancel/{taskRunId}", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseBody
+    public String cancelTaskRun(@PathVariable("taskRunId") Long taskRunId,
+                           @RequestParam(defaultValue = "test", required = false) String comment,
+                           Principal principal) {
+        logger.info("Cancel request for {}, user comments ", taskRunId, comment);
+        String name = principal.getName();
+        taskService.cancelTaskRun(dbService.getTaskRun(taskRunId));
+        return "Request Submitted for Task cancellation";
+    }
+
     @RequestMapping(value = "team", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.ACCEPTED)
     public String changeTeam(@RequestParam("teamId") Long teamId, Principal principal) {

@@ -110,6 +110,11 @@ public class TaskService {
         currentlyRunningTasks.remove(taskRun.getTask().getId());
     }
 
+    public void cancelTaskRun(TaskRun taskRun){
+        TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);
+        taskExecutionPlan.setCancelled(true);
+    }
+
     @Async
     public void consumeStepResult(TaskContext taskContext) {
         TaskStepRun taskStepRun = dbService.getTaskStepRun(taskContext.getTaskStepRunDTO().getId());
@@ -127,13 +132,19 @@ public class TaskService {
         TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);
         taskExecutionPlan.getSessionMap().putAll(taskContext.getSessionMap());
         taskExecutionPlan.setTaskStatus(taskExecutionPlan.isTaskStatus() & (taskStepRun.isStatus() || taskStepRun.getTaskStep().isIgnoreFailure()));
+        if (taskStepRun.getTaskStep().isIgnoreFailure() && !taskStepRun.isStatus()) {
+            logger.info("Ignoring Step failure, as it is set Optional");
+        }
         if (currentlyRunningTaskSteps.get(taskRun).isEmpty()) {
-            if (taskStepRun.getTaskStep().isIgnoreFailure() && taskStepRun.isStatus()) {
-                logger.info("Ignoring Step failure, as it is set Optional");
-            } else if (!taskExecutionPlan.isTaskStatus() && taskExecutionPlan.isAbortOnFirstFailure()) {
+            if (!taskExecutionPlan.isTaskStatus() && taskExecutionPlan.isAbortOnFirstFailure()) {
                 logger.info("Aborting Task Execution after first failure, State = Complete");
                 handleCompletion(taskRun, taskExecutionPlan, RunStatus.FAILURE);
                 statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Aborting Task Execution after first failure, State = Complete");
+                return;
+            } else if(taskExecutionPlan.isCancelled()){
+                logger.info("Aborting Task Execution due to User Cancellation, State = Cancelled");
+                handleCompletion(taskRun, taskExecutionPlan, RunStatus.CANCELLED);
+                statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Aborting Task Execution due to User Cancellation, State = Cancelled");
                 return;
             }
             processNextStep(taskRun, taskExecutionPlan);

@@ -15,6 +15,7 @@ public class TaskExecutionPlan {
     private Map<String, Object> sessionMap = new HashMap<>();
     private boolean taskStatus = true;
     private boolean abortOnFirstFailure = true;
+    private boolean cancelled = false;
 
     public TaskExecutionPlan(Task task) {
         this.task = task;
@@ -55,5 +56,13 @@ public class TaskExecutionPlan {
 
     public void setAbortOnFirstFailure(boolean abortOnFirstFailure) {
         this.abortOnFirstFailure = abortOnFirstFailure;
+    }
+
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
     }
 }
