@@ -62,6 +62,7 @@
                 <th>Title</th>
                 <th>Agent</th>
                 <th>Updated</th>
+                <th>Duration</th>
                 <th>Status</th>
                 <th>Operation</th>
             </tr>
@@ -77,6 +78,7 @@
                 <td>${taskStepRun.taskStep.description!?string}</td>
                 <td>${taskStepRun.agent.name!?string}</td>
                 <td><#if taskStepRun.finishTime??>${taskStepRun.finishTime?datetime?string("dd MMM, yyyy hh.mm aa")}</#if></td>
+                <td>${taskStepRun.timeConsumed()?string}</td>
                 <#if taskStepRun.runStatus?string == 'FAILURE'>
                     <td>
                         <button type="button" class="btn btn-danger">${taskStepRun.runStatus!?string}</button>

@@ -7,6 +7,7 @@ import org.shunya.shared.RunStatus;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Entity
 @Table(name = "TASK_STEP_RUN")
@@ -155,5 +156,16 @@ public class TaskStepRun implements Serializable {
 
     public void setAgent(Agent agent) {
         this.agent = agent;
+    }
+
+    @Transient
+    public String timeConsumed() {
+        if (finishTime == null) {
+            finishTime = new Date();
+        }
+        long millis = finishTime.getTime() - startTime.getTime();
+        return String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
+                TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
+                TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
     }
 }

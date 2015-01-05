@@ -263,8 +263,9 @@ public class TaskService {
                     executionContext.setTaskStepRunDTO(convertToDTO(taskStepRun));
                     TaskStep taskStep = taskStepRun.getTaskStep();
                     executionContext.setStepDTO(convertToDTO(taskStep));
-                    Map<String, String> agentProperties = loadAgentProperties(taskStepRun.getAgent().getAgentProperties());
-                    executionContext.getSessionMap().putAll(agentProperties);
+                    executionContext.getSessionMap().putAll(loadTeamProperties(taskRun.getTeam().getTeamProperties()));
+                    executionContext.getSessionMap().putAll(loadTaskProperties(taskRun.getTask().getTaskProperties()));
+                    executionContext.getSessionMap().putAll(loadAgentProperties(taskStepRun.getAgent().getAgentProperties()));
                     logger.info("executionContext.getSessionMap() = " + executionContext.getSessionMap());
                     restClient.submitTaskToAgent(executionContext, taskStepRun.getAgent());
                     logger.info("task submitted - " + taskStep.getDescription());

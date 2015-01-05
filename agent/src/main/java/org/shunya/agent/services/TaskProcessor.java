@@ -51,7 +51,6 @@ public class TaskProcessor {
                     taskStep.beforeTaskStart();
                     boolean status = taskStep.execute();
                     taskContext.getTaskStepRunDTO().setStatus(status);
-                    taskContext.getTaskStepRunDTO().setFinishTime(new Date());
                     taskContext.getTaskStepRunDTO().setLogs(taskStep.getMemoryLogs());
                     if (status)
                         taskContext.getTaskStepRunDTO().setRunStatus(RunStatus.SUCCESS);
@@ -62,6 +61,7 @@ public class TaskProcessor {
                     taskContext.getTaskStepRunDTO().setLogs(Utils.getStackTrace(e) + "\n");
                     logger.warn("Error executing the taskStep : " + taskContext.getTaskStepRunDTO().getId(), e);
                 } finally {
+                    taskContext.getTaskStepRunDTO().setFinishTime(new Date());
                     taskContext.getTaskStepRunDTO().setRunState(RunState.COMPLETED);
                     taskStep.afterTaskFinish();
                     postProcess();
