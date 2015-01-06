@@ -240,6 +240,7 @@ public class TaskService {
             agentList.stream().forEach(agent -> {
                 TaskStepRun taskStepRun = new TaskStepRun();
                 taskStepRun.setSequence(stepData.getSequence());
+                taskStepRun.setStartTime(new Date());
                 taskStepRun.setTaskStep(stepData);
                 taskStepRun.setTaskRun(taskRun);
                 taskStepRun.setAgent(agent);

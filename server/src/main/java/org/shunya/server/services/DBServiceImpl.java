@@ -72,11 +72,26 @@ public class DBServiceImpl implements DBService {
     @Transactional(readOnly = false)
     public void deleteTask(long id) {
         Task task = getTask(id);
-        List taskData1 = DBDao.getSessionFactory().getCurrentSession().createQuery("select id from TaskRun tr where tr.task = :task").setEntity("task", task).list();
-        DBDao.getSessionFactory().getCurrentSession().createQuery("delete from TaskStepRun tr where tr.taskRun.id in (:taskRunIds)").setParameterList("taskRunIds", taskData1).executeUpdate();
+        List taskRunIds = DBDao.getSessionFactory().getCurrentSession().createQuery("select id from TaskRun tr where tr.task = :task").setEntity("task", task).list();
+        DBDao.getSessionFactory().getCurrentSession().createQuery("delete from TaskStepRun tr where tr.taskRun.id in (:taskRunIds)").setParameterList("taskRunIds", taskRunIds).executeUpdate();
         DBDao.getSessionFactory().getCurrentSession().createQuery("delete from TaskRun tr where tr.task = :task").setEntity("task", task).executeUpdate();
         task.setTaskProperties(null);
         DBDao.getSessionFactory().getCurrentSession().delete(task);
+    }
+
+    @Override
+    public void deleteTaskRun(long id) {
+        TaskRun taskRun = getTaskRun(id);
+//        taskRun.getTaskStepRuns().clear();
+//        DBDao.getSessionFactory().getCurrentSession().createQuery("delete from TaskStepRun tr where tr.taskRun.id in (:taskRunIds)").setParameter("taskRunIds", taskRun.getId()).executeUpdate();
+        DBDao.getSessionFactory().getCurrentSession().delete(taskRun);
+    }
+
+    @Transactional(readOnly = false)
+    public void deleteTaskStepRun(long id) {
+        TaskStepRun taskStepRun = getTaskStepRun(id);
+        taskStepRun.getTaskStep().getTaskStepRuns().remove(taskStepRun);
+        DBDao.getSessionFactory().getCurrentSession().delete(taskStepRun);
     }
 
     @Transactional(readOnly = false)

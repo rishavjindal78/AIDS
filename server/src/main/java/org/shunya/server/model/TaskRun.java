@@ -231,6 +231,9 @@ public class TaskRun implements Serializable {
 
     @Transient
     public String timeConsumed() {
+        if (startTime == null) {
+            return "NA";
+        }
         if (finishTime == null) {
             finishTime = new Date();
         }

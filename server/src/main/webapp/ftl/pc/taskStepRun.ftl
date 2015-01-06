@@ -36,6 +36,19 @@
 //                $(this).next('.content').slideToggle(300);
             })
         });
+
+        function deleteTaskStepRun(stepRunId) {
+            var option = confirm("Are you sure to delete the Step Run ?");
+            if (option == true) {
+                var url = '${rc.contextPath}/server/deleteStepRun/'+stepRunId;
+                $("#results").empty();
+                $.post(url, {}, function (data) {
+                    location.reload();
+//                    $("table#tasksTable tr#table_row_"+stepRunIdId).remove();
+//                    $("#results").html('<div class="alert alert-success">Row Deleted Successfully - ' + url + '</div>');
+                });
+            }
+        }
     </script>
 
     <!--div class="well">
@@ -92,9 +105,8 @@
                     <#if taskStepRun.runStatus!?string == 'RUNNING'>
                         <a id="${taskStepRun.id}" href="${rc.contextPath}/server/getMemoryLogs/view/${taskStepRun.id}" target="_blank">tail logs</a>
                     <#else>
-                        <a class="btn btn-small btn-primary viewTaskLogs heading" id="${taskStepRun.id}"
-                           href="#">logs</a>
-                        <a class="btn btn-small btn-warning" href="delete/${taskStepRun.id}">delete</a>
+                        <a class="btn btn-small btn-primary viewTaskLogs heading" id="${taskStepRun.id}"href="#">logs</a>
+                        <a class="btn btn-small btn-warning" href="#" onclick="deleteTaskStepRun('${taskStepRun.id}')">delete</a>
                     </#if>
                 </td>
             </tr>
@@ -105,7 +117,7 @@
                 </tr>
             </#list>
         </table>
+        <span id="results"></span>
     </div>
-
     </@com.page>
 </#escape>

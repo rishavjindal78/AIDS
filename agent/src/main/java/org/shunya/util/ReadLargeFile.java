@@ -7,14 +7,22 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class ReadLargeFile {
     public static void main(String[] args) throws IOException, InterruptedException {
+        long millis = 66506;
+        String hms = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
+                TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
+                TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
+        System.out.println(hms);
+
         Instant start = Instant.now();
-        Thread.sleep(6553);
+        Thread.sleep(66553);
         Instant end = Instant.now();
-        System.out.println(Duration.between(start, end)); // prints PT1M3.553S
+        Duration duration = Duration.between(start, end);
+        System.out.println(duration.toMinutes()+"m :"+duration.getSeconds()+"s"); // prints PT1M3.553S
 
 //        final Path path = Paths.get("C:\\temp");
 //        final Stream<Path> files = Files.list(path);

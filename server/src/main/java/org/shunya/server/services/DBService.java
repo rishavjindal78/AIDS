@@ -14,6 +14,8 @@ public interface DBService {
     List<Authority> listAuthorities();
     void deleteTaskStep(long id);
     void deleteTask(long id);
+    void deleteTaskRun(long id);
+    void deleteTaskStepRun(long id);
     void save(Agent agent);
     void save(Task task);
     void save(TaskStep taskStep);
@@ -42,4 +44,6 @@ public interface DBService {
     TaskStep getTaskStep(long id);
     List<TaskRun> findTaskHistoryForTaskId(long taskId);
     List<TaskRun> findTaskHistoryByTeam(long teamId);
+
+
 }

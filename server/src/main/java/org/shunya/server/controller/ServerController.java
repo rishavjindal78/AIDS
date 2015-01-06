@@ -372,6 +372,26 @@ public class ServerController {
         return "redirect:" + referer;
     }
 
+    @RequestMapping(value = "deleteStepRun/{id}", method = RequestMethod.POST)
+    public String deleteStepRun(@PathVariable("id") long id, @ModelAttribute("model") ModelMap model) throws IOException {
+        if (id != 0) {
+            dbService.deleteTaskStepRun(id);
+        }
+        final String referer = request.getHeader("referer");
+        System.out.println("referer = " + referer);
+        return "redirect:" + referer;
+    }
+
+    @RequestMapping(value = "deleteTaskRun/{id}", method = RequestMethod.POST)
+    public String deleteTaskRun(@PathVariable("id") long id, @ModelAttribute("model") ModelMap model) throws IOException {
+        if (id != 0) {
+            dbService.deleteTaskRun(id);
+        }
+        final String referer = request.getHeader("referer");
+        System.out.println("referer = " + referer);
+        return "redirect:" + referer;
+    }
+
     @RequestMapping(value = "taskHistory/{taskId}", method = RequestMethod.GET)
     public String viewTaskHistoryForTask(@ModelAttribute("model") ModelMap model, @PathVariable("taskId") long taskId) {
         List<TaskRun> all = dbService.findTaskHistoryForTaskId(taskId);
