@@ -44,6 +44,7 @@ public interface DBService {
     TaskStep getTaskStep(long id);
     List<TaskRun> findTaskHistoryForTaskId(long taskId);
     List<TaskRun> findTaskHistoryByTeam(long teamId);
+    List<TaskRun> findTaskHistoryByAge(int ageInDays);
 
 
 }

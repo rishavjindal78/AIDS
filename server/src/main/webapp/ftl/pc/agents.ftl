@@ -127,7 +127,7 @@
                         <td>${agent.baseUrl?string}</td>
                         <td id="td_${agent.id}">
                             <#if agent.status?exists && agent.status == 'UP'>
-                                <span class="label label-success" id="${agent.id}">${agent.status!'N/A'?string}</span>
+                                <span class="label label-success" id="${agent.id}">${agent.status.version!'N/A'?string}</span>
                             <#else>
                                 <span class="label label-danger" id="${agent.id}">${agent.status!'N/A'?string}</span>
                             </#if>

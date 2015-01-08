@@ -6,10 +6,7 @@ import org.shunya.shared.annotation.OutputParam;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.*;
 
 public abstract class AbstractStep {
@@ -190,11 +187,11 @@ public abstract class AbstractStep {
         List<String> vars = getVariablesFromString(inputString);
         for (String key : vars) {
             String variable = "#{" + key + "}";
-            if (null != variables.get(key)) {
-                String variableBinding = variables.get(key).toString();
-                inputString = inputString.replace(variable, variableBinding);
-            } else if (null != System.getenv(key)) {
+            if (null != System.getenv(key)) {
                 String variableBinding = System.getenv(key);
+                inputString = inputString.replace(variable, variableBinding);
+            } else if (null != variables.get(key)) {
+                String variableBinding = variables.get(key).toString();
                 inputString = inputString.replace(variable, variableBinding);
             } else if (null != System.getProperty(key)) {
                 String variableBinding = System.getProperty(key);
@@ -210,7 +207,7 @@ public abstract class AbstractStep {
     private static List<String> getVariablesFromString(String test) {
         char prevChar = ' ';
         String var = "";
-        List<String> vars = new ArrayList<String>();
+        List<String> vars = new ArrayList<>();
         boolean found = false;
         for (int i = 0; i < test.length(); i++) {
             char ch = test.charAt(i);

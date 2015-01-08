@@ -22,6 +22,15 @@ public class RestClient {
         return false;
     }
 
+    public String agentVersion(Agent agent) {
+        ResponseEntity<String> entity = restTemplate.getForEntity(agent.getBaseUrl() + "/agent/version", String.class);
+//        String body = entity.getBody();
+        if (entity.getStatusCode() == HttpStatus.ACCEPTED) {
+            return entity.getBody();
+        }
+        return "NA";
+    }
+
     public void submitTaskToAgent(TaskContext taskContext, Agent agent) {
         if (agent.getBaseUrl() == null || agent.getBaseUrl().isEmpty())
             throw new RuntimeException("No Host Configured for this Agent " + agent.getName());

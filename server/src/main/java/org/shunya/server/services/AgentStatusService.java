@@ -30,9 +30,11 @@ public class AgentStatusService {
         agents.parallelStream().forEach(agent -> {
             try {
                 boolean status = restClient.ping(agent);
-                if (status)
-                    statusCache.put(agent, AgentStatus.UP);
-                else
+                if (status) {
+                    AgentStatus agentStatus = AgentStatus.UP;
+                    agentStatus.setVersion(restClient.agentVersion(agent));
+                    statusCache.put(agent, agentStatus);
+                } else
                     statusCache.put(agent, AgentStatus.DOWN);
             } catch (Exception e) {
                 statusCache.put(agent, AgentStatus.DOWN);

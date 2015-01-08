@@ -7,6 +7,7 @@ import org.shunya.shared.annotation.InputParam;
 import org.shunya.shared.annotation.PunterTask;
 import org.shunya.shared.utils.RestClient;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,7 +27,7 @@ public class FileUploadStep extends AbstractStep {
 
     @Override
     public boolean run() {
-        boolean status = false;
+        final AtomicBoolean status = new AtomicBoolean(true);
         try {
             String[] split = server.split("[,;]");
             final Logger logger = LOGGER.get();
@@ -35,15 +36,17 @@ public class FileUploadStep extends AbstractStep {
                     logger.log(Level.INFO, "Uploading File :" + filePath + " To Location : " + singleServer);
                     restClient.fileUpload(singleServer, filePath, name, remotePath);
                     logger.log(Level.INFO, "File Uploaded :" + filePath + " To Location : " + singleServer);
+                    status.set(true & status.get());
                 } catch (Exception e) {
+                    status.set(false);
                     e.printStackTrace();
                     logger.log(Level.SEVERE, "Exception uploading file to server - " + singleServer + "\n" + StringUtils.getExceptionStackTrace(e));
                 }
             });
-            status = true;
         } catch (Exception e) {
+            e.printStackTrace();
             LOGGER.get().log(Level.SEVERE, StringUtils.getExceptionStackTrace(e));
         }
-        return status;
+        return status.get();
     }
 }

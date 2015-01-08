@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -257,6 +260,17 @@ public class DBServiceImpl implements DBService {
         criteria.addOrder(Order.desc("id"));
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         criteria.setMaxResults(30);
+        criteria.setCacheable(true);
+        return criteria.list();
+    }
+
+    @Override
+    public List<TaskRun> findTaskHistoryByAge(int ageInDays) {
+        Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskRun.class);
+        criteria.setFetchSize(50);
+        criteria.add(Restrictions.lt("startTime", java.sql.Date.valueOf(LocalDate.now().minusDays(ageInDays))));
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        criteria.setMaxResults(50);
         criteria.setCacheable(true);
         return criteria.list();
     }

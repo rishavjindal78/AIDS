@@ -2,8 +2,10 @@ package org.shunya.agent.controller;
 
 import org.apache.commons.io.IOUtils;
 import org.shunya.agent.services.TaskProcessor;
+import org.shunya.shared.StringUtils;
 import org.shunya.shared.TaskContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -30,10 +32,13 @@ public class AgentController {
     @Autowired
     private TaskProcessor taskProcessor;
 
+    @Value("${app.version}")
+    private String appVersion;
+
     @RequestMapping(value = "submitTaskStep", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     @ResponseBody
     public void submitTaskStep(@RequestBody TaskContext taskContext) throws InterruptedException, ExecutionException {
-        System.out.println("TaskStep Received for Execution = " + taskContext.getStepDTO().getDescription() + " ID - "+taskContext.getTaskStepRunDTO().getId());
+        System.out.println("TaskStep Received for Execution = " + taskContext.getStepDTO().getDescription() + " ID - " + taskContext.getTaskStepRunDTO().getId());
         taskProcessor.executeTask(taskContext);
     }
 
@@ -42,6 +47,13 @@ public class AgentController {
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public void ping() {
         logger.fine(() -> "ping success");
+    }
+
+    @RequestMapping(value = "version", method = RequestMethod.GET)
+    @ResponseBody
+    @ResponseStatus(value = HttpStatus.ACCEPTED)
+    public String version() {
+        return appVersion;
     }
 
     @RequestMapping(value = "download/{name}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE})
@@ -56,16 +68,21 @@ public class AgentController {
     @RequestMapping(value = "upload", method = RequestMethod.POST)
     @ResponseBody
     public String handleFileUpload(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "path", required = false) String path, @RequestParam("file") MultipartFile file) throws IOException {
-        if (path == null)
-            path = "uploads";
-        File dir = new File(path);
-        dir.mkdirs();
-        FileOutputStream fileOutputStream = new FileOutputStream(new File(dir, name));
-        IOUtils.copyLarge(file.getInputStream(), fileOutputStream);
-        fileOutputStream.close();
-        String absolutePath = new File(dir, name).getAbsolutePath();
-        logger.info(() -> "File saved at location : " + absolutePath);
-        return absolutePath;
+        try {
+            if (path == null)
+                path = "uploads";
+            File dir = new File(path);
+            dir.mkdirs();
+            FileOutputStream fileOutputStream = new FileOutputStream(new File(dir, name));
+            IOUtils.copyLarge(file.getInputStream(), fileOutputStream);
+            fileOutputStream.close();
+            String absolutePath = new File(dir, name).getAbsolutePath();
+            logger.info(() -> "File saved at location : " + absolutePath);
+            return absolutePath;
+        } catch (IOException e) {
+            logger.severe(() -> "Error while saving the file - " + StringUtils.getExceptionStackTrace(e));
+            throw e;
+        }
     }
 
     @RequestMapping(value = "getMemoryLogs/{id}", method = RequestMethod.GET)
