@@ -13,6 +13,7 @@ import java.util.List;
 
 public class TelegramTaskRunner {
     private long taskId;
+    private long taskRunId;
 
     TelegramUserState inputState;
     TelegramUserState confirmState;
@@ -94,6 +95,8 @@ public class TelegramTaskRunner {
                 try {
                     User user = dbService.findUserByTelegramId(fromId);
                     taskRun.setRunBy(user);
+                    dbService.save(taskRun);
+                    setTaskRunId(taskRun.getId());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -105,6 +108,15 @@ public class TelegramTaskRunner {
         } catch (Exception e) {
             return "Unknown error - " + e.getMessage();
         }
+    }
+
+    public String abort() {
+        if (getTaskRunId() != 0) {
+            TaskRun taskRun = dbService.getTaskRun(getTaskRunId());
+            if (taskService.cancelTaskRun(taskRun))
+                return "Command submitted to cancel Task Execution";
+        }
+        return "There is no task running at the moment";
     }
 
     public void setState(TelegramUserState state) {
@@ -127,8 +139,16 @@ public class TelegramTaskRunner {
         this.randomNumber = randomNumber;
     }
 
-    public String reset(){
+    public String reset() {
         setState(getInputState());
         return "Trx has been reset";
+    }
+
+    public long getTaskRunId() {
+        return taskRunId;
+    }
+
+    public void setTaskRunId(long taskRunId) {
+        this.taskRunId = taskRunId;
     }
 }

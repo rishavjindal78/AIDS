@@ -67,7 +67,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="documentFileId" class="col-sm-2 control-label">Tags</label>
+                    <label for="documentFileId" class="col-sm-2 control-label">File</label>
 
                     <div class="col-sm-6">
                         <input id="documentFileId" type="file" name="file" placeholder="FilePath" class="form-sm"/>

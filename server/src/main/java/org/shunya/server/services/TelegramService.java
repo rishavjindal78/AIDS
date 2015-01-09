@@ -328,6 +328,8 @@ public class TelegramService implements StatusObserver {
             sendMessage(peerState, "WarAndPeace.TEXT2");
         } else if (command.equals("war2")) {
             sendMessage(peerState, "WarAndPeace.TEXT");
+        } else if (command.equals("abort")) {
+            sendMessage(peerState, userTaskRunner.abort());
         } else if (command.equals("help")) {
             sendMessage(peerState, userTaskRunner.help());
             /*sendMessage(peerState, "Bot commands:\n" +

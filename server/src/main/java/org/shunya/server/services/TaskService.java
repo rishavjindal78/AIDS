@@ -110,9 +110,13 @@ public class TaskService {
         currentlyRunningTasks.remove(taskRun.getTask().getId());
     }
 
-    public void cancelTaskRun(TaskRun taskRun){
+    public boolean cancelTaskRun(TaskRun taskRun) {
         TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);
-        taskExecutionPlan.setCancelled(true);
+        if (taskExecutionPlan != null) {
+            taskExecutionPlan.setCancelled(true);
+            return true;
+        }
+        return false;
     }
 
     @Async
@@ -141,7 +145,7 @@ public class TaskService {
                 handleCompletion(taskRun, taskExecutionPlan, RunStatus.FAILURE);
                 statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Aborting Task Execution after first failure, State = Complete");
                 return;
-            } else if(taskExecutionPlan.isCancelled()){
+            } else if (taskExecutionPlan.isCancelled()) {
                 logger.info("Aborting Task Execution due to User Cancellation, State = Cancelled");
                 handleCompletion(taskRun, taskExecutionPlan, RunStatus.CANCELLED);
                 statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Aborting Task Execution due to User Cancellation, State = Cancelled");
