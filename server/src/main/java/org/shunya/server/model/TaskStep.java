@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "TASK_STEP")
@@ -53,7 +54,7 @@ public class TaskStep implements Serializable {
     private List<TaskStepRun> taskStepRuns;
     @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Agent> agentList;
+    private Set<Agent> agentList;
 
     public long getId() {
         return id;
@@ -165,11 +166,11 @@ public class TaskStep implements Serializable {
         this.taskStepRuns = taskStepRuns;
     }
 
-    public List<Agent> getAgentList() {
+    public Set<Agent> getAgentList() {
         return agentList;
     }
 
-    public void setAgentList(List<Agent> agentList) {
+    public void setAgentList(Set<Agent> agentList) {
         this.agentList = agentList;
     }
 

@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import static org.hibernate.annotations.CascadeType.DELETE;
 import static org.hibernate.annotations.CascadeType.REMOVE;
@@ -56,7 +57,7 @@ public class Task implements Serializable {
     */
     @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Agent> agentList;
+    private Set<Agent> agentList;
     private boolean notifyStatus = false;
     @OneToOne
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.REMOVE})
@@ -157,11 +158,11 @@ public class Task implements Serializable {
         this.tags = tags;
     }
 
-    public List<Agent> getAgentList() {
+    public Set<Agent> getAgentList() {
         return agentList;
     }
 
-    public void setAgentList(List<Agent> agentList) {
+    public void setAgentList(Set<Agent> agentList) {
         this.agentList = agentList;
     }
 

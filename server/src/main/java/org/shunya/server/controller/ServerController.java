@@ -8,6 +8,7 @@ import org.shunya.server.services.*;
 import org.shunya.server.vo.AgentVO;
 import org.shunya.server.vo.AgentVOBuilder;
 import org.shunya.server.vo.LogsVO;
+import org.shunya.server.vo.MultiAgentVO;
 import org.shunya.shared.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -197,9 +198,9 @@ public class ServerController {
     }
 
     @RequestMapping(value = "taskStep/addAgent/{taskStepId}", method = RequestMethod.POST)
-    public String addTaskStepAgentPOST(@ModelAttribute("agent") Agent agent, @PathVariable("taskStepId") long taskStepId) throws Exception {
+    public String addTaskStepAgentPOST(@ModelAttribute("multiAgentVO") MultiAgentVO multiAgentVO, @PathVariable("taskStepId") long taskStepId) throws Exception {
         TaskStep taskStep = dbService.getTaskStep(taskStepId);
-        taskStep.getAgentList().add(dbService.getAgent(agent.getId()));
+        multiAgentVO.getAgents().forEach(agent -> taskStep.getAgentList().add(dbService.getAgent(agent)));
         dbService.save(taskStep);
         return "redirect:../../task/" + taskStep.getTask().getId();
     }

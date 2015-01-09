@@ -1,3 +1,4 @@
+<#--<#import "/spring.ftl" as spring />-->
 <#escape x as x?html>
 <script type="text/javascript">
     $(document).ready(function () {
@@ -6,19 +7,16 @@
             e.stopPropagation();
             $(this).parent().parent().parent().remove();
         });
-
-      /*  $('.datetimepicker').datepicker({
-            format: 'dd/mm/yyyy'
-        });*/
     });
 </script>
 
 <div>
     <fieldset>
-        <form class="form-horizontal" name="agent" action="${rc.contextPath}/server/taskStep/addAgent/${model['taskStepId']?string}" method="post">
+        <form class="form-horizontal" name="multiAgentVO" action="${rc.contextPath}/server/taskStep/addAgent/${model['taskStepId']?string}" method="post">
             <div class="form-group">
                 <div class="col-lg-2">
-                    <select id="agent" class="form-control" name="id">
+                    <#--<@spring.formMultiSelect path="agents" options="" attributes=""/>-->
+                    <select id="agent" class="form-control" name="agents" multiple="true">
                         <#list model["agents"] as agent>
                             <option value="${agent.id}">${agent.name}</option>
                         </#list>
