@@ -14,14 +14,20 @@ public class DBCleanUpService {
     @Value("${maxTaskRunAge}")
     private int maxTaskRunAge;
 
+    @Value("${maxSystemFailureTimeInHours}")
+    private int maxSystemFailureTimeInHours;
+
     @Autowired
     private DBService dbService;
 
-    @Scheduled(cron = "0 0/2 * * * ?")
+//    @Scheduled(cron = "0 0/2 * * * ?")
+    @Scheduled(cron = "${cleanOldTaskHistory.cron.expression}")
     public void cleanOldTaskHistory() {
         logger.info(() -> "Running TaskRun Cleanup Job for Max Age - " + maxTaskRunAge);
         List<TaskRun> taskHistoryByAge = dbService.findTaskHistoryByAge(maxTaskRunAge);
         taskHistoryByAge.forEach(taskRun -> dbService.deleteTaskRun(taskRun.getId()));
         logger.info(() -> "Job TaskRun Cleanup completed for Max Age - " + maxTaskRunAge + ", deleted entries - " + taskHistoryByAge.size());
     }
+
+
 }

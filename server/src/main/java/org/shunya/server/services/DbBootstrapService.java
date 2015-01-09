@@ -2,12 +2,15 @@ package org.shunya.server.services;
 
 import org.shunya.server.Role;
 import org.shunya.server.model.Authority;
+import org.shunya.server.model.Task;
 import org.shunya.server.model.User;
 import org.shunya.server.UserBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+
+import java.util.List;
 
 import static java.util.Arrays.asList;
 
@@ -17,10 +20,21 @@ public class DbBootstrapService {
     @Autowired
     private DBService dbService;
 
+    @Autowired
+    private MyJobScheduler myJobScheduler;
+
     @PostConstruct
     public void init() {
         loadAuthorities();
         loadDefaultUsers();
+        scheduleTasks();
+    }
+
+    public void scheduleTasks(){
+        List<Task> tasks = dbService.listTasks();
+        tasks.stream()
+                .filter(task -> task.getSchedule()!= null && !task.getSchedule().isEmpty())
+                .forEach(task -> myJobScheduler.schedule(task.getSchedule(), task.getId()));
     }
 
     public void loadAuthorities() {

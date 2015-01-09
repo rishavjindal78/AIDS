@@ -210,7 +210,7 @@ public class TaskService {
             currentlyRunningTaskSteps.remove(taskRun);
             handleCompletion(taskRun, taskExecutionPlan, RunStatus.SUCCESS);
             logger.info("Task has no further steps, " + taskRun.getName() + " Completed with status - " + taskRun.getRunStatus());
-            statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Task has no further steps, " + taskRun.getName() + " Completed with status - " + taskRun.getRunStatus());
+            statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), true, "Task - " + taskRun.getName() + " Completed with status - " + taskRun.getRunStatus());
         }
     }
 

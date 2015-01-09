@@ -9,6 +9,7 @@ public interface DBService {
     List<Agent> listAgents();
     List<Agent> listAgentsByTeam(long teamId);
     List<Task> listTasksByTeam(long teamId);
+    List<Task> listTasks();
     List<Team> listTeams();
     List<User> listUser();
     List<Authority> listAuthorities();
@@ -45,6 +46,4 @@ public interface DBService {
     List<TaskRun> findTaskHistoryForTaskId(long taskId);
     List<TaskRun> findTaskHistoryByTeam(long teamId);
     List<TaskRun> findTaskHistoryByAge(int ageInDays);
-
-
 }

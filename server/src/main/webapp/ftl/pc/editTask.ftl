@@ -6,11 +6,18 @@
             e.stopPropagation();
             $(this).parent().parent().parent().remove();
         });
-
-        /*$('.datetimepicker').datepicker({
-            format: 'dd/mm/yyyy'
-        });*/
     });
+
+    function fetchPredictions(id){
+        $("#serverResults").empty();
+        $.get('${rc.getContextPath()}/server/schedule', { cronString: $('#'+id).val()}, function (data) {
+            var schedules ='';
+            $.each(data, function (i, item) {
+                schedules += '<li>'+item + '</li>';
+            });
+            $("#serverResults").html('<div class="alert alert-info">Next 10 Scheduled Dates  - <ul>'+schedules+'</ul></div>');
+        });
+    }
 </script>
 
 <div>
@@ -37,6 +44,15 @@
                     <textarea id="agentPropertiesTextArea" type="text" class="form-control input-sm" placeholder="Agent properties to override" name="taskProperties.properties"
                               rows="5">${(model.task.taskProperties.properties)!?string}</textarea>
                 </div>
+                <div class="col-lg-4">
+                    <input type="text" id="${model.task.id}_schedule" class="form-control input" placeholder="Cron Trigger for Schedule" name="schedule"
+                           value="${model.task.schedule!?string}">
+                    <a class="btn-link" onclick="fetchPredictions('${model.task.id}_schedule')">Predictions</a>
+                    <a target="_blank" href="http://quartz-scheduler.org/documentation/quartz-2.x/tutorials/tutorial-lesson-06">Tutorial-1</a>
+                    <a target="_blank" href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/scheduling/support/CronSequenceGenerator.html">Tutorial-2</a>
+                    <a target="_blank" href="http://quartz-scheduler.org/api/2.2.0/org/quartz/CronTrigger.html">Tutorial-3</a>
+                    <a target="_blank" href="http://www.cronmaker.com/">Tutorial-4</a>
+                </div>
                 <div class="control-group">
                     <button type="submit" class="btn btn-primary" id="save">Save</button>
                     <button class="btn cancel btn-default" id="cancel">Cancel</button>
@@ -60,7 +76,6 @@
                     </select>
                 </div>-->
             </div>
-
             <#--<div class="form-group">
                 <div class="col-lg-2">
                     <select id="account" class="form-control" name="account.id">
@@ -79,4 +94,5 @@
         </form>
     </fieldset>
 </div>
+<span id="serverResults"></span>
 </#escape>

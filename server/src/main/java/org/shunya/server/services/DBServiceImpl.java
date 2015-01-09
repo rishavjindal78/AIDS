@@ -23,6 +23,9 @@ public class DBServiceImpl implements DBService {
     @Autowired
     private DBDao DBDao;
 
+    @Autowired
+    private MyJobScheduler myJobScheduler;
+
     @Override
     public List<Agent> listAgents() {
         return DBDao.list();
@@ -105,6 +108,9 @@ public class DBServiceImpl implements DBService {
     @Transactional(readOnly = false)
     public void save(Task task) {
         DBDao.saveOrUpdate(task);
+        myJobScheduler.unSchedule(task.getId());
+        if (task.getSchedule() != null && !task.getSchedule().isEmpty())
+            myJobScheduler.schedule(task.getSchedule(), task.getId());
     }
 
     @Transactional(readOnly = false)
@@ -269,6 +275,17 @@ public class DBServiceImpl implements DBService {
         Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskRun.class);
         criteria.setFetchSize(50);
         criteria.add(Restrictions.lt("startTime", java.sql.Date.valueOf(LocalDate.now().minusDays(ageInDays))));
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        criteria.setMaxResults(50);
+        criteria.setCacheable(true);
+        return criteria.list();
+    }
+
+    @Override
+    public List<Task> listTasks() {
+        Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(Task.class);
+        criteria.setFetchSize(50);
+        criteria.add(Restrictions.isNotNull("schedule"));
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         criteria.setMaxResults(50);
         criteria.setCacheable(true);

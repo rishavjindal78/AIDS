@@ -221,6 +221,7 @@ public class ServerController {
             final Task existingTask = dbService.getTask(id);
             existingTask.setName(task.getName());
             existingTask.setDescription(task.getDescription());
+            existingTask.setSchedule(task.getSchedule());
             existingTask.setTags(task.getTags());
             existingTask.setTaskProperties(task.getTaskProperties());
             dbService.save(existingTask);
@@ -439,8 +440,8 @@ public class ServerController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ResponseBody
     public String cancelTaskRun(@PathVariable("taskRunId") Long taskRunId,
-                           @RequestParam(defaultValue = "test", required = false) String comment,
-                           Principal principal) {
+                                @RequestParam(defaultValue = "test", required = false) String comment,
+                                Principal principal) {
         logger.info("Cancel request for {}, user comments ", taskRunId, comment);
         String name = principal.getName();
         taskService.cancelTaskRun(dbService.getTaskRun(taskRunId));
@@ -517,7 +518,7 @@ public class ServerController {
     @RequestMapping(value = "schedule", method = RequestMethod.GET)
     @ResponseBody
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void scheduleDynamic() {
-        myJobScheduler.schedule("5 * * * * ?");
+    public List<String> schedulePrediction(@ModelAttribute("model") ModelMap model, @RequestParam("cronString") String cronString) {
+        return myJobScheduler.predict(cronString, 10);
     }
 }
