@@ -19,6 +19,17 @@
                 });
             }
         }
+
+        function cancelTaskRun(taskRun) {
+            var option = confirm("Are you sure to delete the Step Run ?");
+            if (option == true) {
+                var url = '${rc.contextPath}/server/cancel/' + taskRun;
+                $("#results").empty();
+                $.post(url, {}, function (data) {
+                    $("#results").html('<div class="alert alert-success">Request submitted to cancel the TaskRun - ' + taskRun+ '</div>');
+                });
+            }
+        }
     </script>
 
     <#--<div class="well">
@@ -81,6 +92,7 @@
             </td>
             <td>
                 <a class="btn btn-small btn-warning" href="#" onclick="deleteTaskRun('${taskHistory.id}')">delete</a>
+                <a class="btn btn-small btn-warning" href="#" onclick="cancelTaskRun('${taskHistory.id}')">Cancel</a>
             </td>
         </tr>
         </#list>

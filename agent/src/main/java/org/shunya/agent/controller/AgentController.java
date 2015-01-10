@@ -2,6 +2,7 @@ package org.shunya.agent.controller;
 
 import org.apache.commons.io.IOUtils;
 import org.shunya.agent.services.TaskProcessor;
+import org.shunya.shared.AbstractStep;
 import org.shunya.shared.StringUtils;
 import org.shunya.shared.TaskContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
@@ -67,8 +70,10 @@ public class AgentController {
 
     @RequestMapping(value = "upload", method = RequestMethod.POST)
     @ResponseBody
-    public String handleFileUpload(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "path", required = false) String path, @RequestParam("file") MultipartFile file) throws IOException {
+    public String handleFileUpload(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "path", required = false) String path, @RequestParam("file") MultipartFile file/*, @RequestParam("session") Map<String, Object> sessionMap*/) throws IOException {
         try {
+            name = AbstractStep.substituteEnvVariables(name);
+            path = AbstractStep.substituteEnvVariables(path);
             if (path == null)
                 path = "uploads";
             File dir = new File(path);
@@ -79,7 +84,8 @@ public class AgentController {
             String absolutePath = new File(dir, name).getAbsolutePath();
             logger.info(() -> "File saved at location : " + absolutePath);
             return absolutePath;
-        } catch (IOException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
             logger.severe(() -> "Error while saving the file - " + StringUtils.getExceptionStackTrace(e));
             throw e;
         }

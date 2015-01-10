@@ -18,6 +18,7 @@ import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
+import java.util.Map;
 
 import static java.util.Collections.singletonList;
 
@@ -31,7 +32,7 @@ public class RestClient {
         restTemplate = new RestTemplate(requestFactory);
     }
 
-    public void fileUpload(String baseUri, String localFilePath, String targetName, String targetFolder) throws Exception {
+    public String fileUpload(String baseUri, String localFilePath, String targetName, String targetFolder) throws Exception {
         String uri = baseUri + "/agent/upload";
         MultiValueMap<String, Object> mvm = new LinkedMultiValueMap<>();
         mvm.add("file", new FileSystemResource(localFilePath));
@@ -40,7 +41,8 @@ public class RestClient {
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(uri, mvm, String.class);
         logger.info("upload response from server  - " + responseEntity.getStatusCode());
         String body = responseEntity.getBody();
-        logger.info("file path at target server - " + body);
+        logger.info("file uploaded on agent "+baseUri+" at Location - " + body);
+        return body;
     }
 
     public void downloadFile(String baseUri, String id, String localPath) throws Exception {

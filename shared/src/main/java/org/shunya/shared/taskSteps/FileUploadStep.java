@@ -19,9 +19,9 @@ public class FileUploadStep extends AbstractStep {
     private String server;
     @InputParam(required = false, displayName = "Local File Path", description = "Path of the file to upload e:/test.mp3")
     private String filePath;
-    @InputParam(required = false, displayName = "Target File Name", description = "Name of the file")
+    @InputParam(required = false, displayName = "Target File Name", description = "Target Name of the file")
     private String name;
-    @InputParam(required = false, displayName = "Target Folder", description = "Remote Path for the file")
+    @InputParam(required = false, displayName = "Target Folder", description = "Target Path for the file", substitute = false)
     private String remotePath;
     private RestClient restClient = new RestClient();
 
@@ -34,8 +34,8 @@ public class FileUploadStep extends AbstractStep {
             asList(split).parallelStream().filter(s -> s != null && !s.isEmpty()).forEach(singleServer -> {
                 try {
                     logger.log(Level.INFO, "Uploading File :" + filePath + " To Location : " + singleServer);
-                    restClient.fileUpload(singleServer, filePath, name, remotePath);
-                    logger.log(Level.INFO, "File Uploaded :" + filePath + " To Location : " + singleServer);
+                    String targetLocation = restClient.fileUpload(singleServer, filePath, name, remotePath);
+                    logger.log(Level.INFO, filePath + " Uploaded on Agent: " + singleServer + " at Location - " + targetLocation);
                     status.set(true & status.get());
                 } catch (Exception e) {
                     status.set(false);

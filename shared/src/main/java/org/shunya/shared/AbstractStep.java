@@ -8,6 +8,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class AbstractStep {
     private Map<String, Object> sessionMap;
@@ -122,9 +124,12 @@ public abstract class AbstractStep {
     }
 
     private void substituteParams(FieldPropertiesMap inputParams) throws Exception {
+        Map<String, String> variablesMap = new HashMap<>();
+        sessionMap.forEach((s, o) -> variablesMap.put(s, o.toString()));
         Field[] fields = getClass().getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(InputParam.class)) {
+                InputParam ann = field.getAnnotation(InputParam.class);
                 try {
                     field.setAccessible(true);
                     if (inputParams.get(field.getName()) != null) {
@@ -135,7 +140,10 @@ public abstract class AbstractStep {
                                 fieldValue = (String) getSessionObject(fieldValue);
                             }
                             if (doVariableSubstitution && fieldValue.contains("#{")) {
-                                fieldValue = substituteVariables(fieldValue, sessionMap);
+                                fieldValue = substituteSessionVariables(fieldValue, variablesMap);
+                                if (ann.substitute()) {
+                                    fieldValue = substituteEnvVariables(fieldValue);
+                                }
                             }
                             if (field.getType().getSimpleName().equals("String")) {
                                 field.set(this, fieldValue);
@@ -183,7 +191,7 @@ public abstract class AbstractStep {
         }
     }
 
-    private String substituteVariables(String inputString, Map<String, Object> variables) {
+    public static String substituteVariables2(String inputString, Map<String, Object> variables, String errorIdentifier) {
         List<String> vars = getVariablesFromString(inputString);
         for (String key : vars) {
             String variable = "#{" + key + "}";
@@ -197,20 +205,58 @@ public abstract class AbstractStep {
                 String variableBinding = System.getProperty(key);
                 inputString = inputString.replace(variable, variableBinding);
             } else {
-                LOGGER.get().severe(() -> "Variable Binding not Found :" + variable + " TaskStepName : " + taskStepData.getName());
-                throw new RuntimeException("Variable Binding not Found :" + variable + " TaskStepName : " + taskStepData.getName());
+                LOGGER.get().severe(() -> "Variable Binding not Found :" + variable + " TaskStepName : " + errorIdentifier);
+                throw new RuntimeException("Variable Binding not Found :" + variable + " TaskStepName : " + errorIdentifier);
             }
         }
         return inputString;
     }
 
-    private static List<String> getVariablesFromString(String test) {
+    public static String substituteEnvVariables(String template) {
+        return substituteVariables(template, System.getenv(), "\\#env\\{(.+?)\\}");
+    }
+
+    public static String substituteSessionVariables(String template, Map<String, String> variables) {
+        return substituteVariables(template, variables, "\\#\\{(.+?)\\}");
+    }
+
+    public static String substituteVariables(String template, Map<String, String> variables, String regex) {
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(template);
+        // StringBuilder cannot be used here because Matcher expects StringBuffer
+        StringBuffer buffer = new StringBuffer();
+        while (matcher.find()) {
+            if (variables.containsKey(matcher.group(1))) {
+                String replacement = variables.get(matcher.group(1));
+                if (replacement == null) {
+                    LOGGER.get().severe(() -> "Variable Binding not Found :" + matcher.group(1));
+                    throw new RuntimeException("Variable Binding not Found :" + matcher.group(1));
+                }
+                // quote to work properly with $ and {,} signs
+                matcher.appendReplacement(buffer, replacement != null ? Matcher.quoteReplacement(replacement) : "null");
+            }
+        }
+        matcher.appendTail(buffer);
+        return buffer.toString();
+    }
+
+    public static List<String> getVariablesFromTemplate(String template) {
+        Pattern pattern = Pattern.compile("\\#env\\{(.+?)\\}");
+        Matcher matcher = pattern.matcher(template);
+        List<String> variables = new ArrayList<>();
+        while (matcher.find()) {
+            variables.add(matcher.group(1));
+        }
+        return variables;
+    }
+
+    public static List<String> getVariablesFromString(String inputString) {
         char prevChar = ' ';
         String var = "";
         List<String> vars = new ArrayList<>();
         boolean found = false;
-        for (int i = 0; i < test.length(); i++) {
-            char ch = test.charAt(i);
+        for (int i = 0; i < inputString.length(); i++) {
+            char ch = inputString.charAt(i);
             if (ch == '{' && prevChar == '#') {
                 var = "";
                 found = true;

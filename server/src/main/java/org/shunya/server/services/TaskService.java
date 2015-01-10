@@ -114,6 +114,7 @@ public class TaskService {
         TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);
         if (taskExecutionPlan != null) {
             taskExecutionPlan.setCancelled(true);
+//            taskExecutionPlanMap.remove(taskRun);
             return true;
         }
         return false;
