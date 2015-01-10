@@ -2,6 +2,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $(".cancel").click(function (e) {
+            $('#agent_row_'+${model.agent.id!?string}).removeClass('alert-warning');
             $('#spane_edit_agent').empty();
             e.preventDefault();
             e.stopPropagation();

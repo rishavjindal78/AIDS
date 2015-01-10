@@ -20,6 +20,8 @@
         }
 
         function editAgent(id) {
+            $('.agent_row').removeClass('alert-warning');
+            $('#agent_row_'+id).addClass('alert-warning');
             $.get('${rc.contextPath}/server/editAgent/' + id, function (data) {
                 $('#spane_edit_agent').empty();
                 $('#spane_edit_agent').html(data);
@@ -121,7 +123,7 @@
                 <#--<th>Comments</th>-->
                 </tr>
                 <#list model["agents"] as agent>
-                    <tr>
+                    <tr id="agent_row_${agent.id}" class="agent_row">
                         <td>${agent_index+1} &nbsp;<a href="#" onclick="editAgent('${agent.id}')"><span
                                 class="glyphicon glyphicon-edit"/></a></td>
                         <td>${agent.name?string}</td>

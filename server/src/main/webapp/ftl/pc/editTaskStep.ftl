@@ -12,7 +12,7 @@
 
 <div class="alert alert-warning">
     <fieldset>
-        <legend class="text-muted">Edit TaskStep - ${model.stepData.description!?string}</legend>
+        <legend class="text-muted">${model.stepData.sequence}. Edit TaskStep - ${model.stepData.description!?string}</legend>
         <form id="editTaskStepData" class="form-horizontal" name="taskStepDTO" modelAttribute="taskStepDTO"
               action="../addTaskStep/${model.stepData.id}" method="post">
             <div class="form-group">
