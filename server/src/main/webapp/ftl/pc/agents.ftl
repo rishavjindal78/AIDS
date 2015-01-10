@@ -23,6 +23,7 @@
             $.get('${rc.contextPath}/server/editAgent/' + id, function (data) {
                 $('#spane_edit_agent').empty();
                 $('#spane_edit_agent').html(data);
+                $('#spane_edit_agent').focus();
 //                $('#span_expense_edit_'+id).empty();
 //                $('#span_expense_edit_'+id).html(data);
             });
@@ -81,7 +82,7 @@
     </script>
     <#--<div class="container">-->
         <div class="heading btn-link">Add New Agent</div>
-        <div class="content">
+        <div class="content alert alert-warning">
             <form role="form" name="agent" action="register" method="POST">
                 <div class="form-group">
                     <label for="exampleInputEmail1">Agent Name</label>
@@ -104,6 +105,7 @@
                     </label>
                 </div>
                 <button type="submit" class="btn btn-primary">Save</button>
+                <button type="reset" class="btn btn-default">Reset</button>
             </form>
         </div>
         <h2 class="sub-header text-muted">Agents</h2>

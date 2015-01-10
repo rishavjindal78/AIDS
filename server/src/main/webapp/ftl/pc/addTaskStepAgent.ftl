@@ -3,15 +3,17 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $(".cancel").click(function (e) {
+            $('#span_task_agent').empty();
             e.preventDefault();
             e.stopPropagation();
-            $(this).parent().parent().parent().remove();
+//            $(this).parent().parent().parent().remove();
         });
     });
 </script>
 
-<div>
+<div class="alert alert-warning">
     <fieldset>
+        <legend class="text-muted">Add Agent to TaskStep - ${model.taskStep.description!?string}</legend>
         <form class="form-horizontal" name="multiAgentVO" action="${rc.contextPath}/server/taskStep/addAgent/${model['taskStepId']?string}" method="post">
             <div class="form-group">
                 <div class="col-lg-2">

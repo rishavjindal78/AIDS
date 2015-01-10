@@ -2,15 +2,17 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $(".cancel").click(function (e) {
+            $('#spane_edit_agent').empty();
             e.preventDefault();
             e.stopPropagation();
-            $(this).parent().parent().parent().remove();
+//            $(this).parent().parent().parent().remove();
         });
     });
 </script>
 
-<div>
+<div class="alert alert-warning">
     <fieldset>
+        <legend class="text-muted">Edit Agent - ${model.agent.name!?string}</legend>
         <form class="form-horizontal" name="user" action="${rc.contextPath}/server/editAgent/${model.agent.id!?string}" method="post">
             <div class="form-group">
                 <div class="col-lg-1">

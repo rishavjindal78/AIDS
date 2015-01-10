@@ -20,6 +20,7 @@
                 $.get('../edit/' + this.id, function (data) {
                     $('#span_edit').empty();
                     $('#span_edit').html(data);
+                    $('#span_edit').focus();
                 });
             });
 
@@ -76,6 +77,7 @@
             $.get('${rc.contextPath}/server/team/${model.task.team.id}/taskStep/addAgent/'+taskStepId, function (data) {
                 $('#span_task_agent').empty();
                 $('#span_task_agent').html(data);
+                $('#span_task_agent').focus();
             });
         }
 

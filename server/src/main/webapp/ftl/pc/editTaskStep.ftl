@@ -2,16 +2,17 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $(".cancel").click(function (e) {
+            $('#span_edit').empty();
             e.preventDefault();
             e.stopPropagation();
-            $(this).parent().parent().parent().remove();
+//            $(this).parent().parent().parent().remove();
         });
     });
 </script>
 
-<div class="well">
+<div class="alert alert-warning">
     <fieldset>
-        <legend>Edit TaskStep - ${model.stepData.description!?string}</legend>
+        <legend class="text-muted">Edit TaskStep - ${model.stepData.description!?string}</legend>
         <form id="editTaskStepData" class="form-horizontal" name="taskStepDTO" modelAttribute="taskStepDTO"
               action="../addTaskStep/${model.stepData.id}" method="post">
             <div class="form-group">

@@ -57,7 +57,7 @@
     </script>
     <#--<div class="container">-->
     <div class="heading btn-link">Add New Task</div>
-    <div class="content">
+    <div class="content alert alert-warning">
         <form role="form" name="agent" action="${rc.contextPath}/server/team/${model.team.id}/addTask/0" method="POST">
             <div class="form-group">
                 <label for="exampleInputEmail1">Task Name</label>
