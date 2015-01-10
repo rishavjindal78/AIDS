@@ -96,6 +96,8 @@
                             Upload Time : ${(doc.uploadDate?date?string("dd-MMM-yyyy hh:mm a"))!''} Tags [${doc.tags!''}
                             ]<BR>
                             Total downloads : ${doc.downloads!''}
+                            <BR>
+                            <a href="${rc.contextPath}/documents/download/${doc.id}">Download</a>
 
                         <form action="${rc.contextPath}/documents/team/${Session['SELECTED_TEAM'].id}/delete/${doc.id}" method="POST"><input type="submit"
                                                                                                          class="btn btn-xs"

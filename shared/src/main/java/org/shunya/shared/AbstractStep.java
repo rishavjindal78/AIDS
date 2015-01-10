@@ -139,7 +139,7 @@ public abstract class AbstractStep {
                                 fieldValue = fieldValue.substring(1);
                                 fieldValue = (String) getSessionObject(fieldValue);
                             }
-                            if (doVariableSubstitution && fieldValue.contains("#{")) {
+                            if (doVariableSubstitution) {
                                 fieldValue = substituteSessionVariables(fieldValue, variablesMap);
                                 if (ann.substitute()) {
                                     fieldValue = substituteEnvVariables(fieldValue);
