@@ -276,10 +276,10 @@ public class TaskService {
                     restClient.submitTaskToAgent(executionContext, taskStepRun.getAgent());
                     logger.info("task submitted - " + taskStep.getDescription());
                 } catch (Exception e) {
-                    logger.error("Task Submission Failed", e);
+                    logger.error("Task Submission Failed", e.getMessage());
                     taskExecutionPlanMap.get(taskRun).setTaskStatus(false);
                     executionContext.getTaskStepRunDTO().setStatus(false);
-                    if (e.getCause() != null && e.getCause() instanceof ConnectException) {
+                    if (e.getCause() != null && e.getCause() instanceof IOException) {
                         statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Task Submission Failed, Agent not reachable - " + taskStepRun.getAgent().getName() + e.getMessage());
                         executionContext.getTaskStepRunDTO().setLogs("Task Submission Failed, Agent not reachable - " + taskStepRun.getAgent().getName() + "\r\n" + e);
                     } else {

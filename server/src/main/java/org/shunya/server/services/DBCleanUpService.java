@@ -1,10 +1,14 @@
 package org.shunya.server.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.IOUtils;
+import org.shunya.server.model.Task;
 import org.shunya.server.model.TaskRun;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.io.*;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -17,10 +21,13 @@ public class DBCleanUpService {
     @Value("${maxSystemFailureTimeInHours}")
     private int maxSystemFailureTimeInHours;
 
+    @Value("${db.path}")
+    private String aids_home;
+
     @Autowired
     private DBService dbService;
 
-//    @Scheduled(cron = "0 0/2 * * * ?")
+    //    @Scheduled(cron = "0 0/2 * * * ?")
     @Scheduled(cron = "${cleanOldTaskHistory.cron.expression}")
     public void cleanOldTaskHistory() {
         logger.info(() -> "Running TaskRun Cleanup Job for Max Age - " + maxTaskRunAge);
@@ -30,4 +37,20 @@ public class DBCleanUpService {
     }
 
 
+    @Scheduled(cron = "${backupTasks.cron.expression}")
+    public void backUpTasks() {
+        logger.info(() -> "running daily backup all the Tasks into aids home - " + aids_home);
+        List<Task> tasks = dbService.listTasks();
+        tasks.forEach(task -> {
+            Task taskToSave = dbService.getTask(task.getId());
+            ObjectMapper mapper = new ObjectMapper();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try (FileWriter fileWriter = new FileWriter(new File(aids_home, task.getId() + ".json"))) {
+                mapper.writeValue(baos, taskToSave);
+                IOUtils.write(baos.toByteArray(), fileWriter);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
 }
