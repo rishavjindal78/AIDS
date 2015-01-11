@@ -51,4 +51,11 @@ public class RestClient {
         logger.fine(() -> "Logs fetched from the Agent");
         return body;
     }
+
+    public Boolean checkStepRunning(long stepRunId, Agent agent) {
+        if (agent.getBaseUrl() == null || agent.getBaseUrl().isEmpty())
+            throw new RuntimeException("No Host Configured for this Agent " + agent.getName());
+        ResponseEntity<Boolean> entity = restTemplate.getForEntity(agent.getBaseUrl() + "/agent/isStepRunning/{taskRunId}", Boolean.class, stepRunId);
+        return entity.getBody();
+    }
 }

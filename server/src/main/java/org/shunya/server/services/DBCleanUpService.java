@@ -9,11 +9,14 @@ import org.shunya.shared.RunStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
 import java.util.List;
 import java.util.logging.Logger;
 
+@Service
 public class DBCleanUpService {
     private static final Logger logger = Logger.getLogger(DBCleanUpService.class.getName());
 

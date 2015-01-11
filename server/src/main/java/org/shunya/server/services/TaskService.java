@@ -58,15 +58,34 @@ public class TaskService {
     private int maxSystemFailureTimeInHours = 3;
 
     @Scheduled(cron = "0 0/2 * * * ?")
-    public void checkSystemFailures() {
-        logger.info("Running System Failures of Agents");
+    public void checkTimeoutSystemFailures() {
+        logger.info("Running Timeout System Failures");
         taskExecutionPlanMap.forEach((taskRun, taskExecutionPlan) -> {
             if (LocalDateTime.ofInstant(taskRun.getStartTime().toInstant(), ZoneId.systemDefault()).isBefore(LocalDateTime.now().minusHours(maxSystemFailureTimeInHours))) {
-                logger.warn("System Failures Detected for TaskRun - " + taskRun.getName());
+                logger.warn("System Failures Detected for TaskRun due to timeout - " + taskRun.getName());
                 handleCompletion(taskRun, taskExecutionPlan, RunStatus.FAILURE);
                 currentlyRunningTaskSteps.remove(taskRun);
                 logger.warn("Task Kicked due to System Failures, TaskRun - " + taskRun.getName());
             }
+        });
+    }
+
+    @Scheduled(cron = "0 0/2 * * * ?")
+    public void checkAgentDiedSystemFailures() {
+        logger.info("Running System Failures of Agents");
+        currentlyRunningTaskSteps.forEach((taskRun, taskStepRuns) -> {
+            taskStepRuns.forEach(taskStepRun -> {
+                Boolean stepRunning = false;
+                try {
+                    stepRunning = restClient.checkStepRunning(taskStepRun.getId(), taskStepRun.getAgent());
+                } catch (Exception e) {
+                    stepRunning = false;
+                    e.printStackTrace();
+                }
+                if(!stepRunning && currentlyRunningTaskSteps.get(taskRun).contains(taskStepRun)){
+                    //TODO implement steprun failure
+                }
+            });
         });
     }
 
