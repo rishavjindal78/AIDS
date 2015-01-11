@@ -32,8 +32,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class TaskService {
     private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
 
-    Map<TaskRun, TaskExecutionPlan> taskExecutionPlanMap = new ConcurrentHashMap<>(100);
-    Map<TaskRun, List<TaskStepRun>> currentlyRunningTaskSteps = new ConcurrentHashMap<>(100);
+    Map<TaskRun, TaskExecutionPlan> taskExecutionPlanMap = new ConcurrentHashMap<>(10);
+    Map<TaskRun, List<TaskStepRun>> currentlyRunningTaskSteps = new ConcurrentHashMap<>(10);
+    Map<TaskStepRun, TaskContext> currentlyRunningStepContext = new ConcurrentHashMap<>(10);
     Set<Long> currentlyRunningTasks = new HashSet<>();
 
     @Autowired
@@ -57,7 +58,7 @@ public class TaskService {
 
     private int maxSystemFailureTimeInHours = 3;
 
-    @Scheduled(cron = "0 0/2 * * * ?")
+    @Scheduled(cron = "20 0/10 * * * ?")
     public void checkTimeoutSystemFailures() {
         logger.info("Running Timeout System Failures");
         taskExecutionPlanMap.forEach((taskRun, taskExecutionPlan) -> {
@@ -70,26 +71,33 @@ public class TaskService {
         });
     }
 
-    @Scheduled(cron = "0 0/2 * * * ?")
+    @Scheduled(cron = "0/30 * * * * ?")
     public void checkAgentDiedSystemFailures() {
         logger.info("Running System Failures of Agents");
         currentlyRunningTaskSteps.forEach((taskRun, taskStepRuns) -> {
-            taskStepRuns.forEach(taskStepRun -> {
+            new CopyOnWriteArrayList<>(taskStepRuns).forEach(taskStepRun -> {
                 Boolean stepRunning = false;
                 try {
                     stepRunning = restClient.checkStepRunning(taskStepRun.getId(), taskStepRun.getAgent());
                 } catch (Exception e) {
                     stepRunning = false;
-                    e.printStackTrace();
+                    logger.warn("Task probably died due to Agent failure, synchronizing it at server.", e);
                 }
-                if(!stepRunning && currentlyRunningTaskSteps.get(taskRun).contains(taskStepRun)){
-                    //TODO implement steprun failure
+                if (!stepRunning && currentlyRunningStepContext.containsKey(taskStepRun)) {
+                    TaskContext executionContext = currentlyRunningStepContext.get(taskStepRun);
+                    taskExecutionPlanMap.get(taskRun).setTaskStatus(false);
+                    executionContext.getTaskStepRunDTO().setStatus(false);
+                    executionContext.getTaskStepRunDTO().setLogs("TaskStep failed due to unreachable Agent, probably agent died.");
+                    executionContext.getTaskStepRunDTO().setFinishTime(new Date());
+                    executionContext.getTaskStepRunDTO().setRunStatus(RunStatus.FAILURE);
+                    executionContext.getTaskStepRunDTO().setRunState(RunState.COMPLETED);
+                    consumeStepResult(executionContext);
                 }
             });
         });
     }
 
-    public boolean isTaskRunning(TaskRun taskRun){
+    public boolean isTaskRunning(TaskRun taskRun) {
         return taskExecutionPlanMap.containsKey(taskRun);
     }
 
@@ -137,15 +145,18 @@ public class TaskService {
         TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);
         if (taskExecutionPlan != null) {
             taskExecutionPlan.setCancelled(true);
-//            taskExecutionPlanMap.remove(taskRun);
+//            List<TaskStepRun> taskStepRuns = currentlyRunningTaskSteps.get(taskRun);
+//            new ArrayList<>(taskStepRuns).forEach(taskStepRun -> restClient.interruptTaskStep(taskStepRun.getId(), taskStepRun.getAgent()));
             return true;
         }
         return false;
     }
 
-    @Async
+    //    @Async
+//    Making this method async may cause race condition
     public void consumeStepResult(TaskContext taskContext) {
         TaskStepRun taskStepRun = dbService.getTaskStepRun(taskContext.getTaskStepRunDTO().getId());
+        currentlyRunningStepContext.remove(taskStepRun);
         taskStepRun.setStartTime(taskContext.getTaskStepRunDTO().getStartTime());
         taskStepRun.setFinishTime(taskContext.getTaskStepRunDTO().getFinishTime());
         taskStepRun.setLogs(taskContext.getTaskStepRunDTO().getLogs());
@@ -297,6 +308,7 @@ public class TaskService {
                     executionContext.getSessionMap().putAll(loadAgentProperties(taskStepRun.getAgent().getAgentProperties()));
                     logger.info("executionContext.getSessionMap() = " + executionContext.getSessionMap());
                     restClient.submitTaskToAgent(executionContext, taskStepRun.getAgent());
+                    currentlyRunningStepContext.put(taskStepRun, executionContext);
                     logger.info("task submitted - " + taskStep.getDescription());
                 } catch (Exception e) {
                     logger.error("Task Submission Failed", e.getMessage());

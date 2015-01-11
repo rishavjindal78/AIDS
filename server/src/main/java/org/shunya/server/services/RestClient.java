@@ -58,4 +58,10 @@ public class RestClient {
         ResponseEntity<Boolean> entity = restTemplate.getForEntity(agent.getBaseUrl() + "/agent/isStepRunning/{taskRunId}", Boolean.class, stepRunId);
         return entity.getBody();
     }
+
+    public void interruptTaskStep(long stepRunId, Agent agent) {
+        if (agent.getBaseUrl() == null || agent.getBaseUrl().isEmpty())
+            throw new RuntimeException("No Host Configured for this Agent " + agent.getName());
+        restTemplate.getForEntity(agent.getBaseUrl() + "/agent/interrupt/{taskRunId}", Void.class, stepRunId);
+    }
 }

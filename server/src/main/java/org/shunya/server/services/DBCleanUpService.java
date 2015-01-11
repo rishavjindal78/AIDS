@@ -44,9 +44,10 @@ public class DBCleanUpService {
         logger.info(() -> "Job TaskRun Cleanup completed for Max Age - " + maxTaskRunAge + ", deleted entries - " + taskHistoryByAge.size());
     }
 
-    @Scheduled(cron = "0 0/2 * * * ?")
-    public void synchronizeTasks1(){
-        logger.info(() -> "Running TaskRun Synchronization");
+//    @Scheduled(cron = "0 0/2 * * * ?")
+    @PostConstruct
+    public void synchronizeTasksWhenServerIsRestarted(){
+        logger.info(() -> "Running TaskRun Synchronization after server startup");
         List<TaskRun> runningTasks = dbService.findRunningTasks();
         runningTasks.forEach(taskRun -> {
             if(!taskService.isTaskRunning(taskRun)){
