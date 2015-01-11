@@ -82,6 +82,16 @@ public class TaskProcessor {
         return "FINISHED";
     }
 
+    public boolean isRunning(long taskStepRunId) {
+        return cache.get(taskStepRunId) != null;
+    }
+
+    public void interrupt(long taskStepRunId) {
+        if (cache.get(taskStepRunId) != null) {
+            cache.get(taskStepRunId).interrupt();
+        }
+    }
+
     private void postProcess() {
         runningJobCount.decrementAndGet();
     }

@@ -194,7 +194,9 @@ public class ServerController {
     public String addTaskStepAgent(@ModelAttribute("model") ModelMap model, @PathVariable("taskStepId") long taskStepId, @PathVariable("teamId") long teamId) throws Exception {
         model.addAttribute("agents", dbService.listAgentsByTeam(teamId));
         model.addAttribute("taskStepId", taskStepId);
-        model.addAttribute("taskStep", dbService.getTaskStep(taskStepId));
+        TaskStep taskStep = dbService.getTaskStep(taskStepId);
+        model.addAttribute("taskStep", taskStep);
+        model.addAttribute("selectedAgents", taskStep.getAgentList());
         return "addTaskStepAgent";
     }
 

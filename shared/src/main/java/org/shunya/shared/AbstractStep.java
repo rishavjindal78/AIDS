@@ -32,11 +32,15 @@ public abstract class AbstractStep {
         }
     };
 
+    public void interrupt() {
+    //  TODO override in the task step implementation
+    }
+
     public void beforeTaskStart() {
         strLogger = new StringBuilder();
         Handler logHandler = new Handler() {
             public void publish(LogRecord record) {
-                //                    String msg = new Date(record.getMillis()) + " [" + record.getLevel() + "] " + record.getMessage();
+                //    String msg = new Date(record.getMillis()) + " [" + record.getLevel() + "] " + record.getMessage();
                 strLogger.append(record.getMessage() + "\n");
                 if (logListener != null) {
                     logListener.publish(record.getMessage() + "\n");

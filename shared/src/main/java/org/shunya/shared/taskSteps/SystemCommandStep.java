@@ -23,12 +23,19 @@ public class SystemCommandStep extends AbstractStep {
     @InputParam(required = false, displayName = "Wait For Terminate",type = "text", description = "Should wait for the Process termination or not ?")
     public boolean waitForTerminate = true;
 
+    private Process child;
+
+    @Override
+    public void interrupt() {
+        child.destroyForcibly();
+    }
+
     @Override
     public boolean run() {
         final AtomicBoolean status = new AtomicBoolean(true);
         try {
             String[] commands = systemCommand.split("[\n]");
-            final Process child = Runtime.getRuntime().exec("cmd /k");
+            child = Runtime.getRuntime().exec("cmd /k");
             /*final ProcessBuilder pb = new ProcessBuilder("cmd", "/k");
             pb.redirectErrorStream(true);
             final Process child = pb.start();*/

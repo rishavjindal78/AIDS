@@ -18,9 +18,16 @@
             <div class="form-group">
                 <div class="col-lg-2">
                     <#--<@spring.formMultiSelect path="agents" options="" attributes=""/>-->
+                    <#--<#assign selectedLangs = spring.status.value?default(" ")>-->
                     <select id="agent" class="form-control" name="agents" multiple="true">
                         <#list model["agents"] as agent>
-                            <option value="${agent.id}">${agent.name}</option>
+                            <#if model.selectedAgents?seq_contains(agent) >
+                                <#assign isSelected = true>
+                            <#else>
+                                <#assign isSelected = false>
+                            </#if>
+                            <option value="${agent.id}"<#if isSelected> selected="selected"</#if>>${agent.name}</option>
+                        <#--<option value="${value?html}"<#if isSelected> selected="selected"</#if>>${languages[value]?html}-->
                         </#list>
                     </select>
                 </div>

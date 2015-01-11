@@ -97,4 +97,16 @@ public class AgentController {
         return taskProcessor.getMemoryLogs(id, start);
     }
 
+    @RequestMapping(value = "isStepRunning/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public Boolean checkIfTaskStepRunning(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id) throws Exception {
+        return taskProcessor.isRunning(id);
+    }
+
+    @RequestMapping(value = "interrupt/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public void interruptStep(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id) throws Exception {
+        taskProcessor.interrupt(id);
+    }
+
 }

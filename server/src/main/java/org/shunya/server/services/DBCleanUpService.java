@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.shunya.server.model.Task;
 import org.shunya.server.model.TaskRun;
+import org.shunya.shared.RunState;
+import org.shunya.shared.RunStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,6 +29,9 @@ public class DBCleanUpService {
     @Autowired
     private DBService dbService;
 
+    @Autowired
+    private TaskService taskService;
+
     //    @Scheduled(cron = "0 0/2 * * * ?")
     @Scheduled(cron = "${cleanOldTaskHistory.cron.expression}")
     public void cleanOldTaskHistory() {
@@ -36,6 +41,18 @@ public class DBCleanUpService {
         logger.info(() -> "Job TaskRun Cleanup completed for Max Age - " + maxTaskRunAge + ", deleted entries - " + taskHistoryByAge.size());
     }
 
+    @Scheduled(cron = "0 0/2 * * * ?")
+    public void synchronizeTasks1(){
+        logger.info(() -> "Running TaskRun Synchronization");
+        List<TaskRun> runningTasks = dbService.findRunningTasks();
+        runningTasks.forEach(taskRun -> {
+            if(!taskService.isTaskRunning(taskRun)){
+                taskRun.setRunState(RunState.COMPLETED);
+                taskRun.setRunStatus(RunStatus.FAILURE);
+                dbService.save(taskRun);
+            }
+        });
+    }
 
     @Scheduled(cron = "${backupTasks.cron.expression}")
     public void backUpTasks() {

@@ -6,6 +6,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.shunya.server.dao.DBDao;
 import org.shunya.server.model.*;
+import org.shunya.shared.RunState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -278,6 +279,16 @@ public class DBServiceImpl implements DBService {
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         criteria.setMaxResults(50);
         criteria.setCacheable(true);
+        return criteria.list();
+    }
+
+    @Override
+    public List<TaskRun> findRunningTasks() {
+        Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskRun.class);
+        criteria.setFetchSize(50);
+        criteria.add(Restrictions.eq("runState", RunState.RUNNING));
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        criteria.setMaxResults(50);
         return criteria.list();
     }
 

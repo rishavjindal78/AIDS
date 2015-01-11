@@ -9,6 +9,9 @@ public interface DBService {
     List<Agent> listAgents();
     List<Agent> listAgentsByTeam(long teamId);
     List<Task> listTasksByTeam(long teamId);
+
+    List<TaskRun> findRunningTasks();
+
     List<Task> listTasks();
     List<Team> listTeams();
     List<User> listUser();

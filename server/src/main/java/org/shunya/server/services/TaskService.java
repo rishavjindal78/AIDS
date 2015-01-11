@@ -70,6 +70,10 @@ public class TaskService {
         });
     }
 
+    public boolean isTaskRunning(TaskRun taskRun){
+        return taskExecutionPlanMap.containsKey(taskRun);
+    }
+
     // if task is not started at all - create execution plan and start it
     // if task has start but not completed - then execute rest of steps
     // if all task steps has completed, then do the cleanup
