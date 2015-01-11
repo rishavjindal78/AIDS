@@ -60,8 +60,8 @@ public class DynamicJobScheduler implements MyJobScheduler {
 
     @Override
     public List<String> predict(String cronExpression, int times) {
+        List<String> results = new ArrayList<>();
         try {
-            List<String> results = new ArrayList<>();
             CronSequenceGenerator generator = new CronSequenceGenerator(cronExpression);
             System.out.println(generator.toString());
             Date seedDate = new Date();
@@ -70,9 +70,10 @@ public class DynamicJobScheduler implements MyJobScheduler {
                 results.add(date.toString());
                 seedDate = date;
             }
-            return results;
         } catch (Exception e) {
-            throw e;
+            logger.info(() -> "Error in Cron Expression - " + e.getMessage());
+            results.add(e.getMessage());
         }
+        return results;
     }
 }
