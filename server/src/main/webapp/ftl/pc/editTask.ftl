@@ -2,6 +2,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $(".cancel").click(function (e) {
+            $('#table_row_'+${model.task.id!?string}).removeClass('alert-warning');
             $("#span_task_edit").empty();
 //            $("#serverResults").empty();
             e.preventDefault();

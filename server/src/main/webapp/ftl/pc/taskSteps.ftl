@@ -17,6 +17,8 @@
     <script type="text/javascript">
         $(document).ready(function () {
             $(".taskStepEdit").click(function () {
+                $('.taskstep_row').removeClass('alert-warning');
+                $('#taskstep_row_' + this.id).addClass('alert-warning');
                 $.get('../edit/' + this.id, function (data) {
                     $('#span_edit').empty();
                     $('#span_edit').html(data);
@@ -74,7 +76,7 @@
         }
 
         function addAgent(taskStepId) {
-            $.get('${rc.contextPath}/server/team/${model.task.team.id}/taskStep/addAgent/'+taskStepId, function (data) {
+            $.get('${rc.contextPath}/server/team/${model.task.team.id}/taskStep/addAgent/' + taskStepId, function (data) {
                 $('#span_task_agent').empty();
                 $('#span_task_agent').html(data);
                 $('#span_task_agent').focus();
@@ -82,7 +84,7 @@
         }
 
         function removeAgent(agentId, taskId) {
-            $.post('${rc.contextPath}/server/taskStep/removeAgent/'+taskId+'/'+agentId, function (data) {
+            $.post('${rc.contextPath}/server/taskStep/removeAgent/' + taskId + '/' + agentId, function (data) {
                 $('#span_task_agent').empty();
                 $('#span_task_agent').html(data);
             });
@@ -109,22 +111,26 @@
             <th>Operation</th>
         </tr>
         <#list model.task.stepDataList as taskStep>
-            <tr>
+            <tr id="taskstep_row_${taskStep.id}" class="taskstep_row">
                 <td width="5%">${taskStep.sequence?string}</td>
                 <td width="12%">${taskStep.taskClass?string}</td>
                 <td width="30%">${taskStep.description!?string}</td>
                 <td width="5%"><input class="activeCheckBox" type="checkbox" id="${taskStep.id}"
-                           <#if taskStep.active?? && taskStep.active?string=="true">checked="true"</#if></td>
+                                      <#if taskStep.active?? && taskStep.active?string=="true">checked="true"</#if></td>
                 <td width="5%"><input class="ignoreFailureCheckBox" type="checkbox" id="${taskStep.id}"
-                           <#if taskStep.ignoreFailure?? && taskStep.ignoreFailure?string=="true">checked="true"</#if></td>
-                <td width="15%">
+                                      <#if taskStep.ignoreFailure?? && taskStep.ignoreFailure?string=="true">checked="true"</#if>
+                </td>
+                <td width="13%">
                     <#list taskStep.agentList as agent>
-                        <form class="form-horizontal" name="agent" action="${rc.contextPath}/server/taskStep/removeAgent/${taskStep.id?string}/${agent.id}" method="post">
-                            <span class="label label-primary">${agent.name}</span><button type="submit" class="btn btn-link" id="save">X</button>
+                        <form class="form-horizontal" name="agent"
+                              action="${rc.contextPath}/server/taskStep/removeAgent/${taskStep.id?string}/${agent.id}"
+                              method="post">
+                            <span class="label label-primary">${agent.name}</span>
+                            <button type="submit" class="btn btn-link" id="save">X</button>
                         </form>
                     </#list>
                 </td>
-                <td width="10%"><a class="taskStepEdit" id="${taskStep.id?string}">edit</a>
+                <td width="12%"><a class="taskStepEdit" id="${taskStep.id?string}">edit</a>
                     <a href="../deleteStep/${taskStep.id}">delete</a>
                     <a href="#" onclick="addAgent('${taskStep.id}')">+agent</a>
                 </td>

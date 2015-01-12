@@ -2,6 +2,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $(".cancel").click(function (e) {
+            $('#taskstep_row_'+${model.stepData.id!?string}).removeClass('alert-warning');
             $('#span_edit').empty();
             e.preventDefault();
             e.stopPropagation();

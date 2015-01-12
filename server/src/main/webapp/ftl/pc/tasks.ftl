@@ -27,6 +27,8 @@
         }
 
         function editTask(id) {
+            $('.task_row').removeClass('alert-warning');
+            $('#table_row_'+id).addClass('alert-warning');
             $.get('${rc.contextPath}/server/team/${model.team.id}/editTask/' + id, function (data) {
                 $('#span_task_edit').empty();
                 $('#span_task_edit').html(data);
@@ -116,7 +118,7 @@
                 <th width="5%">Operation</th>
             </tr>
             <#list model["tasks"] as td>
-                <tr id="table_row_${td.id}">
+                <tr id="table_row_${td.id}" class="task_row">
                     <td>${td_index+1} &nbsp;<a href="#" onclick="editTask('${td.id}')"><span
                             class="glyphicon glyphicon-edit"/></a></td>
                     <td><a href="${rc.getContextPath()}/server/task/${td.id}">${td.name?string}</a></td>
