@@ -33,7 +33,7 @@ public abstract class AbstractStep {
     };
 
     public void interrupt() {
-    //  TODO override in the task step implementation
+        //  TODO override in the task step implementation
     }
 
     public void beforeTaskStart() {
@@ -238,6 +238,9 @@ public abstract class AbstractStep {
                 }
                 // quote to work properly with $ and {,} signs
                 matcher.appendReplacement(buffer, replacement != null ? Matcher.quoteReplacement(replacement) : "null");
+            } else {
+                LOGGER.get().severe(() -> "Variable Binding not Found :" + matcher.group(1));
+                throw new RuntimeException("Variable Binding not Found :" + matcher.group(1));
             }
         }
         matcher.appendTail(buffer);
