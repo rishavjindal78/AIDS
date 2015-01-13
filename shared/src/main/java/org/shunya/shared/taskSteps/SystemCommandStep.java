@@ -20,14 +20,19 @@ public class SystemCommandStep extends AbstractStep {
     public String systemCommand;
     @InputParam(required = false, displayName = "Success Message", type = "text", description = "Import terminated successfully")
     public String successMessage;
-    @InputParam(required = false, displayName = "Wait For Terminate",type = "text", description = "Should wait for the Process termination or not ?")
+    @InputParam(required = false, displayName = "Wait For Terminate", type = "text", description = "Should wait for the Process termination or not ?")
     public boolean waitForTerminate = true;
 
     private Process child;
+    private Logger logger;
 
     @Override
     public void interrupt() {
-        child.destroyForcibly();
+        if (child != null) {
+            child.destroy();
+            if(logger!=null)
+                logger.warning(() -> "Process destroyed by the user.");
+        }
     }
 
     @Override
@@ -39,7 +44,7 @@ public class SystemCommandStep extends AbstractStep {
             /*final ProcessBuilder pb = new ProcessBuilder("cmd", "/k");
             pb.redirectErrorStream(true);
             final Process child = pb.start();*/
-            final Logger logger = LOGGER.get();
+            logger = LOGGER.get();
             Thread captureProcessStreams = new Thread(() -> {
                 try {
                     startOutputAndErrorReadThreads(child.getInputStream(), child.getErrorStream(), logger);

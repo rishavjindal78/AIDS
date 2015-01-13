@@ -108,5 +108,4 @@ public class AgentController {
     public void interruptStep(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id) throws Exception {
         taskProcessor.interrupt(id);
     }
-
 }

@@ -39,14 +39,14 @@ public class TaskProcessor {
 
     public void executeTask(TaskContext taskContext) throws InterruptedException {
         try {
+            TaskStepDTO taskStepDTO = taskContext.getStepDTO();
+            taskContext.getTaskStepRunDTO().setStartTime(new Date());
+            AbstractStep taskStep = AbstractStep.getTask(taskStepDTO);
+            taskStep.setTaskStepData(taskStepDTO);
+            taskStep.setSessionMap(taskContext.getSessionMap());
+            cache.put(taskContext.getTaskStepRunDTO().getId(), taskStep);
             myExecutor.execute(() -> {
                 preProcess();
-                TaskStepDTO taskStepDTO = taskContext.getStepDTO();
-                taskContext.getTaskStepRunDTO().setStartTime(new Date());
-                AbstractStep taskStep = AbstractStep.getTask(taskStepDTO);
-                taskStep.setTaskStepData(taskStepDTO);
-                taskStep.setSessionMap(taskContext.getSessionMap());
-                cache.putIfAbsent(taskContext.getTaskStepRunDTO().getId(), taskStep);
                 try {
                     taskStep.beforeTaskStart();
                     boolean status = taskStep.execute();

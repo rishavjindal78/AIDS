@@ -77,9 +77,17 @@ public class TaskService {
         currentlyRunningTaskSteps.forEach((taskRun, taskStepRuns) -> {
             new CopyOnWriteArrayList<>(taskStepRuns).forEach(taskStepRun -> {
                 Boolean stepRunning = false;
+                Boolean agentRunning = false;
                 try {
-                    stepRunning = restClient.checkStepRunning(taskStepRun.getId(), taskStepRun.getAgent());
+                    for (int i = 0; i < 2; i++) {
+                        stepRunning = restClient.checkStepRunning(taskStepRun.getId(), taskStepRun.getAgent());
+                        Thread.sleep(2000);
+                        if (stepRunning)
+                            break;
+                    }
+                    agentRunning = true;
                 } catch (Exception e) {
+                    agentRunning = false;
                     stepRunning = false;
                     logger.warn("Task probably died due to Agent failure, synchronizing it at server.", e);
                 }
@@ -87,7 +95,10 @@ public class TaskService {
                     TaskContext executionContext = currentlyRunningStepContext.get(taskStepRun);
                     taskExecutionPlanMap.get(taskRun).setTaskStatus(false);
                     executionContext.getTaskStepRunDTO().setStatus(false);
-                    executionContext.getTaskStepRunDTO().setLogs("TaskStep failed due to unreachable Agent, probably agent died.");
+                    if (!agentRunning)
+                        executionContext.getTaskStepRunDTO().setLogs("TaskStep failed due to unreachable Agent, agent probably died.");
+                    else
+                        executionContext.getTaskStepRunDTO().setLogs("TaskStep failed due to unknown reason, Agent is not running this step.");
                     executionContext.getTaskStepRunDTO().setFinishTime(new Date());
                     executionContext.getTaskStepRunDTO().setRunStatus(RunStatus.FAILURE);
                     executionContext.getTaskStepRunDTO().setRunState(RunState.COMPLETED);
@@ -145,8 +156,8 @@ public class TaskService {
         TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);
         if (taskExecutionPlan != null) {
             taskExecutionPlan.setCancelled(true);
-//            List<TaskStepRun> taskStepRuns = currentlyRunningTaskSteps.get(taskRun);
-//            new ArrayList<>(taskStepRuns).forEach(taskStepRun -> restClient.interruptTaskStep(taskStepRun.getId(), taskStepRun.getAgent()));
+            List<TaskStepRun> taskStepRuns = currentlyRunningTaskSteps.get(taskRun);
+            new ArrayList<>(taskStepRuns).forEach(taskStepRun -> restClient.interruptTaskStep(taskStepRun.getId(), taskStepRun.getAgent()));
             return true;
         }
         return false;
