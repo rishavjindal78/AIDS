@@ -250,14 +250,20 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public List<TaskRun> findTaskHistoryForTaskId(long taskId) {
-        Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskRun.class);
-        criteria.setFetchSize(30);
-        criteria.add(Restrictions.eq("task.id", taskId));
-        criteria.addOrder(Order.desc("id"));
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        criteria.setMaxResults(30);
-        criteria.setCacheable(true);
-        return criteria.list();
+        List<Integer> idList = DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskRun.class)
+                .setFetchSize(10)
+                .add(Restrictions.eq("task.id", taskId))
+                .addOrder(Order.desc("id"))
+                .setProjection(Projections.distinct(Projections.id()))
+                .setMaxResults(10)
+                .setCacheable(true)
+                .list();
+        List<TaskRun> testRuns = DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskRun.class)
+                .setFetchSize(10)
+                .add(Restrictions.in("id", idList))
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+                .list();
+        return testRuns;
     }
 
     @Override
@@ -271,9 +277,9 @@ public class DBServiceImpl implements DBService {
                 .setCacheable(true)
                 .list();
         List<TaskRun> testRuns = DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskRun.class)
-                .setFetchSize(30)
-                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+                .setFetchSize(10)
                 .add(Restrictions.in("id", idList))
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
                 .list();
         return testRuns;
     }
