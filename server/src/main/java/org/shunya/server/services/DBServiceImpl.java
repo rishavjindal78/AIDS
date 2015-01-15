@@ -252,8 +252,8 @@ public class DBServiceImpl implements DBService {
     public List<TaskRun> findTaskHistoryForTaskId(long taskId) {
         List<Integer> idList = DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskRun.class)
                 .setFetchSize(10)
-                .add(Restrictions.eq("task.id", taskId))
                 .addOrder(Order.desc("id"))
+                .add(Restrictions.eq("task.id", taskId))
                 .setProjection(Projections.distinct(Projections.id()))
                 .setMaxResults(10)
                 .setCacheable(true)
@@ -261,6 +261,7 @@ public class DBServiceImpl implements DBService {
         List<TaskRun> testRuns = DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskRun.class)
                 .setFetchSize(10)
                 .add(Restrictions.in("id", idList))
+                .addOrder(Order.desc("id"))
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
                 .list();
         return testRuns;
@@ -270,14 +271,15 @@ public class DBServiceImpl implements DBService {
     public List<TaskRun> findTaskHistoryByTeam(long teamId) {
         List<Integer> idList = DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskRun.class)
                 .setFetchSize(30)
-                .add(Restrictions.eq("team.id", teamId))
                 .addOrder(Order.desc("id"))
+                .add(Restrictions.eq("team.id", teamId))
                 .setProjection(Projections.distinct(Projections.id()))
                 .setMaxResults(10)
                 .setCacheable(true)
                 .list();
         List<TaskRun> testRuns = DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskRun.class)
                 .setFetchSize(10)
+                .addOrder(Order.desc("id"))
                 .add(Restrictions.in("id", idList))
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
                 .list();
