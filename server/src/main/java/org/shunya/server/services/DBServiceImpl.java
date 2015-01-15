@@ -3,6 +3,7 @@ package org.shunya.server.services;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.shunya.server.dao.DBDao;
 import org.shunya.server.model.*;
@@ -261,14 +262,20 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public List<TaskRun> findTaskHistoryByTeam(long teamId) {
-        Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskRun.class);
-        criteria.setFetchSize(30);
-        criteria.add(Restrictions.eq("team.id", teamId));
-        criteria.addOrder(Order.desc("id"));
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        criteria.setMaxResults(30);
-        criteria.setCacheable(true);
-        return criteria.list();
+        List<Integer> idList = DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskRun.class)
+                .setFetchSize(30)
+                .add(Restrictions.eq("team.id", teamId))
+                .addOrder(Order.desc("id"))
+                .setProjection(Projections.distinct(Projections.id()))
+                .setMaxResults(10)
+                .setCacheable(true)
+                .list();
+        List<TaskRun> testRuns = DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskRun.class)
+                .setFetchSize(30)
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+                .add(Restrictions.in("id", idList))
+                .list();
+        return testRuns;
     }
 
     @Override
