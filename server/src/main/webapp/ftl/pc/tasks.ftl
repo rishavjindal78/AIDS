@@ -4,7 +4,7 @@
     <@com.page activeTab="tasks">
 
     <script type="text/javascript">
-        function executeFunction(url) {
+        function runTask(url) {
             var userComment = prompt("Please enter comments for the run .. ?", "Test Run");
             if (userComment != null) {
                 $("#results").empty();
@@ -143,7 +143,7 @@
                                 <li><a href="${rc.getContextPath()}/server/task/${td.id}">view</a></li>
                                 <li><a href="#" onclick="editTask('${td.id}')">edit</a></li>
                                 <li><a href="#" onclick="addAgent('${td.id}')">add agent</a></li>
-                                <li><a href="#" onclick="executeFunction('${rc.getContextPath()}/server/run/${td.id}')">run</a>
+                                <li><a href="#" onclick="runTask('${rc.getContextPath()}/server/run/${td.id}')">run</a>
                                 </li>
                                 <li><a href="${rc.getContextPath()}/server/taskHistory/${td.id}">history</a></li>
                                 <li><a href="${rc.getContextPath()}/server/export/task/${td.id}">Download</a></li>

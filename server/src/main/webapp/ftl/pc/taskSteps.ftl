@@ -75,6 +75,17 @@
             }
         }
 
+        function runTask(url) {
+            var userComment = $('#userComments').val();
+            if (userComment != null) {
+                $("#results").empty();
+                $.post(url, { comment: userComment}, function (data) {
+                    $("#results").html('<div class="alert alert-success">Job Submitted Successfully - ' + url + '</div>');
+                });
+                $('#myModal').modal('hide');
+            }
+        }
+
         function addAgent(taskStepId) {
             $.get('${rc.contextPath}/server/team/${model.task.team.id}/taskStep/addAgent/' + taskStepId, function (data) {
                 $('#span_task_agent').empty();
@@ -99,6 +110,8 @@
     <a href="../addTaskStep/${model.task.id?string}" class="btn btn-mini btn-primary">Add Step</a>
     <a href="#" onclick="execute('../run/${model.task.id?string}')" class="btn btn-mini  btn btn-danger">Run</a>
     <a href="../taskHistory/${model.task.id}" class="btn btn-mini  btn btn-danger">history</a>
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Execute</button>
 
     <table class="table table-striped">
         <tr>
@@ -141,5 +154,28 @@
     <span id="span_edit"></span>
     <br/>
     <span id="results"></span>
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Run Task</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">User Comments</label>
+                            <input type="text" class="form-control" id="userComments">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="runTask('../run/${model.task.id?string}')">Run Task</button>
+                </div>
+            </div>
+        </div>
+    </div>
     </@com.page>
 </#escape>
