@@ -20,7 +20,6 @@ import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.ConnectException;
 import java.net.Inet4Address;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -33,7 +32,7 @@ public class TaskService {
     private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
 
     Map<TaskRun, TaskExecutionPlan> taskExecutionPlanMap = new ConcurrentHashMap<>(10);
-    Map<TaskRun, List<TaskStepRun>> currentlyRunningTaskSteps = new ConcurrentHashMap<>(10);
+    Map<TaskRun, List<TaskStepRun>> prepareTaskSteps = new ConcurrentHashMap<>(10);
     Map<TaskStepRun, TaskContext> currentlyRunningStepContext = new ConcurrentHashMap<>(10);
     Set<Long> currentlyRunningTasks = new HashSet<>();
 
@@ -65,7 +64,7 @@ public class TaskService {
             if (LocalDateTime.ofInstant(taskRun.getStartTime().toInstant(), ZoneId.systemDefault()).isBefore(LocalDateTime.now().minusHours(maxSystemFailureTimeInHours))) {
                 logger.warn("System Failures Detected for TaskRun due to timeout - " + taskRun.getName());
                 handleCompletion(taskRun, taskExecutionPlan, RunStatus.FAILURE);
-                currentlyRunningTaskSteps.remove(taskRun);
+                prepareTaskSteps.remove(taskRun);
                 logger.warn("Task Kicked due to System Failures, TaskRun - " + taskRun.getName());
             }
         });
@@ -74,8 +73,8 @@ public class TaskService {
     @Scheduled(cron = "0/30 * * * * ?")
     public void checkAgentDiedSystemFailures() {
         logger.info("Running System Failures of Agents");
-        currentlyRunningTaskSteps.forEach((taskRun, taskStepRuns) -> {
-            new CopyOnWriteArrayList<>(taskStepRuns).forEach(taskStepRun -> {
+        prepareTaskSteps.forEach((taskRun, taskStepRuns) -> {
+            new CopyOnWriteArrayList<>(taskStepRuns).stream().filter(taskStepRun -> currentlyRunningStepContext.containsKey(taskStepRun)).forEach(taskStepRun -> {
                 Boolean stepRunning = false;
                 Boolean agentRunning = false;
                 try {
@@ -156,7 +155,7 @@ public class TaskService {
         TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);
         if (taskExecutionPlan != null) {
             taskExecutionPlan.setCancelled(true);
-            List<TaskStepRun> taskStepRuns = currentlyRunningTaskSteps.get(taskRun);
+            List<TaskStepRun> taskStepRuns = prepareTaskSteps.get(taskRun);
             new ArrayList<>(taskStepRuns).forEach(taskStepRun -> restClient.interruptTaskStep(taskStepRun.getId(), taskStepRun.getAgent()));
             return true;
         }
@@ -178,14 +177,14 @@ public class TaskService {
         TaskRun taskRun = dbService.getTaskRun(taskStepRun);
         logger.info(taskContext.getStepDTO().getSequence() + ". " + taskStepRun.getAgent().getName() + " - " + taskContext.getStepDTO().getDescription() + " - " + taskContext.getTaskStepRunDTO().getRunStatus());
         statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), taskContext.getStepDTO().getSequence() + ". " + taskStepRun.getAgent().getName() + " - " + taskContext.getStepDTO().getDescription() + " - " + taskContext.getTaskStepRunDTO().getRunStatus());
-        currentlyRunningTaskSteps.get(taskRun).remove(taskStepRun);
+        prepareTaskSteps.get(taskRun).remove(taskStepRun);
         TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);
         taskExecutionPlan.getSessionMap().putAll(taskContext.getSessionMap());
         taskExecutionPlan.setTaskStatus(taskExecutionPlan.isTaskStatus() & (taskStepRun.isStatus() || taskStepRun.getTaskStep().isIgnoreFailure()));
         if (taskStepRun.getTaskStep().isIgnoreFailure() && !taskStepRun.isStatus()) {
             logger.info("Ignoring Step failure, as it is set Optional");
         }
-        if (currentlyRunningTaskSteps.get(taskRun).isEmpty()) {
+        if (prepareTaskSteps.get(taskRun).isEmpty()) {
             if (!taskExecutionPlan.isTaskStatus() && taskExecutionPlan.isAbortOnFirstFailure()) {
                 logger.info("Aborting Task Execution after first failure, State = Complete");
                 handleCompletion(taskRun, taskExecutionPlan, RunStatus.FAILURE);
@@ -257,10 +256,10 @@ public class TaskService {
         if (next != null) {
             delegateStepToAgents(next.getValue(), taskRun);
         } else {
-            currentlyRunningTaskSteps.remove(taskRun);
+            prepareTaskSteps.remove(taskRun);
             handleCompletion(taskRun, taskExecutionPlan, RunStatus.SUCCESS);
             logger.info("Task has no further steps, " + taskRun.getName() + " Completed with status - " + taskRun.getRunStatus());
-            statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), true, "Task - " + taskRun.getName() + " Completed with status - " + taskRun.getRunStatus());
+            statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), true, "Task - " + taskRun.getComments() + " Completed with status - " + taskRun.getRunStatus());
         }
     }
 
@@ -297,12 +296,12 @@ public class TaskService {
                 taskStepRun.setRunState(RunState.RUNNING);
                 taskStepRun.setRunStatus(RunStatus.RUNNING);
                 dbService.save(taskStepRun);
-                currentlyRunningTaskSteps.computeIfAbsent(taskRun, tsr -> new Vector<>()).add(taskStepRun);
+                prepareTaskSteps.computeIfAbsent(taskRun, tsr -> new Vector<>()).add(taskStepRun);
             });
         });
-        if (currentlyRunningTaskSteps.get(taskRun) != null && currentlyRunningTaskSteps.get(taskRun).size() > 0) {
+        if (prepareTaskSteps.get(taskRun) != null && prepareTaskSteps.get(taskRun).size() > 0) {
             logger.info("execution started for task step - " + taskStepDataList.get(0).getSequence());
-            new CopyOnWriteArrayList<>(currentlyRunningTaskSteps.get(taskRun)).parallelStream().forEach(taskStepRun -> {
+            new CopyOnWriteArrayList<>(prepareTaskSteps.get(taskRun)).parallelStream().forEach(taskStepRun -> {
                 TaskContext executionContext = new TaskContext();
                 try {
                     String hostAddress = Inet4Address.getLocalHost().getHostAddress();
