@@ -163,7 +163,7 @@ public class TaskService {
     }
 
     //    @Async
-//    Making this method async may cause race condition
+//    Making this method async may cause race condition when agent submits results
     public void consumeStepResult(TaskContext taskContext) {
         TaskStepRun taskStepRun = dbService.getTaskStepRun(taskContext.getTaskStepRunDTO().getId());
         currentlyRunningStepContext.remove(taskStepRun);

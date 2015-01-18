@@ -1,6 +1,6 @@
-package org.shunya.server.services;
+package org.shunya.serverwatcher.services;
 
-import org.shunya.server.ScheduledTaskRunner;
+import org.shunya.serverwatcher.ServerApp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
@@ -18,8 +18,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.logging.Logger;
 
 @Service
-public class DynamicJobScheduler implements MyJobScheduler {
-
+public class DynamicJobScheduler {
     private static final Logger logger = Logger.getLogger(DynamicJobScheduler.class.getName());
 
     @Autowired
@@ -30,32 +29,24 @@ public class DynamicJobScheduler implements MyJobScheduler {
     @Qualifier("myExecutor")
     private TaskExecutor executor;
 
-    @Autowired
-    private DBService dbService;
+    private ConcurrentMap<ServerApp, ScheduledFuture<?>> futureConcurrentMap = new ConcurrentHashMap<>();
 
-    @Autowired
-    private TaskService taskService;
-
-    private ConcurrentMap<Long, ScheduledFuture> futureConcurrentMap = new ConcurrentHashMap<>();
-
-    public void schedule(String cronExpression, long taskId) {
-        ScheduledFuture<?> scheduledFuture = scheduler.schedule(new ScheduledTaskRunner(taskId, dbService, taskService), new CronTrigger(cronExpression));
-        futureConcurrentMap.putIfAbsent(taskId, scheduledFuture);
-        logger.info(() -> "Task Scheduled - " + taskId);
+    public void schedule(String cronExpression, Runnable runnable, ServerApp serverApp) {
+        ScheduledFuture<?> scheduledFuture = scheduler.schedule(runnable, new CronTrigger(cronExpression));
+        futureConcurrentMap.putIfAbsent(serverApp, scheduledFuture);
+        logger.info(() -> "Task Scheduled - " + serverApp);
     }
 
-    @Override
-    public void unSchedule(long taskId) {
-        futureConcurrentMap.computeIfPresent(taskId, (aLong, scheduledFuture) -> {
+    public void unSchedule(ServerApp serverApp) {
+        futureConcurrentMap.computeIfPresent(serverApp, (aLong, scheduledFuture) -> {
                     scheduledFuture.cancel(true);
                     return scheduledFuture;
                 }
         );
-        futureConcurrentMap.remove(taskId);
-        logger.info(() -> "Task UnScheduled - " + taskId);
+        futureConcurrentMap.remove(serverApp);
+        logger.info(() -> "Task UnScheduled - " + serverApp);
     }
 
-    @Override
     public List<String> predict(String cronExpression, int times) {
         List<String> results = new ArrayList<>();
         try {

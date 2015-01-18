@@ -1,0 +1,148 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath*:**/default.properties</value>
+                <value>classpath*:**/database-${env:qa}.properties</value>
+                <value>classpath*:**/${env:qa}.properties</value>
+            </list>
+        </property>
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="ignoreResourceNotFound" value="true"/>
+    </bean>
+
+    <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
+    <task:executor id="myExecutor" pool-size="5-10" queue-capacity="100"/>
+    <task:scheduler id="myScheduler" pool-size="5"/>
+
+    <context:component-scan base-package="org.shunya.serverwatcher"/>
+    <context:annotation-config />
+
+    <mvc:resources mapping="/resources/**" location="/resources/" />
+    <mvc:resources mapping="/css/**" location="/resources/css/" />
+    <mvc:resources mapping="/js/**" location="/resources/js/" />
+    <!--<mvc:resources mapping="/images/**" location="/images/" />-->
+
+    <bean id="messageSource"
+          class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>messages</value>
+            </list>
+        </property>
+    </bean>
+
+    <!--<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
+                <prop key="hibernate.show_sql">false</prop>
+                &lt;!&ndash;<prop key="hibernate.current_session_context_class">thread</prop>&ndash;&gt;
+                <prop key="hibernate.format_sql">${hibernate.format_sql:true}</prop>
+                &lt;!&ndash;<prop key="hibernate.connection.pool_size">1</prop>&ndash;&gt;
+                <prop key="hibernate.connection.isolation">2</prop>
+                <prop key="hibernate.max_fetch_depth">3</prop>
+                <prop key="hibernate.jdbc.batch_size">50</prop>
+                <prop key="hibernate.connection.autocommit">false</prop>
+                <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto:update}</prop>
+                <prop key="javax.persistence.lock.timeout">1000</prop>
+            </props>
+        </property>
+        <property name="packagesToScan" value="org.shunya.server.model"/>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+        <property name="transactionManager" ref="transactionManager"/>
+    </bean>
+
+    <tx:advice id="txAdvice">
+        <tx:attributes>
+            <tx:method name="save*" />
+            <tx:method name="*" read-only="false" />
+        </tx:attributes>
+    </tx:advice>
+-->
+    <bean id="asyncTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="5"/>
+        <property name="maxPoolSize" value="10"/>
+        <property name="queueCapacity" value="25"/>
+    </bean>
+
+    <mvc:annotation-driven>
+        <mvc:async-support default-timeout="100000000" task-executor="asyncTaskExecutor"/>
+    </mvc:annotation-driven>
+
+    <mvc:view-controller path="/ftl/*" />
+    <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPath" value="/ftl/"/>
+        <property name="defaultEncoding" value="utf-8"/>
+        <property name="freemarkerSettings">
+            <props>
+                <prop key="classic_compatible">false</prop>
+                <prop key="arithmetic_engine">conservative</prop>
+                <prop key="date_format">dd-MM-yyyy</prop>
+                <prop key="time_format">HH:mm</prop>
+                <prop key="number_format">#####</prop>
+                <prop key="datetime_format">dd-MM-yyyy HH:mm a</prop>
+                <prop key="output_encoding">UTF-8</prop>
+                <prop key="default_encoding">UTF-8</prop>
+                <prop key="url_escaping_charset">UTF-8</prop>
+                <!--<prop key="object_wrapper">com.my.view.data.DocumentWrapper</prop>-->
+                <!--<prop key="auto_import">include/lib.ftl as lib, include/validation.ftl as validation</prop>-->
+                <prop key="default_encoding">UTF-8</prop>
+                <prop key="localized_lookup">true</prop>
+                <prop key="strict_syntax">true</prop>
+                <prop key="whitespace_stripping">true</prop>
+                <prop key="template_update_delay">0</prop>
+                <prop key="locale">en_IN</prop>
+                <!--<prop key="number_format">0.####</prop>-->
+            </props>
+        </property>
+    </bean>
+
+    <!--<bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="cache" value="true"/>
+        <property name="prefix" value=""/>
+        <property name="suffix" value=".ftl"/>
+        <property name="requestContextAttribute" value="rc"/>
+    </bean>-->
+
+    <bean class="org.springframework.mobile.device.view.LiteDeviceDelegatingViewResolver">
+        <constructor-arg>
+            <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+                <property name="cache" value="true"/>
+                <property name="prefix" value=""/>
+                <property name="suffix" value=".ftl"/>
+                <property name="requestContextAttribute" value="rc"/>
+                <property name="exposeSpringMacroHelpers" value="true"/>
+            </bean>
+        </constructor-arg>
+        <property name="mobilePrefix" value="mobile/" />
+        <property name="tabletPrefix" value="tablet/" />
+        <property name="normalPrefix" value="pc/" />
+        <property name="enableFallback" value="true"/>
+    </bean>
+
+    <mvc:interceptors>
+        <!-- On pre-handle, resolve the device that originated the web request -->
+        <bean class="org.springframework.mobile.device.DeviceResolverHandlerInterceptor" />
+    </mvc:interceptors>
+
+</beans>

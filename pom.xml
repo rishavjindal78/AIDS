@@ -11,6 +11,7 @@
         <module>shared</module>
         <module>agent</module>
         <module>server</module>
+        <module>serverwatcher</module>
     </modules>
     <properties>
         <skip.integration.tests>true</skip.integration.tests>
