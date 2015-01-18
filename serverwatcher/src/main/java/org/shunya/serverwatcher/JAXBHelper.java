@@ -8,13 +8,13 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 
 public class JAXBHelper {
-    public static void persistServerAppConfig(String folder, Class<ServerApp> aClass, ServerApp... retroApps) throws JAXBException, IOException {
-        for (ServerApp retroApp : retroApps) {
-            final String fileName = retroApp.getId() + ".xml";
+    public static void persistServerAppConfig(String folder, Class<ServerApp> aClass, ServerApp... apps) throws JAXBException, IOException {
+        for (ServerApp app : apps) {
+            final String fileName = app.getId() + ".xml";
             JAXBContext context = JAXBContext.newInstance(aClass);
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            marshaller.marshal(retroApp, new FileWriter(new File(folder, fileName)));
+            marshaller.marshal(app, new FileWriter(new File(folder, fileName)));
         }
     }
 

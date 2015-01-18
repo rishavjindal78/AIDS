@@ -1,6 +1,7 @@
 package org.shunya.serverwatcher;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.http.client.CookieStore;
 
 import javax.xml.bind.annotation.*;
@@ -63,6 +64,7 @@ public class ServerApp implements Comparable<ServerApp> {
     private String pingSchedule;
     private String diskUsageSchedule;
     @XmlTransient
+    @JsonSerialize(using = JsonDateSerializer.class)
     private LocalDateTime lastStatusUpdateTime;
 
     private String comments;

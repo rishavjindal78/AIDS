@@ -1,6 +1,7 @@
 package org.shunya.serverwatcher.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -14,8 +15,7 @@ import org.springframework.web.context.request.async.DeferredResult;
 
 import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBException;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -105,6 +105,14 @@ public class ServerHealthService {
             jobScheduler.unSchedule(app);
         }
         jobScheduler.schedule(app.getPingSchedule(), new ServerHealthChecker(app, httpClient, notificationListeners, executorService, appStatus), app);
+    }
+
+    public void saveServerApp(ServerApp serverApp){
+        try {
+            JAXBHelper.persistServerAppConfig(serverAppPath, ServerApp.class, serverApp);
+        } catch (JAXBException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void scheduleAll() {
