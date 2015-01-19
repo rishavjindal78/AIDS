@@ -46,7 +46,7 @@
                             content += '<th>Response</th>';
                             content += '<th>Status / Last Updated</th></tr>';
                             $.each(data.serverApps, function (index, serverApp) {
-                                content += '<tr class="info"><td colspan="5"><h4>' + serverApp.id + '. ' + serverApp.name + '&nbsp;<small>' +
+                                content += '<tr class="info"><td colspan="5"><h4>' + serverApp.id + '. ' + serverApp.name + '&nbsp;<small>'+getSpanForStatus(serverApp.status)+
                                         '<button onclick="javascript:downloadFile(' + serverApp.id + ')">Download Config' + '</button>' +
                                         '<button onclick="javascript:updateDiv(' + serverApp.id + ')">Refresh Status' + '</button>' +
                                         ' &nbsp; Lead Developer - '+serverApp.leadDeveloper+', Contact DL - '+serverApp.contactDL+'</small></h5></td></tr>';
@@ -59,7 +59,7 @@
                                         + '</address>';
 //                              content += '<td class="" rowspan='+serverApp.serverComponents.length+'>'+teamContacts+'</td>';
                                 $.each(serverApp.componentGroups, function (index, group) {
-                                    content += '<tr><td class="warning" rowspan="' + group.componentList.length + '"><h5>' + group.groupName + '</h5></td>';
+                                    content += '<tr><td class="warning" rowspan="' + group.componentList.length + '"><h5><small>' + group.groupName + getSpanForStatus(group.status) + '</small></h5></td>';
                                     $.each(group.componentList, function (index, component) {
                                         var uniqueId = serverApp.id + '-' + index;
                                         content += '<td class="warning"><h5><small><a href="'+component.url+'" target="_blank">'+component.url+'</a></small></h5></td>';
@@ -136,6 +136,22 @@
                     break;
             }
             return classname;
+        }
+
+        var getSpanForStatus = function (serverStatus) {
+            var spanValue;
+            switch (serverStatus){
+                case 'UP' :
+                    spanValue = ' <span class="text-muted label label-success">up</span>';
+                    break;
+                case 'DOWN':
+                    spanValue = ' <span class="label label-danger">down</span>';
+                    break;
+
+                default :
+                    spanValue = ' '
+            }
+            return spanValue;
         }
 
         var getClassForServerAppStatus = function (serverAppStatus) {

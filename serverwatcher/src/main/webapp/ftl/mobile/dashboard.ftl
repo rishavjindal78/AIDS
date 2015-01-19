@@ -43,7 +43,7 @@
                             var content = '';
 
                             $.each(data.serverApps, function (index, serverApp) {
-                                content += '<tr class="info"><td colspan="2"><h4>' + serverApp.name + '<h4></td></tr>';
+                                content += '<tr class="info"><td colspan="2"><h4>' + (index + 1) + '. ' + serverApp.name + getSpanForStatus(serverApp.status)+'<h4></td></tr>';
 //                                content += '<tr>';
 //                                content += '<td><h6><a href="javascript:downloadFile('+serverApp.id+')">' + serverApp.id + '</a></h6></td>';
                                 var teamContacts = '<address>'
@@ -53,11 +53,11 @@
                                         + '</address>';
 //                                content += '<td class="" rowspan='+serverApp.serverComponents.length+'>'+teamContacts+'</td>';
 
-                                $.each(serverApp.componentGroups, function (index, group){
-                                    content += '<tr><td class="warning" rowspan="'+ group.componentList.length + '"><p><h5>'+group.groupName+'</h5></p></td>';
+                                $.each(serverApp.componentGroups, function (index, group) {
+                                    content += '<tr><td class="warning" rowspan="' + group.componentList.length + '"><p><h5>' + group.groupName + '<small>'+getSpanForStatus(group.status)+'</small></h5></p></td>';
                                     $.each(group.componentList, function (index, component) {
                                         var uniqueId = serverApp.id + '-' + index;
-                                        content += '<td class="'+getClassForServerAppStatus(component.status)+'"><h6>' + component.name + ' [' + component.status + ']<sup>' + trimOrBlank(component.lastStatusUpdateTime) + '</sup></td></tr><tr>';
+                                        content += '<td class="' + getClassForServerAppStatus(component.status) + '"><h6>' + component.name + ' [' + component.status + ']<sup>' + trimOrBlank(component.lastStatusUpdateTime) + '</sup></td></tr><tr>';
                                     });
                                 });
                                 content += '</tr>';
@@ -149,6 +149,22 @@
             return classname;
         }
 
+        var getSpanForStatus = function (serverStatus) {
+            var spanValue;
+            switch (serverStatus) {
+                case 'UP' :
+                    spanValue = ' <span class="text-muted label label-success">up</span>';
+                    break;
+                case 'DOWN':
+                    spanValue = ' <span class="label label-danger">down</span>';
+                    break;
+
+                default :
+                    spanValue = ' '
+            }
+            return spanValue;
+        }
+
     </script>
 </head>
 
@@ -159,27 +175,27 @@
         <button type="button" onclick="javascript:updateDiv()" class="btn btn-primary">Refresh Status</button>
     </h1>
 
-    <#--<button type="button" class="btn btn-primary btn-lg btn-block">TestM Dist Dev</button>
+<#--<button type="button" class="btn btn-primary btn-lg btn-block">TestM Dist Dev</button>
 
-    <!-- Stack the columns on mobile by making one full-width and the other half-width &ndash;&gt;
-    <div class="row">
-        <div class="col-xs-12 col-md-8">.col-xs-12 .col-md-8</div>
-        <div class="col-xs-6 col-md-4">.col-xs-6 .col-md-4</div>
-    </div>
+<!-- Stack the columns on mobile by making one full-width and the other half-width &ndash;&gt;
+<div class="row">
+    <div class="col-xs-12 col-md-8">.col-xs-12 .col-md-8</div>
+    <div class="col-xs-6 col-md-4">.col-xs-6 .col-md-4</div>
+</div>
 
-    <!-- Columns start at 50% wide on mobile and bump up to 33.3% wide on desktop &ndash;&gt;
-    <div class="row">
-        <div class="col-xs-6 col-md-4">.col-xs-6 .col-md-4</div>
-        <div class="col-xs-6 col-md-4">.col-xs-6 .col-md-4</div>
-        <div class="col-xs-6 col-md-4">.col-xs-6 .col-md-4</div>
-    </div>
+<!-- Columns start at 50% wide on mobile and bump up to 33.3% wide on desktop &ndash;&gt;
+<div class="row">
+    <div class="col-xs-6 col-md-4">.col-xs-6 .col-md-4</div>
+    <div class="col-xs-6 col-md-4">.col-xs-6 .col-md-4</div>
+    <div class="col-xs-6 col-md-4">.col-xs-6 .col-md-4</div>
+</div>
 
-    <!-- Columns are always 50% wide, on mobile and desktop &ndash;&gt;
-    <div class="row">
-        <div class="col-xs-6"><button type="button" class="btn btn-success">R</button>UI Server 1</div>
-        <div class="col-xs-6"><button type="button" class="btn btn-success">R</button>UI Server 2</div>
-        <div class="col-xs-6"><button type="button" class="btn btn-primary btn-lg btn-block">UI Server 2</button></div>
-    </div>-->
+<!-- Columns are always 50% wide, on mobile and desktop &ndash;&gt;
+<div class="row">
+    <div class="col-xs-6"><button type="button" class="btn btn-success">R</button>UI Server 1</div>
+    <div class="col-xs-6"><button type="button" class="btn btn-success">R</button>UI Server 2</div>
+    <div class="col-xs-6"><button type="button" class="btn btn-primary btn-lg btn-block">UI Server 2</button></div>
+</div>-->
     <div class="table-responsive">
         <table class="table table-condensed" id="resultDisplayTable">
             <tbody id="serverTable">
@@ -189,10 +205,10 @@
         </table>
     </div>
     <h3>Legends</h3>
-        <span class="label-danger">Server Down</span>
-        <span class="label-success">Server Up</span>
-        <span class="label-warning">Unknown Problem</span>
-        <span class="label-info">Notice</span>
+    <span class="label-danger">Server Down</span>
+    <span class="label-success">Server Up</span>
+    <span class="label-warning">Unknown Problem</span>
+    <span class="label-info">Notice</span>
 </div>
 <footer>
     <p>&copy; TestM</p>

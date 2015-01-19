@@ -7,6 +7,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.shunya.serverwatcher.*;
+import org.shunya.serverwatcher.utils.AssertServerRunning;
+import org.shunya.serverwatcher.utils.Atleast;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -163,21 +165,25 @@ public class ServerHealthService {
                 .withComponentGroup(ComponentGroupBuilder.aComponentGroup().withGroupName("UI App Server").withComponentList(
                         new ServerComponentBuilder().withName("UI Server 1").withUrl("http://endevtdm01:8080/tdm").withExpectedTokenString("<title>Login</title>").build(),
                         new ServerComponentBuilder().withName("UI Server 2").withUrl("http://endevtdm03:8080/tdm").withExpectedTokenString("<title>Login</title>").build())
+                        .withMinRunningCount(2)
                         .build())
                 .withComponentGroup(ComponentGroupBuilder.aComponentGroup().withGroupName("Workers").withComponentList(
                         new ServerComponentBuilder().withName("VDG/Upload").withUrl("http://endevtdm04:8080/tdm").withExpectedTokenString("<title>Login</title>").build())
+                        .withMinRunningCount(1)
                         .build())
                 .withComponentGroup(ComponentGroupBuilder.aComponentGroup().withGroupName("ActiveMQ").withComponentList(
                         new ServerComponentBuilder().withName("ActiveMQ 1").withUrl("http://endevtdm02:8161/").withUserName("admin").withPassword("admin").withExpectedTokenString("ActiveMQ").build(),
                         new ServerComponentBuilder().withName("ActiveMQ 2").withUrl("http://endevtdm03:8161/").withUserName("admin").withPassword("admin").withExpectedTokenString("ActiveMQ").build())
+                        .withMinRunningCount(1)
                         .build())
                 .withComponentGroup(ComponentGroupBuilder.aComponentGroup().withGroupName("Infrastructure").withComponentList(
                         new ServerComponentBuilder().withName("JackRabbit").withUrl("http://endevtdm02:9090/jackrabbit/").build(),
                         new ServerComponentBuilder().withName("ES Master").withUrl("http://endevtdm02:9200/_status").build(),
                         new ServerComponentBuilder().withName("Batch-App").withUrl("http://endevtdm05:8080/tdm-batch/").withExpectedTokenString("TDM-Batch").build())
+                        .withMinRunningCount(3)
                         .build())
                 .withNotificationEmailIds("munish.chandel@edifecs.com")
-                .withPingSchedule("*/2 * * * Mon-Fri")
+                .withPingSchedule("0 */2 * * * Mon-Fri")
                 .withLeadDeveloper("Rishav Jindal (rishav.jindal@edifecs.com)")
                 .withContactDL("ENG.UT.TDM.DEV@edifecs.com")
                 .withChatChannel("#TestM_help")
@@ -194,12 +200,12 @@ public class ServerHealthService {
                         new ServerComponentBuilder().withName("Upload-2").withUrl("http://enqaperftdm-08:8080/tdm").withExpectedTokenString("<title>Login</title>").build(),
                         new ServerComponentBuilder().withName("VDG-1").withUrl("http://enqaperftdm-05:8080/tdm").withExpectedTokenString("<title>Login</title>").build(),
                         new ServerComponentBuilder().withName("VDG-2/TestRun-2").withUrl("http://enqaperftdm-07:8080/tdm").withExpectedTokenString("<title>Login</title>").build(),
-                        new ServerComponentBuilder().withName("TestRun1").withUrl("http://enqaperftdm-06:8080/tdm").withExpectedTokenString("<title>Login</title>").build()
-                )
+                        new ServerComponentBuilder().withName("TestRun1").withUrl("http://enqaperftdm-06:8080/tdm").withExpectedTokenString("<title>Login</title>").build())
                         .build())
                 .withComponentGroup(ComponentGroupBuilder.aComponentGroup().withGroupName("ActiveMQ").withComponentList(
                         new ServerComponentBuilder().withName("ActiveMQ 1").withUrl("http://enqaperftdm-02:8161/").withUserName("admin").withPassword("admin").withExpectedTokenString("ActiveMQ").build(),
                         new ServerComponentBuilder().withName("ActiveMQ 2").withUrl("http://enqaperftdm-09:8161/").withUserName("admin").withPassword("admin").withExpectedTokenString("ActiveMQ").build())
+                        .withMinRunningCount(1)
                         .build())
                 .withComponentGroup(ComponentGroupBuilder.aComponentGroup().withGroupName("Infrastructure").withComponentList(
                         new ServerComponentBuilder().withName("JackRabbit").withUrl("http://enqaperftdm-02:7070/jackrabbit-webapp-2.4.3/").build(),
@@ -207,7 +213,7 @@ public class ServerHealthService {
                         new ServerComponentBuilder().withName("Batch-App").withUrl("http://enqaperftdm-01:8050/tdm-batch/").withExpectedTokenString("TDM-Batch").build())
                         .build())
                 .withNotificationEmailIds("munish.chandel@edifecs.com")
-                .withPingSchedule("*/2 * * * Mon-Fri")
+                .withPingSchedule("0 */2 * * * Mon-Fri")
                 .withLeadDeveloper("Sonali Bhat (sonali.bhat@EDIFECS.COM)")
                 .withContactDL("ENG.UT.TDM.QA@edifecs.com")
                 .withChatChannel("#TestM_help")

@@ -89,6 +89,8 @@ public class ServerApp implements Comparable<ServerApp> {
     private boolean useHttpProxy = false;
 
     private boolean enabled = true;
+    @XmlTransient
+    private ServerStatus status = ServerStatus.UNKNOWN;
 
     public void addGroupComponent(ComponentGroup componentGroup) {
         componentGroups.add(componentGroup);
@@ -135,24 +137,22 @@ public class ServerApp implements Comparable<ServerApp> {
     }
 
     public ServerStatus getStatus() {
-        boolean allOk = true;
-        for (ComponentGroup group : componentGroups) {
-            for (ServerComponent component : group.getComponentList()) {
-                if (component.getStatus() != ServerStatus.UP) {
-                    allOk = false;
-                    break;
-                }
-            }
-        }
-        return allOk ? ServerStatus.UP : ServerStatus.UNKNOWN;
+        return status;
     }
 
     public void setStatus(ServerStatus status) {
-        for (ComponentGroup group : componentGroups) {
-            for (ServerComponent component : group.getComponentList()) {
-                component.setStatus(status);
+        this.status = status;
+    }
+
+    public void calculateStatus() {
+        boolean allOk = true;
+        for (ComponentGroup group : getComponentGroups()) {
+            if (group.getStatus() != ServerStatus.UP) {
+                allOk = false;
+                break;
             }
         }
+        setStatus(allOk ? ServerStatus.UP : ServerStatus.DOWN);
     }
 
     public LocalDateTime getLastStatusUpdateTime() {

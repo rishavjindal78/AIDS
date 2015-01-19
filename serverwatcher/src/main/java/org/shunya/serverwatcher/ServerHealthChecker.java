@@ -33,7 +33,7 @@ public class ServerHealthChecker implements Runnable {
     }
 
     public void authenticateAndCheckServerStatus(ServerApp app) throws AuthenticationException, IOException {
-        for (ComponentGroup group :app.getComponentGroups()) {
+        for (ComponentGroup group : app.getComponentGroups()) {
             for (ServerComponent component : group.getComponentList()) {
                 try {
                     ServerResponse serverResponse = getServerStatus(httpClient, component);
@@ -45,7 +45,9 @@ public class ServerHealthChecker implements Runnable {
                     e.printStackTrace();
                 }
             }
+            group.calculateStatus();
         }
+        app.calculateStatus();
     }
 
     public void getDiscSpace(ServerApp app) throws AuthenticationException, IOException {
@@ -75,37 +77,28 @@ public class ServerHealthChecker implements Runnable {
         }
     }
 
-    private ResponseValidator responseCodeValidator = new ResponseValidator() {
-        @Override
-        public boolean validate(ServerComponent component, ServerResponse serverResponse) {
-            for (int responseCode : component.getExpectedResponseCode()) {
-                if (responseCode == serverResponse.getStatusCode())
-                    return true;
-            }
-            component.setStatus(ServerStatus.SCM);
-            return false;
+    private ResponseValidator responseCodeValidator = (component, serverResponse) -> {
+        for (int responseCode : component.getExpectedResponseCode()) {
+            if (responseCode == serverResponse.getStatusCode())
+                return true;
         }
+        component.setStatus(ServerStatus.SCM);
+        return false;
     };
 
-    private ResponseValidator stringTokenValidator = new ResponseValidator() {
-        @Override
-        public boolean validate(ServerComponent component, ServerResponse serverResponse) {
-            if (component.getExpectedTokenString() != null && !component.getExpectedTokenString().isEmpty()) {
-                if (serverResponse.getContent() != null && !serverResponse.getContent().contains(component.getExpectedTokenString())) {
-                    component.setStatus(ServerStatus.TM);
-                    return false;
-                }
+    private ResponseValidator stringTokenValidator = (component, serverResponse) -> {
+        if (component.getExpectedTokenString() != null && !component.getExpectedTokenString().isEmpty()) {
+            if (serverResponse.getContent() != null && !serverResponse.getContent().contains(component.getExpectedTokenString())) {
+                component.setStatus(ServerStatus.TM);
+                return false;
             }
-            return true;
         }
+        return true;
     };
 
-    private ResponseValidator setServerStatusUp = new ResponseValidator() {
-        @Override
-        public boolean validate(ServerComponent component, ServerResponse serverResponse) {
-            component.setStatus(ServerStatus.UP);
-            return true;
-        }
+    private ResponseValidator setServerStatusUp = (component, serverResponse) -> {
+        component.setStatus(ServerStatus.UP);
+        return true;
     };
 
     public ServerResponse getServerStatus(CloseableHttpClient httpClient, ServerComponent component) {

@@ -32,9 +32,7 @@ public class ServerAppStatus {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 mapper.writeValue(baos, serverAppStatus);
                 synchronized (deferredResults) {
-                    deferredResults.forEach(deferredResult -> {
-                        deferredResult.setResult(baos.toString());
-                    });
+                    deferredResults.forEach(deferredResult -> deferredResult.setResult(baos.toString()));
                     deferredResults.clear();
                 }
             } catch (IOException e) {
@@ -44,7 +42,7 @@ public class ServerAppStatus {
     }
 
     public void subscribe(long serverId, DeferredResult<String> deferredResult) {
-        deferredResultConcurrentMap.computeIfAbsent(serverId, aLong -> new Vector<>()).add(deferredResult);;
+        deferredResultConcurrentMap.computeIfAbsent(serverId, aLong -> new Vector<>()).add(deferredResult);
     }
 
     public ServerAppStatus fetchStatus(Long serverId) {

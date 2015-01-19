@@ -1,12 +1,14 @@
 package org.shunya.serverwatcher;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 import static java.util.Arrays.asList;
 
 public class ComponentGroupBuilder {
     private String groupName;
     private List<ServerComponent> componentList;
+    private int minRunningCount;
 
     private ComponentGroupBuilder() {
     }
@@ -30,6 +32,11 @@ public class ComponentGroupBuilder {
         return this;
     }
 
+    public ComponentGroupBuilder withMinRunningCount(int runningCount){
+        this.minRunningCount = runningCount;
+        return this;
+    }
+
     public ComponentGroupBuilder but() {
         return aComponentGroup().withGroupName(groupName).withComponentList(componentList);
     }
@@ -38,6 +45,7 @@ public class ComponentGroupBuilder {
         ComponentGroup componentGroup = new ComponentGroup();
         componentGroup.setGroupName(groupName);
         componentGroup.setComponentList(componentList);
+        componentGroup.setMinRunningCount(minRunningCount);
         return componentGroup;
     }
 }
