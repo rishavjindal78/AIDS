@@ -91,12 +91,12 @@
         //        setInterval('updateDiv()', 10000);
 
         function updateDiv() {
-            $.post("refresh")
+            $.post("dashboard/refresh")
 //            window.location.reload(true);
         }
 
         function downloadFile(id) {
-            $.download('fileDownload', 'filename=mySpreadsheet&format=xls&id=' + id, 'GET');
+            $.download('dashboard/fileDownload', 'filename=mySpreadsheet&format=xls&id=' + id, 'GET');
         }
 
         function closeDiv() {
