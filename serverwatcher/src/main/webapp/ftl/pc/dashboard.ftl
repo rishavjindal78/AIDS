@@ -1,3 +1,5 @@
+<#assign security=JspTaglibs["/WEB-INF/tlds/security.tld"] />
+<#import "/spring.ftl" as spring />
 <#escape x as x?html>
 <#--<#noescape>-->
 <!DOCTYPE html>
@@ -179,7 +181,7 @@
 <body>
 <div class="container-fluid">
     <h1>
-        <small>Server Health Dashboard</small>
+        <small class="text-muted"><@spring.message code="dashboard.title"/></small>
         <button type="button" onclick="javascript:updateDiv(0)" class="btn btn-primary">Refresh Status</button>
     </h1>
 
@@ -217,10 +219,11 @@
     <span class="label-success">Server Up</span>
     <span class="label-warning">Unknown Problem</span>
     <span class="label-info">Notice</span>
+
+    <footer>
+        <p class="text-muted">&copy; Server Watcher v<@spring.message code="build.timestamp"/></p>
+    </footer>
 </div>
-<footer>
-    <p>&copy; TestM</p>
-</footer>
 </div>
 </body>
 </html>
