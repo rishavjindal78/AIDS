@@ -62,10 +62,7 @@ public class WatcherController {
     @RequestMapping(value = "refresh", method = RequestMethod.POST)
     @ResponseBody
     public void refresh(@RequestParam(required = false, defaultValue = "0") long id) throws Exception {
-        if (id != 0)
-            serverHealthService.refresh(id);
-        else
-            serverHealthService.refreshAll();
+        serverHealthService.loadServerApps(id);
     }
 
     @RequestMapping(value = "upload", method = RequestMethod.POST)

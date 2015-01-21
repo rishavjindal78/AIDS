@@ -14,10 +14,13 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Logger;
 
 import static org.apache.http.util.EntityUtils.consume;
 
 public class ServerHealthChecker implements Runnable {
+    private static final Logger logger = Logger.getLogger(ServerHealthChecker.class.getName());
+
     private ServerApp serverApp;
     private List<NotificationListener> notificationListeners;
     private final CloseableHttpClient httpClient;
@@ -42,7 +45,7 @@ public class ServerHealthChecker implements Runnable {
                     component.setStatusCode(serverResponse.getStatusCode());
                     validateResponse(component, serverResponse, responseCodeValidator, stringTokenValidator, setServerStatusUp);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.fine("Exception getting server component status - " + StringUtils.getExceptionHeaders(e));
                 }
             }
             group.calculateStatus();
@@ -125,12 +128,12 @@ public class ServerHealthChecker implements Runnable {
             serverResponse.setStatus(ServerStatus.DOWN);
             serverResponse.setResponse(e.getMessage());
             serverResponse.setException(StringUtils.getExceptionHeaders(e));
-            e.printStackTrace();
+            logger.fine("Exception getting server component status - " + StringUtils.getExceptionHeaders(e));
         } catch (Exception e) {
             serverResponse.setResponse(e.toString());
             serverResponse.setStatus(ServerStatus.DOWN);
             serverResponse.setException(StringUtils.getExceptionHeaders(e));
-            e.printStackTrace();
+            logger.fine("Exception getting server component status - " + StringUtils.getExceptionHeaders(e));
         } finally {
             try {
                 consume(response.getEntity());
@@ -146,6 +149,7 @@ public class ServerHealthChecker implements Runnable {
     public void run() {
         executorService.submit(() -> {
             try {
+                logger.info(() -> "Scanning servers - " + serverApp.getId() + " - " + serverApp.getName());
                 serverApp.setLastStatusUpdateTime(LocalDateTime.now());
                 authenticateAndCheckServerStatus(serverApp);
                 getDiscSpace(serverApp);
@@ -154,7 +158,7 @@ public class ServerHealthChecker implements Runnable {
                 }
             } catch (Exception e) {
                 serverApp.setServerResponse(StringUtils.getExceptionHeaders(e));
-                e.printStackTrace();
+                logger.fine("Exception getting server app status - " + StringUtils.getExceptionHeaders(e));
             } finally {
                 appStatus.updateCacheId();
             }

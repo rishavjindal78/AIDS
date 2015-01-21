@@ -12,8 +12,11 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Logger;
 
 public class ServerAppStatus {
+    private static final Logger logger = Logger.getLogger(ServerAppStatus.class.getName());
+
     private final AtomicLong cacheId;
     private final List<ServerApp> serverApps;
     private final ConcurrentMap<Long, List<DeferredResult>> deferredResultConcurrentMap = new ConcurrentHashMap<>();
@@ -36,7 +39,7 @@ public class ServerAppStatus {
                     deferredResults.clear();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.warning(StringUtils.getExceptionHeaders(e));
             }
         });
     }

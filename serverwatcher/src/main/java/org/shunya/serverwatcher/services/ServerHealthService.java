@@ -59,16 +59,19 @@ public class ServerHealthService {
                 setConnectionRequestTimeout(10000).setConnectTimeout(6000).setSocketTimeout(10000).build();
         httpClient = HttpClients.custom().setConnectionManager(cm)
                 .setDefaultRequestConfig(requestConfig).build();
-
-        loadServerApps(0);
         appStatus = new ServerAppStatus(serverApps, 2000L);
-        scheduleAll();
+        loadServerApps(0);
     }
 
     public void loadServerApps(long id) {
         List<ServerApp> serverAppList = new ServerAppLoader(serverAppPath).getServerApps();
         for (ServerApp serverApp : serverAppList) {
-            addServerApp(serverApp);
+            if (id > 0L && id == serverApp.getId()) {
+                addServerApp(serverApp);
+            }
+            if (id == 0) {
+                addServerApp(serverApp);
+            }
         }
         if (id > 0L)
             refresh(id);
@@ -76,6 +79,7 @@ public class ServerHealthService {
             refreshAll();
         notificationListeners.clear();
         notificationListeners.add(new EmailListener());
+        scheduleAll();
     }
 
     public void addServerApp(ServerApp... multiServerApp) {
@@ -109,7 +113,7 @@ public class ServerHealthService {
         jobScheduler.schedule(app.getPingSchedule(), new ServerHealthChecker(app, httpClient, notificationListeners, executorService, appStatus), app);
     }
 
-    public void saveServerApp(ServerApp serverApp){
+    public void saveServerApp(ServerApp serverApp) {
         try {
             JAXBHelper.persistServerAppConfig(serverAppPath, ServerApp.class, serverApp);
         } catch (JAXBException | IOException e) {
@@ -118,6 +122,7 @@ public class ServerHealthService {
     }
 
     public void scheduleAll() {
+        serverApps.forEach(serverApp -> jobScheduler.unSchedule(serverApp));
         for (ServerApp app : serverApps) {
             List<String> predict = jobScheduler.predict(app.getPingSchedule(), 5);
             System.out.println("predict = " + predict);
