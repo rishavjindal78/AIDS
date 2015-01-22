@@ -6,6 +6,7 @@ import org.shunya.server.services.DBService;
 import org.shunya.server.services.TaskService;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 public class ScheduledTaskRunner implements Runnable{
@@ -33,6 +34,6 @@ public class ScheduledTaskRunner implements Runnable{
         taskRun.setNotifyStatus(false);
 //        taskRun.setRunBy(dbService.findUserByUsername(principal.getName()));
         taskRun.setTeam(task.getTeam());
-        taskService.execute(taskRun);
+        taskService.execute(taskRun, new HashMap<>());
     }
 }

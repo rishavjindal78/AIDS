@@ -6,16 +6,19 @@ import org.shunya.server.model.Team;
 import org.shunya.server.model.User;
 import org.shunya.server.services.DBService;
 import org.shunya.server.services.TaskService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class TelegramTaskRunner {
+    private static final Logger logger = LoggerFactory.getLogger(TelegramTaskRunner.class);
+
     private long taskId;
     private long taskRunId;
 
     TelegramUserState inputState;
+    TelegramUserState propertiesState;
     TelegramUserState confirmState;
 
     TelegramUserState state;
@@ -25,6 +28,7 @@ public class TelegramTaskRunner {
     final PeerState peerState;
     final int fromId;
     int randomNumber;
+    private Map<String, String> valuesToOverride;
 
     public TelegramTaskRunner(DBService dbService, TaskService taskService, PeerState peerState, int fromId) {
         this.dbService = dbService;
@@ -33,6 +37,7 @@ public class TelegramTaskRunner {
         this.fromId = fromId;
 
         inputState = new UserTaskSelectionState(this);
+        propertiesState = new OverrideInputState(this);
         confirmState = new UserConfirmState(this);
 
         state = inputState;
@@ -98,9 +103,10 @@ public class TelegramTaskRunner {
                     dbService.save(taskRun);
                     setTaskRunId(taskRun.getId());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.warn("exception getting user info", e);
                 }
-                taskService.execute(taskRun);
+                logger.info("Properties to override for - " + valuesToOverride);
+                taskService.execute(taskRun, valuesToOverride);
                 return "Command Sent to Server - " + task.getName();
             } else {
                 return "Chat Channel is not part of Team - " + task.getTeam().getName();
@@ -127,6 +133,10 @@ public class TelegramTaskRunner {
         return inputState;
     }
 
+    public TelegramUserState getPropertiesState() {
+        return propertiesState;
+    }
+
     public TelegramUserState getConfirmState() {
         return confirmState;
     }
@@ -150,5 +160,13 @@ public class TelegramTaskRunner {
 
     public void setTaskRunId(long taskRunId) {
         this.taskRunId = taskRunId;
+    }
+
+    public void setValuesToOverride(Map<String, String> valuesToOverride) {
+        this.valuesToOverride = valuesToOverride;
+    }
+
+    public Map<String, String> getValuesToOverride() {
+        return valuesToOverride;
     }
 }

@@ -13,6 +13,7 @@ public class TaskExecutionPlan {
     private final Task task;
     private final TreeMap<Integer, List<TaskStep>> treeMap;
     private Map<String, Object> sessionMap = new HashMap<>();
+    private Map<String, String> propertiesOverride = new HashMap<>();
     private boolean taskStatus = true;
     private boolean abortOnFirstFailure = true;
     private boolean cancelled = false;
@@ -64,5 +65,9 @@ public class TaskExecutionPlan {
 
     public void setCancelled(boolean cancelled) {
         this.cancelled = cancelled;
+    }
+
+    public Map<String, String> getPropertiesOverride() {
+        return propertiesOverride;
     }
 }

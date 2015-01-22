@@ -115,7 +115,7 @@ public class TaskService {
     // if task has start but not completed - then execute rest of steps
     // if all task steps has completed, then do the cleanup
     @Async
-    public void execute(TaskRun taskRun) {
+    public void execute(TaskRun taskRun, Map<String, String> propertiesOverride) {
         if (currentlyRunningTasks.contains(taskRun.getTask().getId())) {
             statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Another instance of this Task is already running, cancelling execution - " + taskRun.getName());
             logger.info("Another instance of this Task is already running, cancelling execution - ", taskRun.getName());
@@ -134,6 +134,7 @@ public class TaskService {
             executionPlan.getSessionMap().putAll(loadAgentNames(taskRun.getTeam().getId()));
             executionPlan.getSessionMap().putAll(loadTeamProperties(taskRun.getTeam().getTeamProperties()));
             executionPlan.getSessionMap().putAll(loadTaskProperties(taskRun.getTask().getTaskProperties()));
+            executionPlan.getPropertiesOverride().putAll(propertiesOverride);
             delegateStepToAgents(next.getValue(), taskRun);
         } else {
             handleCompletion(taskRun, executionPlan, RunStatus.NOT_RUN);
@@ -316,6 +317,7 @@ public class TaskService {
                     executionContext.getSessionMap().putAll(loadTeamProperties(taskRun.getTeam().getTeamProperties()));
                     executionContext.getSessionMap().putAll(loadTaskProperties(taskRun.getTask().getTaskProperties()));
                     executionContext.getSessionMap().putAll(loadAgentProperties(taskStepRun.getAgent().getAgentProperties()));
+                    executionContext.getSessionMap().putAll(taskExecutionPlanMap.get(taskRun).getPropertiesOverride());
                     logger.info("executionContext.getSessionMap() = " + executionContext.getSessionMap());
                     restClient.submitTaskToAgent(executionContext, taskStepRun.getAgent());
                     currentlyRunningStepContext.put(taskStepRun, executionContext);

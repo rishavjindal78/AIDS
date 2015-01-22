@@ -209,10 +209,10 @@
     <span class="label-success">Server Up</span>
     <span class="label-warning">Unknown Problem</span>
     <span class="label-info">Notice</span>
+    <footer>
+        <p class="text-muted">&copy; Server Watcher v<@spring.message code="build.timestamp"/></p>
+    </footer>
 </div>
-<footer>
-    <p>&copy; TestM</p>
-</footer>
 </div>
 </body>
 </html>

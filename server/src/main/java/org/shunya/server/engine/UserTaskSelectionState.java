@@ -1,8 +1,11 @@
 package org.shunya.server.engine;
 
-import org.shunya.shared.utils.Utils;
+import org.shunya.shared.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserTaskSelectionState implements TelegramUserState {
+    private static final Logger logger = LoggerFactory.getLogger(UserTaskSelectionState.class);
     private final TelegramTaskRunner taskRunner;
 
     public UserTaskSelectionState(TelegramTaskRunner taskRunner) {
@@ -14,12 +17,10 @@ public class UserTaskSelectionState implements TelegramUserState {
         try {
             Long taskId = Long.parseLong(input);
             taskRunner.setTaskId(taskId);
-            int randInt = Utils.randInt(100, 999);
-            taskRunner.setRandomNumber(randInt);
-            taskRunner.setState(taskRunner.getConfirmState());
-            return "To confirm please type : bot " + randInt;
+            taskRunner.setState(taskRunner.getPropertiesState());
+            return "Please specify custom properties : bot key=value";
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.warn("Invalid TaskId specified - " + input + "\r\n" + StringUtils.getExceptionStackTrace(e));
             return "Invalid TaskId specified, please try again";
         }
     }

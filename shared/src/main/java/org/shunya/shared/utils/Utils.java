@@ -4,11 +4,14 @@ import org.slf4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Supplier;
 
 public class Utils {
     private static Random rand = new Random();
+
     public static void info(Logger logger, Supplier<String> message) {
         if (logger.isInfoEnabled())
             logger.info(message.get());
@@ -29,5 +32,17 @@ public class Utils {
     public static int randInt(int min, int max) {
         int randomNum = rand.nextInt((max - min) + 1) + min;
         return randomNum;
+    }
+
+    public static Map<String, String> splitToMap(String source, String entriesSeparator, String keyValueSeparator) {
+        Map<String, String> map = new HashMap<>();
+        String[] entries = source.split(entriesSeparator);
+        for (String entry : entries) {
+            if (entry != null && !entry.isEmpty() && entry.contains(keyValueSeparator)) {
+                String[] keyValue = entry.split(keyValueSeparator);
+                map.put(keyValue[0], keyValue[1]);
+            }
+        }
+        return map;
     }
 }

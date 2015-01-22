@@ -436,7 +436,7 @@ public class ServerController {
         taskRun.setNotifyStatus(notifyStatus);
         taskRun.setRunBy(dbService.findUserByUsername(principal.getName()));
         taskRun.setTeam(task.getTeam());
-        taskService.execute(taskRun);
+        taskService.execute(taskRun, new HashMap<>());
         return taskRun;
     }
 
