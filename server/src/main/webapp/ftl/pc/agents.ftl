@@ -26,6 +26,7 @@
                 $('#spane_edit_agent').empty();
                 $('#spane_edit_agent').html(data);
                 $('#spane_edit_agent').focus();
+                scrollToElement('#spane_edit_agent', 1500);
 //                $('#span_expense_edit_'+id).empty();
 //                $('#span_expense_edit_'+id).html(data);
             });

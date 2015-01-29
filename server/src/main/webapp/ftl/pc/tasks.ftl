@@ -32,6 +32,7 @@
             $.get('${rc.contextPath}/server/team/${model.team.id}/editTask/' + id, function (data) {
                 $('#span_task_edit').empty();
                 $('#span_task_edit').html(data);
+                scrollToElement('#span_task_edit', 1200);
             });
         }
 
