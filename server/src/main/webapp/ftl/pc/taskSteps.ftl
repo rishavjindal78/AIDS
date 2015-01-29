@@ -23,6 +23,10 @@
                     $('#span_edit').empty();
                     $('#span_edit').html(data);
                     $('#span_edit').focus();
+//                    var target = "#" + this.getAttribute('data-target');
+                    $('html, body').animate({
+                        scrollTop: $("#span_edit").offset().top
+                    }, 2000);
                 });
             });
 
@@ -91,6 +95,9 @@
                 $('#span_task_agent').empty();
                 $('#span_task_agent').html(data);
                 $('#span_task_agent').focus();
+                $('html, body').animate({
+                    scrollTop: $("#span_task_agent").offset().top
+                }, 2000);
             });
         }
 

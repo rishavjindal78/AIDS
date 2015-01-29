@@ -52,6 +52,7 @@ public class EmailService {
 	         mex.printStackTrace();
 	      }
 	}
+
 	public void sendEMail(String subject, String commaSeparatedRecipients,String body,String[] attachments,String fromAddress,String ccAddress) {
 	      // Get the default Session object.
 	      Session session = Session.getDefaultInstance(properties);

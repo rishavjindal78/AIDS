@@ -85,6 +85,13 @@ public class ServerApp implements Comparable<ServerApp> {
     @JsonIgnore
     @XmlTransient
     private ScheduledFuture<?> scheduledFuture;
+    @XmlTransient
+    @JsonSerialize(using = JsonDateSerializer.class)
+    private LocalDateTime lastUpTime;
+    @XmlTransient
+    private ServerStatus lastStatus = ServerStatus.UP;
+    @XmlTransient
+    private boolean stateChanged;
 
     private boolean useHttpProxy = false;
 
@@ -142,6 +149,44 @@ public class ServerApp implements Comparable<ServerApp> {
 
     public void setStatus(ServerStatus status) {
         this.status = status;
+        if (status == ServerStatus.UP) {
+            lastUpTime = LocalDateTime.now();
+        }
+        updateTimeStamp();
+        if (lastStatus != null && lastStatus != status) {
+            setStateChanged(true);
+        } else {
+            setStateChanged(false);
+        }
+        lastStatus = status;
+    }
+
+    public boolean isStateChanged() {
+        return stateChanged;
+    }
+
+    public void setStateChanged(boolean stateChanged) {
+        this.stateChanged = stateChanged;
+    }
+
+    private void updateTimeStamp() {
+        lastStatusUpdateTime = LocalDateTime.now();
+    }
+
+    public ServerStatus getLastStatus() {
+        return lastStatus;
+    }
+
+    public void setLastStatus(ServerStatus lastStatus) {
+        this.lastStatus = lastStatus;
+    }
+
+    public LocalDateTime getLastUpTime() {
+        return lastUpTime;
+    }
+
+    public void setLastUpTime(LocalDateTime lastUpTime) {
+        this.lastUpTime = lastUpTime;
     }
 
     public void calculateStatus() {
