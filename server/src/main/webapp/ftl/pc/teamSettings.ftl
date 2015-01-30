@@ -77,50 +77,58 @@
 
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">Username</label>
-
                     <div class="col-sm-4">
                         <input type="text" name='username' class="form-control" id="inputEmail3" placeholder="Username"
                                value="${model.user.username?string}">
                     </div>
                 </div>
+
                 <div class="form-group">
                     <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
-
                     <div class="col-sm-4">
                         <input type="password" name='password' class="form-control" id="inputPassword3"
                                placeholder="Password" value="${model.user.password?string}">
                     </div>
                 </div>
+
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">Name</label>
-
                     <div class="col-sm-4">
                         <input type="text" name='name' class="form-control" id="inputEmail3" placeholder="name"
                                value="${model.user.name!?string}">
                     </div>
                 </div>
+
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
-
                     <div class="col-sm-4">
                         <input type="email" name='email' class="form-control" id="inputEmail3" placeholder="Email"
                                value="${model.user.email!?string}">
                     </div>
                 </div>
+
                 <div class="form-group">
                     <label for="TelegramId" class="col-sm-2 control-label">TelegramId</label>
-
                     <div class="col-sm-4">
                         <input type="text" name='telegramId' class="form-control" id="TelegramId"
                                placeholder="TelegramId" value="${model.user.telegramId!?string}">
                     </div>
                 </div>
+
                 <div class="form-group">
                     <label for="phone" class="col-sm-2 control-label">Phone #</label>
-
                     <div class="col-sm-4">
                         <input type="text" name='phone' class="form-control" id="phone" placeholder="Phone Number"
                                value="${model.user.phone!?string}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="documentFileId" class="col-sm-2 control-label">Properties</label>
+                    <div class="col-sm-6">
+                        <textarea id="userPropertiesTextArea" type="text" class="form-control input-sm"
+                                  placeholder="User properties to override" name="userProperties.properties"
+                                  rows="10">${(model.user.userProperties.properties)!?string}</textarea>
                     </div>
                 </div>
                 <div class="form-group">

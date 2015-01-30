@@ -1,11 +1,15 @@
 package org.shunya.server.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.util.List;
+
+import static org.hibernate.annotations.CascadeType.DELETE;
+import static org.hibernate.annotations.CascadeType.SAVE_UPDATE;
 
 @Entity
 @Table(name="USER", uniqueConstraints = {@UniqueConstraint(columnNames = {"username"})})
@@ -31,6 +35,10 @@ public class User {
     @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Authority> authorities;
+    @OneToOne
+    @Cascade({SAVE_UPDATE, DELETE})
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private UserProperties userProperties;
 
     /*@ElementCollection (fetch=FetchType.EAGER)
     @CollectionTable(name="MY_MAP_TABLE" , joinColumns=@JoinColumn(name="ID"))
@@ -133,5 +141,13 @@ public class User {
 
     public void setAuthorities(List<Authority> authorities) {
         this.authorities = authorities;
+    }
+
+    public UserProperties getUserProperties() {
+        return userProperties;
+    }
+
+    public void setUserProperties(UserProperties userProperties) {
+        this.userProperties = userProperties;
     }
 }

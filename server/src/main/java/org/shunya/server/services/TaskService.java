@@ -132,8 +132,9 @@ public class TaskService {
             taskRun.setRunStatus(RunStatus.RUNNING);
             dbService.save(taskRun);
             executionPlan.getSessionMap().putAll(loadAgentNames(taskRun.getTeam().getId()));
-            executionPlan.getSessionMap().putAll(loadTeamProperties(taskRun.getTeam().getTeamProperties()));
-            executionPlan.getSessionMap().putAll(loadTaskProperties(taskRun.getTask().getTaskProperties()));
+            executionPlan.getSessionMap().putAll(loadProperties(taskRun.getTeam().getTeamProperties()));
+            executionPlan.getSessionMap().putAll(loadProperties(taskRun.getRunBy().getUserProperties()));
+            executionPlan.getSessionMap().putAll(loadProperties(taskRun.getTask().getTaskProperties()));
             executionPlan.getPropertiesOverride().putAll(propertiesOverride);
             delegateStepToAgents(next.getValue(), taskRun);
         } else {
@@ -210,38 +211,10 @@ public class TaskService {
         return variables;
     }
 
-    private Map<String, String> loadAgentProperties(AgentProperties agentProperties) {
+    private Map<String, String> loadProperties(CustomProperties customProperties) {
         try {
-            if (agentProperties != null && agentProperties.getProperties() != null) {
-                InputStream is = new ByteArrayInputStream(agentProperties.getProperties().getBytes());
-                Properties prop = new Properties();
-                prop.load(is);
-                return (Map) prop;
-            }
-        } catch (Exception e) {
-            logger.error("Error loading Agent properties while execution", e);
-        }
-        return Collections.emptyMap();
-    }
-
-    private Map<String, String> loadTaskProperties(TaskProperties taskProperties) {
-        try {
-            if (taskProperties != null && taskProperties.getProperties() != null) {
-                InputStream is = new ByteArrayInputStream(taskProperties.getProperties().getBytes());
-                Properties prop = new Properties();
-                prop.load(is);
-                return (Map) prop;
-            }
-        } catch (Exception e) {
-            logger.error("Error loading Agent properties while execution", e);
-        }
-        return Collections.emptyMap();
-    }
-
-    private Map<String, String> loadTeamProperties(TeamProperties teamProperties) {
-        try {
-            if (teamProperties != null && teamProperties.getProperties() != null) {
-                InputStream is = new ByteArrayInputStream(teamProperties.getProperties().getBytes());
+            if (customProperties != null && customProperties.getProperties() != null) {
+                InputStream is = new ByteArrayInputStream(customProperties.getProperties().getBytes());
                 Properties prop = new Properties();
                 prop.load(is);
                 return (Map) prop;
@@ -314,9 +287,10 @@ public class TaskService {
                     executionContext.setTaskStepRunDTO(convertToDTO(taskStepRun));
                     TaskStep taskStep = taskStepRun.getTaskStep();
                     executionContext.setStepDTO(convertToDTO(taskStep));
-                    executionContext.getSessionMap().putAll(loadTeamProperties(taskRun.getTeam().getTeamProperties()));
-                    executionContext.getSessionMap().putAll(loadTaskProperties(taskRun.getTask().getTaskProperties()));
-                    executionContext.getSessionMap().putAll(loadAgentProperties(taskStepRun.getAgent().getAgentProperties()));
+                    executionContext.getSessionMap().putAll(loadProperties(taskRun.getRunBy().getUserProperties()));
+                    executionContext.getSessionMap().putAll(loadProperties(taskRun.getTeam().getTeamProperties()));
+                    executionContext.getSessionMap().putAll(loadProperties(taskRun.getTask().getTaskProperties()));
+                    executionContext.getSessionMap().putAll(loadProperties(taskStepRun.getAgent().getAgentProperties()));
                     executionContext.getSessionMap().putAll(taskExecutionPlanMap.get(taskRun).getPropertiesOverride());
                     logger.info("executionContext.getSessionMap() = " + executionContext.getSessionMap());
                     restClient.submitTaskToAgent(executionContext, taskStepRun.getAgent());

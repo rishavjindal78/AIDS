@@ -3,9 +3,9 @@ package org.shunya.server.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "AGENT_PROPERTIES")
-@TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "AGENT_PROPERTIES", allocationSize = 2)
-public class AgentProperties implements CustomProperties{
+@Table(name = "USER_PROPERTIES")
+@TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "USER_PROPERTIES", allocationSize = 2)
+public class UserProperties implements CustomProperties{
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")
     private long id;

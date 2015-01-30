@@ -5,7 +5,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "TASK_PROPERTIES")
 @TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "TASK_PROPERTIES", allocationSize = 2)
-public class TaskProperties {
+public class TaskProperties implements CustomProperties{
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")
     private long id;
@@ -20,6 +20,7 @@ public class TaskProperties {
         this.id = id;
     }
 
+    @Override
     public String getProperties() {
         return properties;
     }
