@@ -16,6 +16,7 @@ public class UserConfirmState implements TelegramUserState {
                 taskRunner.setState(taskRunner.getInputState());
                 return taskRunner.execute();
             } else if (maxRetryCount <= 0) {
+                maxRetryCount = 2;
                 taskRunner.setState(taskRunner.getInputState());
                 return "Max retry limit reached, resetting trx";
             } else {

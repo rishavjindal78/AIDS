@@ -137,8 +137,10 @@ public class TaskStepRun implements Serializable {
     @Override
     public String toString() {
         return "TaskStepRun{" +
-                "status = " + status +
-                ", sequence = " + sequence +
+                "id=" + id +
+                ", sequence=" + sequence +
+                ", status=" + status +
+                ", agent=" + agent +
                 '}';
     }
 

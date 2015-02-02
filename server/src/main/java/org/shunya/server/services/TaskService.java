@@ -83,6 +83,7 @@ public class TaskService {
                         Thread.sleep(2000);
                         if (stepRunning)
                             break;
+                        logger.warn("Step is not running on the agent, " + taskStepRun + " Agent - " + taskStepRun.getAgent());
                     }
                     agentRunning = true;
                 } catch (Exception e) {
@@ -94,10 +95,13 @@ public class TaskService {
                     TaskContext executionContext = currentlyRunningStepContext.get(taskStepRun);
                     taskExecutionPlanMap.get(taskRun).setTaskStatus(false);
                     executionContext.getTaskStepRunDTO().setStatus(false);
-                    if (!agentRunning)
+                    if (!agentRunning) {
+                        logger.warn("TaskStep failed due to unreachable Agent, agent probably died." + taskStepRun);
                         executionContext.getTaskStepRunDTO().setLogs("TaskStep failed due to unreachable Agent, agent probably died.");
-                    else
+                    } else {
+                        logger.warn("TaskStep failed due to unknown reason, Agent is not running this step." + taskStepRun);
                         executionContext.getTaskStepRunDTO().setLogs("TaskStep failed due to unknown reason, Agent is not running this step.");
+                    }
                     executionContext.getTaskStepRunDTO().setFinishTime(new Date());
                     executionContext.getTaskStepRunDTO().setRunStatus(RunStatus.FAILURE);
                     executionContext.getTaskStepRunDTO().setRunState(RunState.COMPLETED);
@@ -105,6 +109,7 @@ public class TaskService {
                 }
             });
         });
+        logger.info("Finished Running System Failures of Agents");
     }
 
     public boolean isTaskRunning(TaskRun taskRun) {

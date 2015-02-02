@@ -485,7 +485,7 @@ public class ServerController {
     @ResponseBody
     @Secured({Role.ROLE_AGENT})
     public String submitTaskStepResults(@RequestBody TaskContext taskContext) {
-        logger.info("Successfully received Task results {} ", taskContext.getStepDTO().getSequence());
+        logger.info("Successfully received Task results {} ", taskContext.getStepDTO().getSequence() + ", Status - " + taskContext.getTaskStepRunDTO().getRunStatus() + " baseUrl - " + taskContext.getBaseUrl());
         taskService.consumeStepResult(taskContext);
         return "success";
     }

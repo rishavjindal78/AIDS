@@ -83,7 +83,11 @@ public class TaskProcessor {
     }
 
     public boolean isRunning(long taskStepRunId) {
-        return cache.get(taskStepRunId) != null;
+        boolean running = cache.get(taskStepRunId) != null;
+        if (!running) {
+            logger.warn("TaskStep is not running - " + taskStepRunId);
+        }
+        return running;
     }
 
     public void interrupt(long taskStepRunId) {

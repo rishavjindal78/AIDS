@@ -24,7 +24,7 @@ public class RestClient {
         ParameterizedTypeReference<String> typeRef = new ParameterizedTypeReference<String>() {};
         ResponseEntity<String> responseEntity = restTemplate.exchange(taskContext.getCallbackURL(), HttpMethod.POST, httpEntity, typeRef);
         String body = responseEntity.getBody();
-        logger.info(() -> "Posted the Task results back to server - {} " + body);
+        logger.info(() -> "Posted the Task results back to server - {} " + body+" ID : "+taskContext.getTaskStepRunDTO().getId());
     }
 
     public String authenticateGetCookie(String baseUrl, String user, String password) {
