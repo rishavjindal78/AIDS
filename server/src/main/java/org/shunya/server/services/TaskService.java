@@ -138,7 +138,8 @@ public class TaskService {
             dbService.save(taskRun);
             executionPlan.getSessionMap().putAll(loadAgentNames(taskRun.getTeam().getId()));
             executionPlan.getSessionMap().putAll(loadProperties(taskRun.getTeam().getTeamProperties()));
-            executionPlan.getSessionMap().putAll(loadProperties(taskRun.getRunBy().getUserProperties()));
+            if (taskRun.getRunBy() != null)
+                executionPlan.getSessionMap().putAll(loadProperties(taskRun.getRunBy().getUserProperties()));
             executionPlan.getSessionMap().putAll(loadProperties(taskRun.getTask().getTaskProperties()));
             executionPlan.getPropertiesOverride().putAll(propertiesOverride);
             delegateStepToAgents(next.getValue(), taskRun);
@@ -292,7 +293,8 @@ public class TaskService {
                     executionContext.setTaskStepRunDTO(convertToDTO(taskStepRun));
                     TaskStep taskStep = taskStepRun.getTaskStep();
                     executionContext.setStepDTO(convertToDTO(taskStep));
-                    executionContext.getSessionMap().putAll(loadProperties(taskRun.getRunBy().getUserProperties()));
+                    if (taskRun.getRunBy() != null)
+                        executionContext.getSessionMap().putAll(loadProperties(taskRun.getRunBy().getUserProperties()));
                     executionContext.getSessionMap().putAll(loadProperties(taskRun.getTeam().getTeamProperties()));
                     executionContext.getSessionMap().putAll(loadProperties(taskRun.getTask().getTaskProperties()));
                     executionContext.getSessionMap().putAll(loadProperties(taskStepRun.getAgent().getAgentProperties()));
