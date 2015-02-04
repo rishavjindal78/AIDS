@@ -141,7 +141,9 @@ public class TaskService {
             if (taskRun.getRunBy() != null)
                 executionPlan.getSessionMap().putAll(loadProperties(taskRun.getRunBy().getUserProperties()));
             executionPlan.getSessionMap().putAll(loadProperties(taskRun.getTask().getTaskProperties()));
-            executionPlan.getPropertiesOverride().putAll(propertiesOverride);
+            if(propertiesOverride!=null) {
+                executionPlan.getPropertiesOverride().putAll(propertiesOverride);
+            }
             delegateStepToAgents(next.getValue(), taskRun);
         } else {
             handleCompletion(taskRun, executionPlan, RunStatus.NOT_RUN);
