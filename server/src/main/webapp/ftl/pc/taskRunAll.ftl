@@ -1,6 +1,12 @@
 <#import "common.ftl" as com>
 <#escape x as x?html>
     <@com.page activeTab="history">
+    <style type="text/css">
+        body {
+            font-size: 12px;
+            /*background-color: #f5f5f5;*/
+        }
+    </style>
     <script type="text/javascript">
         /* $(prettyPrint);*/
         $(document).ready(function () {
