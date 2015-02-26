@@ -29,6 +29,10 @@ public class TaskRun implements Serializable {
     private String comments;
     @OneToOne
     private User runBy;
+    @Lob
+    @Basic(fetch = FetchType.EAGER)
+//	@Column(columnDefinition="blob(6M)")
+    private String logs;
     @Temporal(TemporalType.TIMESTAMP)
     private Date startTime;
     @Temporal(TemporalType.TIMESTAMP)
@@ -241,5 +245,13 @@ public class TaskRun implements Serializable {
         return String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
                 TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
                 TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
+    }
+
+    public String getLogs() {
+        return logs;
+    }
+
+    public void setLogs(String logs) {
+        this.logs = logs;
     }
 }

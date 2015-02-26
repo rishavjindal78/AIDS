@@ -191,6 +191,7 @@ public class DBServiceImpl implements DBService {
         Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(User.class);
         criteria.add(Restrictions.eq("telegramId", telegramId));
         criteria.setCacheable(true);
+        criteria.setMaxResults(1);
         return (User) criteria.uniqueResult();
     }
 

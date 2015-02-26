@@ -196,7 +196,7 @@ public class TaskService {
         }
         if (prepareTaskSteps.get(taskRun).isEmpty()) {
             if (!taskExecutionPlan.isTaskStatus() && taskExecutionPlan.isAbortOnFirstFailure()) {
-                logger.info("Aborting Task Execution after first failure, State = Complete");
+                logger.info("Aborting Task Execution after first failure, State = Complete, step failed = " + taskStepRun.getTaskStep().getName());
                 handleCompletion(taskRun, taskExecutionPlan, RunStatus.FAILURE);
                 statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Aborting Task Execution after first failure, State = Complete");
                 return;
