@@ -99,7 +99,7 @@
                     <td>${team.description?string}</td>
                     <td>${team.telegramId?string}</td>
                     <td>${team.email?string}</td>
-                    <td><a href="${rc.contextPath}/admin/team/${team.id}">view</a></td>
+                    <td><a href="${rc.contextPath}/admin/team/${team.id}">Manage</a></td>
                 <#--<td>${debt.comments?size}</td>-->
                 </tr>
             </#list>

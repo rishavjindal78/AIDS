@@ -53,6 +53,7 @@ public class TaskStep implements Serializable {
     @LazyCollection(LazyCollectionOption.TRUE)
     private List<TaskStepRun> taskStepRuns;
     @ManyToMany
+    @JsonIgnore
     @LazyCollection(LazyCollectionOption.FALSE)
     private Set<Agent> agentList;
 

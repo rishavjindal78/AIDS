@@ -275,13 +275,34 @@ public class ServerController {
             ObjectMapper mapper = new ObjectMapper();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             mapper.writeValue(baos, task);
-            IOUtils.copy(new ByteArrayInputStream(baos.toByteArray()), response.getOutputStream());
-            response.setContentType("application/json");
-
-            // set headers for the response
+//            response.setContentType("application/json");
+            response.setContentType("application/force-download");
+            response.setContentLength(baos.size());
+            //response.setContentLength(-1);
+            response.setHeader("Content-Transfer-Encoding", "binary");
             String headerKey = "Content-Disposition";
             String headerValue = String.format("attachment; filename=\"%s\"", task.getName() + ".json");
             response.setHeader(headerKey, headerValue);
+            IOUtils.copy(new ByteArrayInputStream(baos.toByteArray()), response.getOutputStream());
+            response.flushBuffer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @RequestMapping(value = "view/task/{id}", method = RequestMethod.GET)
+    public void viewTaskAsJson(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id, HttpServletResponse response) {
+        try {
+            Task task = dbService.getTask(id);
+            ObjectMapper mapper = new ObjectMapper();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            mapper.writeValue(baos, task);
+            response.setContentType("application/json");
+            // set headers for the response
+            String headerKey = "Content-Disposition";
+            String headerValue = String.format("inline; filename=\"%s\"", task.getName() + ".json");
+            response.setHeader(headerKey, headerValue);
+            IOUtils.copy(new ByteArrayInputStream(baos.toByteArray()), response.getOutputStream());
             response.flushBuffer();
         } catch (IOException e) {
             e.printStackTrace();

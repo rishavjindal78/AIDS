@@ -1,5 +1,7 @@
 package org.shunya.server.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -7,6 +9,7 @@ import javax.persistence.*;
 @TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "AGENT_PROPERTIES", allocationSize = 2)
 public class AgentProperties implements CustomProperties{
     @Id
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")
     private long id;
     @Lob

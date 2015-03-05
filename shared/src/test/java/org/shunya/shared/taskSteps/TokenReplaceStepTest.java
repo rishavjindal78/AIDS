@@ -13,9 +13,9 @@ public class TokenReplaceStepTest {
         TokenReplaceStep tokenReplaceStep = new TokenReplaceStep();
         Properties properties = new Properties();
         properties.put("file", "c:/abc.tx");
-        properties.put("names", "aids, agent, server");
+        properties.put("remote:localhost", "remote:endevtdm05");
 
-        String replaceAll = tokenReplaceStep.replaceAll("this file contains names", properties);
-        System.out.println("replaceAll = " + replaceAll);
+        String replaceAll = tokenReplaceStep.replaceAll("orient.db.url = remote:localhost/df", properties);
+        System.out.println("replaceAll String = " + replaceAll);
     }
 }

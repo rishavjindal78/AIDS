@@ -57,6 +57,7 @@ public class Task implements Serializable {
     */
     @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
+    @JsonIgnore
     private Set<Agent> agentList;
     private boolean notifyStatus = false;
     @OneToOne

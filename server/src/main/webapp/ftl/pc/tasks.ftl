@@ -147,7 +147,8 @@
                                 <li><a href="#" onclick="runTask('${rc.getContextPath()}/server/run/${td.id}')">run</a>
                                 </li>
                                 <li><a href="${rc.getContextPath()}/server/taskHistory/${td.id}">history</a></li>
-                                <li><a href="${rc.getContextPath()}/server/export/task/${td.id}">Download</a></li>
+                                <li><a href="${rc.getContextPath()}/server/export/task/${td.id}">download</a></li>
+                                <li><a href="${rc.getContextPath()}/server/view/task/${td.id}">jsonView</a></li>
                                 <li class="divider"></li>
                                 <li><a href="#" onclick="deleteTask('${td.id}')">Delete</a></li>
                             </ul>

@@ -16,6 +16,7 @@ import static org.hibernate.annotations.CascadeType.SAVE_UPDATE;
 @TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "AGENT", allocationSize = 10)
 public class Agent {
     @Id
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")
     private long id;
     @OneToOne
