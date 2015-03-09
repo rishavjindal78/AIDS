@@ -17,6 +17,7 @@ public interface DBService {
     List<User> listUser();
     List<Authority> listAuthorities();
     void deleteTaskStep(long id);
+    void deleteAgent(long id);
     void deleteTask(long id);
     void deleteTaskRun(long id);
     void deleteTaskStepRun(long id);

@@ -149,6 +149,15 @@ public class ServerController {
         return "redirect:" + referer;
     }
 
+    @RequestMapping(value = "agent/{id}", method = RequestMethod.DELETE)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteAgent(@PathVariable("id") long id, @ModelAttribute("model") ModelMap model) throws IOException {
+        if (id != 0) {
+            dbService.deleteAgent(id);
+        }
+    }
+
     @RequestMapping(value = "team/{teamId}/editTask/{id}", method = RequestMethod.GET)
     public String editTask(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id, @PathVariable("teamId") long teamId) throws Exception {
         model.addAttribute("task", dbService.getTask(id));

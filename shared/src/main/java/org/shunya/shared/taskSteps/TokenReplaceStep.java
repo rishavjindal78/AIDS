@@ -43,7 +43,6 @@ public class TokenReplaceStep extends AbstractStep {
         Files.write(Paths.get(filePath), replaceAll.getBytes(), StandardOpenOption.WRITE);
     }
 
-
     public String replaceAll(String input, Properties pairs) {
         for (String key : pairs.stringPropertyNames()) {
             input = input.replaceAll(key, pairs.getProperty(key));

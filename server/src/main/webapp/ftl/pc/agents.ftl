@@ -32,6 +32,25 @@
             });
         }
 
+        function deleteAgent(agentId, agentName) {
+            var option = confirm("Are you sure to delete the Agent : " + agentName + " ?");
+            if (option == true) {
+                var url = '${rc.getContextPath()}/server/agent/' + agentId;
+                $("#results").empty();
+                $.ajax({
+                    url: url,
+                    type: 'delete',
+                    success: function (data) {
+                        $("table#agentsTable tr#agent_row_" + agentId).remove();
+                        $("#results").html('<div class="alert alert-success">Agent Deleted Successfully - ' + url + '</div>');
+                    },
+                    error: function(xhr, textStatus, errorThrown){
+                        alert('request failed due to unknown reason : '+textStatus);
+                    }
+                });
+            }
+        }
+
         $(document).ready(function () {
             $(".content").hide();
 //            $(".content").css("display", "none");
@@ -114,13 +133,14 @@
         <h2 class="sub-header text-muted">Agents</h2>
 
         <div class="table-responsive">
-            <table class="table table-striped">
+            <table id="agentsTable" class="table table-striped">
                 <tr>
                     <th width="5%">#</th>
                     <th width="30%">Name</th>
                     <th width="35%">Description</th>
                     <th width="20%">Base URL</th>
                     <th width="10%">Status</th>
+                    <th width="10%">Operation</th>
                 <#--<th>Comments</th>-->
                 </tr>
                 <#list model["agents"] as agent>
@@ -137,11 +157,24 @@
                                 <span class="label label-danger" id="${agent.id}">${agent.status!'N/A'?string}</span>
                             </#if>
                         </td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-info dropdown-toggle"
+                                        data-toggle="dropdown">Action<span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#" onclick="editAgent('${agent.id}')">edit</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="#" onclick="deleteAgent('${agent.id}','${agent.name}')">delete</a></li>
+                                </ul>
+                            </div>
+                        </td>
                     <#--<td>${debt.comments?size}</td>-->
                     </tr>
                 </#list>
             </table>
             <span id="spane_edit_agent"></span>
+            <span id="results"></span>
         </div>
     <#--</div>-->
     </@com.page>

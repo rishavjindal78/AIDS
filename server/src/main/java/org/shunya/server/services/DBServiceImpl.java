@@ -71,10 +71,18 @@ public class DBServiceImpl implements DBService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public void deleteTaskStep(long id) {
         TaskStep taskStepData = getTaskStep(id);
         taskStepData.getTask().getStepDataList().remove(taskStepData);
         DBDao.getSessionFactory().getCurrentSession().delete(taskStepData);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void deleteAgent(long id) {
+        Agent agent = getAgent(id);
+        DBDao.getSessionFactory().getCurrentSession().delete(agent);
     }
 
     @Transactional(readOnly = false)
@@ -88,6 +96,7 @@ public class DBServiceImpl implements DBService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public void deleteTaskRun(long id) {
         TaskRun taskRun = getTaskRun(id);
 //        taskRun.getTaskStepRuns().clear();
