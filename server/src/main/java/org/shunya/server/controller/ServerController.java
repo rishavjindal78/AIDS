@@ -92,6 +92,14 @@ public class ServerController {
         return "agents";
     }
 
+    @RequestMapping(value = "agent/checkStatus", method = RequestMethod.POST)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void forceCheckAgentStatus() {
+        logger.info("Triggering Agent Status Check on Demand");
+        agentStatusService.checkStatus();
+    }
+
     @RequestMapping(value = "agent/status/{agentId}", method = RequestMethod.GET)
     @ResponseBody
     public String agentStatus(@ModelAttribute("model") ModelMap model, @PathVariable("agentId") long agentId) {

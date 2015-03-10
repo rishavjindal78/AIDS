@@ -32,6 +32,16 @@
             });
         }
 
+        function checkStatus() {
+            var userInput = confirm("Do you want to check status of all agents ?");
+            if (userInput) {
+                $("#results").empty();
+                $.post('${rc.contextPath}/server/agent/checkStatus', {}, function (data) {
+                    $("#results").html('<div class="alert alert-success">Agent Status Command Sent Successfully.</div>');
+                });
+            }
+        }
+
         function deleteAgent(agentId, agentName) {
             var option = confirm("Are you sure to delete the Agent : " + agentName + " ?");
             if (option == true) {
@@ -136,10 +146,10 @@
             <table id="agentsTable" class="table table-striped">
                 <tr>
                     <th width="5%">#</th>
-                    <th width="30%">Name</th>
-                    <th width="35%">Description</th>
-                    <th width="20%">Base URL</th>
-                    <th width="10%">Status</th>
+                    <th width="20%">Name</th>
+                    <th width="30%">Description</th>
+                    <th width="25%">Base URL</th>
+                    <th width="10%">Status <a href="#" onclick="checkStatus()"><span class="glyphicon glyphicon-refresh"/></a></th>
                     <th width="10%">Operation</th>
                 <#--<th>Comments</th>-->
                 </tr>
