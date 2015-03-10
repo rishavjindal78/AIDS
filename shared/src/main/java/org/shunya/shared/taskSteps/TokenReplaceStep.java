@@ -1,6 +1,7 @@
 package org.shunya.shared.taskSteps;
 
 import org.shunya.shared.AbstractStep;
+import org.shunya.shared.StringUtils;
 import org.shunya.shared.annotation.InputParam;
 import org.shunya.shared.annotation.PunterTask;
 
@@ -29,7 +30,7 @@ public class TokenReplaceStep extends AbstractStep {
             LOGGER.get().log(Level.INFO, "Successfully Processed file - " + filePath);
             return true;
         } catch (IOException e) {
-            LOGGER.get().log(Level.SEVERE, "Error Processing file - " + filePath, e);
+            LOGGER.get().log(Level.SEVERE, "Error Processing file - " + filePath + "\n" + StringUtils.getExceptionStackTrace(e));
             return false;
         }
     }
