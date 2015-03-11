@@ -28,15 +28,14 @@ public class UnZipStep extends AbstractStep {
     }
 
     public boolean extractFolder(String zipFile, String outputFolder, boolean recursive) {
-        try {
+        File file = new File(zipFile);
+        try (ZipFile zip = new ZipFile(file)) {
             File folder = new File(outputFolder);
             if (!folder.exists()) {
                 folder.mkdir();
             }
-            System.out.println(zipFile);
+            LOGGER.get().log(Level.INFO, "Processing file - " + zipFile);
             int BUFFER = 2048;
-            File file = new File(zipFile);
-            ZipFile zip = new ZipFile(file);
             Enumeration zipFileEntries = zip.entries();
             // Process each entry
             while (zipFileEntries.hasMoreElements()) {
@@ -69,7 +68,6 @@ public class UnZipStep extends AbstractStep {
                     extractFolder(destFile.getAbsolutePath(), outputFolder, recursive);
                 }
             }
-            zip.close();
             return true;
         } catch (IOException ex) {
             LOGGER.get().log(Level.SEVERE, "Error in zip file extraction - ", ex);
