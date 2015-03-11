@@ -30,7 +30,7 @@ public class SystemCommandStep extends AbstractStep {
     public void interrupt() {
         if (child != null) {
             child.destroy();
-            if(logger!=null)
+            if (logger != null)
                 logger.warning(() -> "Process destroyed by the user.");
         }
     }
@@ -39,6 +39,11 @@ public class SystemCommandStep extends AbstractStep {
     public boolean run() {
         final AtomicBoolean status = new AtomicBoolean(true);
         try {
+            if (!waitForTerminate) {
+                //Run the new process completely independent of this agent service
+                child = Runtime.getRuntime().exec("cmd /c " + systemCommand);
+                return true;
+            }
             String[] commands = systemCommand.split("[\n]");
             child = Runtime.getRuntime().exec("cmd /k");
             /*final ProcessBuilder pb = new ProcessBuilder("cmd", "/k");
