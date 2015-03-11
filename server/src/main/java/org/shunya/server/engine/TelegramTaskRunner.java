@@ -81,6 +81,7 @@ public class TelegramTaskRunner {
                 String name = task.getName();
                 helpMessage.append("bot " + id + " <" + name + ">\n");
             }
+            helpMessage.append("bot abort"  + " <Abort current task>\n");
             return helpMessage.toString();
         }
     }
