@@ -5,6 +5,8 @@ import org.shunya.shared.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+
 public class OverrideInputState implements TelegramUserState {
     private static final Logger logger = LoggerFactory.getLogger(OverrideInputState.class);
 
@@ -19,6 +21,8 @@ public class OverrideInputState implements TelegramUserState {
         try {
             if (input != null && !input.isEmpty())
                 taskRunner.setValuesToOverride(Utils.splitToMap(input, ",", "="));
+            else
+                taskRunner.setValuesToOverride(new HashMap<>());
             int randInt = Utils.randInt(100, 999);
             taskRunner.setRandomNumber(randInt);
             taskRunner.setState(taskRunner.getConfirmState());
