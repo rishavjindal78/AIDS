@@ -110,6 +110,7 @@
     </script>
 
     <br/>
+    <a href="../team/${Session['SELECTED_TEAM'].id}/tasks">Tasks</a> -> <a href="../task/${model.task.id}">${model.task.name}</a>
     <legend>Task Details</legend>
     <p>Task Name : ${model.task.name}</p>
     <p>Task Description : ${model.task.description}</p>

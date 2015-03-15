@@ -62,17 +62,17 @@
     <div class="heading btn-link">Add New Task</div>
     <div class="content alert alert-warning">
         <form role="form" name="agent" action="${rc.contextPath}/server/team/${model.team.id}/addTask/0" method="POST">
-            <div class="form-group">
+            <div class="form-group" style="width: 80%;">
                 <label for="exampleInputEmail1">Task Name</label>
                 <input type="text" class="form-control" id="exampleInputEmail1" name="name"
                        placeholder="Enter Task Name">
             </div>
-            <div class="form-group">
+            <div class="form-group" style="width: 80%;">
                 <label for="exampleInputPassword1">Task Description</label>
                 <input type="text" class="form-control" id="exampleInputPassword1" name="description"
                        placeholder="Enter Task Description">
             </div>
-            <div class="form-group">
+            <div class="form-group" style="width: 50%;">
                 <label for="exampleInputTags">Task Search Tags</label>
                 <input type="text" class="form-control" id="exampleInputTags" name="tags"
                        placeholder="Enter Task Search tags">
