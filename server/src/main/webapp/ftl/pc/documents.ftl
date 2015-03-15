@@ -21,6 +21,13 @@
                 });
                 return false;
             });
+
+            //add more file components if Add is clicked
+            $('.addFile').click(function () {
+                var fileIndex = $(this).next('.fileTable').children().length;
+                console.info("add new file holder - " + fileIndex);
+                $(this).next('.fileTable').append('<li>' + '   <input type="file" name="files[' + fileIndex + ']" />' + '</li>');
+            });
         });
 
         function editDocument(id) {
