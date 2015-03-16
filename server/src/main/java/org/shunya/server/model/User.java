@@ -6,6 +6,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 import static org.hibernate.annotations.CascadeType.DELETE;
@@ -15,7 +16,7 @@ import static org.hibernate.annotations.CascadeType.SAVE_UPDATE;
 @Table(name="USER", uniqueConstraints = {@UniqueConstraint(columnNames = {"username"})})
 @TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "USER", allocationSize = 1)
 @Cacheable(true)
-public class User {
+public class User implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")
     private long id;

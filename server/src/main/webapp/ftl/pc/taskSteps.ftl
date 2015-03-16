@@ -36,44 +36,43 @@
             });
 
             $(".activeCheckBox").change(function () {
-                if ($(this).is(":checked")) {
-                    $.ajax({
-                        url: '../updateTaskStep',
-                        type: 'POST',
-                        data: { id: $(this).attr("id"), active: "1" }
-                    });
-                } else {
-                    $.ajax({
-                        url: '../updateTaskStep',
-                        type: 'POST',
-                        data: { id: $(this).attr("id"), active: "0" }
-                    });
-                }
+                $.ajax({
+                    url: '../updateTaskStep',
+                    type: 'POST',
+                    data: { id: $(this).attr("id"), active: $(this).is(":checked") },
+                    success: function(data) {
+//                        location.reload();
+                    }
+                });
             });
 
             $(".ignoreFailureCheckBox").change(function () {
-                if ($(this).is(":checked")) {
-                    $.ajax({
-                        url: '../updateTaskStep2',
-                        type: 'POST',
-                        data: { id: $(this).attr("id"), ignoreFailure: "1" }
-                    });
-                } else {
-                    $.ajax({
-                        url: '../updateTaskStep2',
-                        type: 'POST',
-                        data: { id: $(this).attr("id"), ignoreFailure: "0" }
-                    });
-                }
+                $.ajax({
+                    url: '../updateTaskStep2',
+                    type: 'POST',
+                    data: { id: $(this).attr("id"), ignoreFailure: $(this).is(":checked") },
+                    success: function (data) {
+//                        location.reload();
+                    }
+                });
             });
 
+            $('#select_all').change(function() {
+                alert("select all checked");
+                var checkboxes = $(this).closest('form').find(':checkbox');
+                if($(this).is(':checked')) {
+                    checkboxes.prop('checked', true);
+                } else {
+                    checkboxes.prop('checked', false);
+                }
+            });
         });
 
-        function execute(url) {
-            var userComment = prompt("Please enter comments for the run .. ?", "Test Run");
-            if (userComment != null) {
+        function cloneTask(url) {
+            var userOption = confirm("Are you sure to Clone this Task ?");
+            if (userOption) {
                 $("#results").empty();
-                $.post(url, { comment: userComment}, function (data) {
+                $.post(url, {}, function (data) {
                     $("#results").html('<div class="alert alert-success">Job Submitted Successfully - ' + url + '</div>');
                 });
             }
@@ -116,11 +115,11 @@
     <p>Task Description : ${model.task.description}</p>
 
     <a href="../addTaskStep/${model.task.id?string}" class="btn btn-mini btn-primary">Add Step</a>
-    <a href="#" onclick="execute('../run/${model.task.id?string}')" class="btn btn-mini  btn btn-danger">Run</a>
-    <a href="../taskHistory/${model.task.id}" class="btn btn-mini  btn btn-danger">history</a>
+    <#--<a href="#" onclick="execute('../run/${model.task.id?string}')" class="btn btn-mini  btn btn-danger">Run</a>-->
+    <a href="../taskHistory/${model.task.id}" class="btn btn-mini  btn btn-primary">history</a>
     <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Execute</button>
-
+    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal">Execute</button>
+    <a href="#" onclick="cloneTask('../cloneTask/${model.task.id?string}')" class="btn btn-mini  btn btn-danger">Clone</a>
     <table class="table table-striped">
         <tr>
             <th>#</th>
@@ -137,9 +136,9 @@
                 <td width="12%">${taskStep.taskClass?string}</td>
                 <td width="30%">${taskStep.description!?string}</td>
                 <td width="5%"><input class="activeCheckBox" type="checkbox" id="${taskStep.id}"
-                                      <#if taskStep.active?? && taskStep.active?string=="true">checked="true"</#if></td>
+                                      <#if taskStep.active?? && taskStep.active?string=="true">checked="true"</#if>></td>
                 <td width="5%"><input class="ignoreFailureCheckBox" type="checkbox" id="${taskStep.id}"
-                                      <#if taskStep.ignoreFailure?? && taskStep.ignoreFailure?string=="true">checked="true"</#if>
+                                      <#if taskStep.ignoreFailure?? && taskStep.ignoreFailure?string=="true">checked="true"</#if>>
                 </td>
                 <td width="13%">
                     <#list taskStep.agentList as agent>

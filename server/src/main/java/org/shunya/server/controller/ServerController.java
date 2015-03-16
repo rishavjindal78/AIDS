@@ -3,6 +3,7 @@ package org.shunya.server.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.shunya.server.Role;
+import org.shunya.server.Utility;
 import org.shunya.server.model.*;
 import org.shunya.server.services.*;
 import org.shunya.server.vo.AgentVO;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -257,9 +259,28 @@ public class ServerController {
         return "redirect:" + referer;
     }
 
+    @RequestMapping(value = "cloneTask/{taskId}", method = RequestMethod.POST)
+    public String cloneTask(@PathVariable("taskId") long taskId,
+                            final HttpServletRequest request,
+                            Principal principal) {
+        logger.info("Message received for cloning an existing task");
+        if (taskId != 0) {
+            final Task existingTask = dbService.getTask(taskId);
+            existingTask.setId(0L);
+            existingTask.getStepDataList().forEach(taskStep -> {
+                taskStep.setId(0L);
+                taskStep.setTask(existingTask);
+                taskStep.setTaskStepRuns(new ArrayList<>());
+            });
+            dbService.save(existingTask);
+        }
+        final String referer = request.getHeader("referer");
+        System.out.println("referer = " + referer);
+        return "redirect:" + referer;
+    }
+
     @RequestMapping(value = "updateTaskStep", method = RequestMethod.POST)
-    @ResponseBody
-    //we can also use this @RequestParam("active") String valueOne  ,  @ModelAttribute("active") String valueOne
+    @ResponseStatus(value = HttpStatus.OK)
     public void updateTaskStep(@ModelAttribute("taskStepData") TaskStep taskStepData) throws IOException {
         TaskStep dbTaskStepData = dbService.getTaskStep(taskStepData.getId());
         dbTaskStepData.setActive(taskStepData.isActive());
@@ -267,8 +288,7 @@ public class ServerController {
     }
 
     @RequestMapping(value = "updateTaskStep2", method = RequestMethod.POST)
-    @ResponseBody
-    //we can also use this @RequestParam("active") String valueOne  ,  @ModelAttribute("active") String valueOne
+    @ResponseStatus(value = HttpStatus.OK)
     public void updateTaskStep2(@ModelAttribute("taskStepData") TaskStep taskStepData) throws IOException {
         TaskStep dbTaskStepData = dbService.getTaskStep(taskStepData.getId());
         dbTaskStepData.setIgnoreFailure(taskStepData.isIgnoreFailure());

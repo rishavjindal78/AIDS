@@ -46,7 +46,7 @@ public class Task implements Serializable {
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.REMOVE})
     @LazyCollection(LazyCollectionOption.FALSE)
     @BatchSize(size = 10)
-    @OrderBy(clause = "sequence asc")
+    @OrderBy(clause = "sequence asc, id desc")
     @OneToMany(mappedBy = "task", fetch = FetchType.EAGER)
     private List<TaskStep> stepDataList;
     /*@OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
