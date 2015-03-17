@@ -1,6 +1,7 @@
 package org.shunya.server.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.shunya.shared.RunState;
 import org.shunya.shared.RunStatus;
 
@@ -20,11 +21,14 @@ public class TaskStepRun implements Serializable {
     @Lob
     @Basic(fetch = FetchType.EAGER)
 //	@Column(columnDefinition="blob(6M)")
+    @JsonIgnore
     private String logs;
     private boolean status;
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonSerialize(using = JsonDateSerializer.class, include=JsonSerialize.Inclusion.NON_NULL)
     private Date startTime;
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonSerialize(using = JsonDateSerializer.class, include=JsonSerialize.Inclusion.NON_NULL)
     private Date finishTime;
     @ManyToOne
     private TaskStep taskStep;
@@ -39,6 +43,9 @@ public class TaskStepRun implements Serializable {
     private RunStatus runStatus = RunStatus.NOT_RUN;
     @OneToOne
     private Agent agent;
+
+    @Transient
+    private String duration;
 
     public long getId() {
         return id;
@@ -172,5 +179,15 @@ public class TaskStepRun implements Serializable {
         return String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
                 TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
                 TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
+    }
+
+    public String getDuration() {
+        if(duration == null)
+            duration= timeConsumed();
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
     }
 }

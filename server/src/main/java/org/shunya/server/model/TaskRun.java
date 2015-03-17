@@ -1,5 +1,6 @@
 package org.shunya.server.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.*;
 import org.shunya.shared.RunState;
 import org.shunya.shared.RunStatus;
@@ -45,6 +46,7 @@ public class TaskRun implements Serializable {
     @ManyToOne
     private Task task;
     @ManyToOne
+    @JsonIgnore
     private Team team;
     private boolean status;
     private boolean notifyStatus = false;
@@ -52,6 +54,8 @@ public class TaskRun implements Serializable {
     private int progress;
     @Transient
     private transient Document logDocument;
+    @Transient
+    private int cacheId = 100;
     //	@Basic(optional = false)
 //	@Column(nullable = false, columnDefinition = "char(1) default 'A'")
     @Enumerated(EnumType.STRING)
@@ -146,6 +150,15 @@ public class TaskRun implements Serializable {
     }
 
     public int getProgress() {
+        if (runState != RunState.COMPLETED) {
+            int total = getTaskStepRuns().size();
+            int completed = (int) getTaskStepRuns().stream().filter(taskStepRun1 -> taskStepRun1.getRunState() == RunState.COMPLETED).count();
+            if (total > 0) {
+                progress = 100 * completed / total;
+            }
+        } else {
+            progress = 100;
+        }
         return progress;
     }
 
@@ -253,5 +266,13 @@ public class TaskRun implements Serializable {
 
     public void setLogs(String logs) {
         this.logs = logs;
+    }
+
+    public int getCacheId() {
+        return cacheId;
+    }
+
+    public void setCacheId(int cacheId) {
+        this.cacheId = cacheId;
     }
 }

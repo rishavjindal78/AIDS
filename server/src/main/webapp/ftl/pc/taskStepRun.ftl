@@ -111,12 +111,10 @@
                 </td>
                 <td>
                     <#if taskStepRun.runStatus!?string == 'RUNNING'>
-                        <a id="${taskStepRun.id}" href="${rc.contextPath}/server/getMemoryLogs/view/${taskStepRun.id}"
-                           target="_blank">tail logs</a>
+                        <a class="btn btn-sm btn-info" id="${taskStepRun.id}" href="${rc.contextPath}/server/getMemoryLogs/view/${taskStepRun.id}" target="_blank">tail logs</a>
                     <#else>
-                        <a class="btn btn-small btn-primary viewTaskLogs heading" id="${taskStepRun.id}"
-                           href="#">logs</a>
-                        <a class="btn btn-small btn-warning" href="#" onclick="deleteTaskStepRun('${taskStepRun.id}')">delete</a>
+                        <a class="btn btn-sm btn-primary viewTaskLogs heading" id="${taskStepRun.id}" href="#">logs</a>
+                        <a class="btn btn-sm btn-warning" href="#" onclick="deleteTaskStepRun('${taskStepRun.id}')">delete</a>
                     </#if>
                 </td>
             </tr>

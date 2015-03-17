@@ -98,10 +98,10 @@
                 }
         );
 
-        //        setInterval('updateDiv()', 10000);
+//        setInterval('updateDiv()', 10000);
 
         function updateDiv(id) {
-            $.post("dashboard/refresh?id="+id)
+            $.post("dashboard/refresh?id="+id);
 //            window.location.reload(true);
         }
 
@@ -122,7 +122,7 @@
                 return '';
             }
             return input;
-        }
+        };
         var getServerType = function (serverType) {
             var classname;
             switch (serverType) {
@@ -138,7 +138,7 @@
                     break;
             }
             return classname;
-        }
+        };
 
         var getSpanForStatus = function (serverStatus) {
             var spanValue;
@@ -154,7 +154,7 @@
                     spanValue = ' '
             }
             return spanValue;
-        }
+        };
 
         var getClassForServerAppStatus = function (serverAppStatus) {
             var classname;
@@ -182,7 +182,7 @@
 <div class="container-fluid">
     <h1>
         <small class="text-muted"><@spring.message code="dashboard.title"/></small>
-        <button type="button" onclick="javascript:updateDiv(0)" class="btn btn-primary">Refresh Status</button>
+        <button type="button" onclick="updateDiv(0)" class="btn btn-primary">Refresh Status</button>
     </h1>
 
 <#--<button type="button" class="btn btn-primary btn-lg btn-block">TestM Dist Dev</button>

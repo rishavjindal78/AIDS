@@ -1,9 +1,9 @@
 package org.shunya.server.controller;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.shunya.server.Role;
-import org.shunya.server.Utility;
 import org.shunya.server.model.*;
 import org.shunya.server.services.*;
 import org.shunya.server.vo.AgentVO;
@@ -15,19 +15,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
@@ -601,6 +599,31 @@ public class ServerController {
         TaskStepRun taskStepRun = dbService.getTaskStepRun(stepRunId);
         model.addAttribute("taskStepRun", taskStepRun);
         return "tailLogs";
+    }
+
+    @RequestMapping(value = "taskRunMonitor", method = RequestMethod.GET)
+    @ResponseBody
+    public DeferredResult<String> taskRunMonitor(@RequestParam(value = "taskRunId", required = false, defaultValue = "0") long taskRunId,
+                                                 @RequestParam(value = "cacheId", required = false, defaultValue = "0") long cacheId,
+                                                 HttpServletResponse response) throws IOException, InterruptedException {
+        DeferredResult<String> deferredResult = new DeferredResult<>();
+        TaskRun taskRun = dbService.getTaskRun(taskRunId);
+        if(taskRun!=null && (taskRun.getRunState() == RunState.COMPLETED || cacheId ==0)){
+            ObjectMapper mapper = new ObjectMapper();
+//            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            mapper.writeValue(baos, taskRun);
+            deferredResult.setResult(baos.toString());
+        } else {
+            taskService.registerForTaskRunStatus(taskRun, deferredResult);
+        }
+        return deferredResult;
+    }
+
+    @RequestMapping(value = "taskRun/view/{taskRunId}", method = RequestMethod.GET)
+    public String getTaskRunView(@ModelAttribute("model") ModelMap model, @PathVariable("taskRunId") long taskRunId) throws Exception {
+        model.addAttribute("taskRun", dbService.getTaskRun(taskRunId));
+        return "tailTaskRun";
     }
 
     @RequestMapping(value = "schedule", method = RequestMethod.GET)

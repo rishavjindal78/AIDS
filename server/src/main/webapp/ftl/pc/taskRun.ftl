@@ -52,20 +52,20 @@
                 <td>${taskHistory.runDuration!?string}</td>
                 <#if taskHistory.runStatus?string == 'FAILURE'>
                     <td>
-                        <button type="button" class="btn btn-danger">${taskHistory.runStatus!?string}</button>
+                        <button type="button" class="btn btn-sm btn-danger">${taskHistory.runStatus!?string}</button>
                     </td>
                 <#elseif taskHistory.runStatus?string == 'SUCCESS'>
                     <td>
-                        <button type="button" class="btn btn-success">${taskHistory.runStatus!?string}</button>
+                        <button type="button" class="btn btn-sm btn-success">${taskHistory.runStatus!?string}</button>
                     </td>
                 <#else >
                     <td>
-                        <button type="button" class="btn btn-warning">${taskHistory.runStatus!?string}</button>
+                        <button type="button" class="btn btn-sm btn-warning">${taskHistory.runStatus!?string}</button>
                     </td>
                 </#if>
 
                 <td>
-                    <a href="../deleteTaskHistory/${taskHistory.id}" class="btn btn-small btn-primary">delete</a>
+                    <a href="../deleteTaskHistory/${taskHistory.id}" class="btn btn-sm btn-primary">delete</a>
                 </td>
             </tr>
             </#list>

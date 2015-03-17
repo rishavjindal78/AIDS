@@ -1,5 +1,7 @@
 package org.shunya.server.services;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.shunya.server.TaskExecutionPlan;
 import org.shunya.server.model.*;
 import org.shunya.shared.*;
@@ -13,11 +15,13 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Inet4Address;
@@ -33,6 +37,8 @@ public class TaskService {
     Map<TaskStepRun, TaskContext> currentlyRunningStepContext = new ConcurrentHashMap<>(10);
     Map<TaskRun, TaskExecutionContext> taskRunExecutionContext = new ConcurrentHashMap<>();
     Set<Long> currentlyRunningTasks = new HashSet<>();
+
+    Map<TaskRun, List<DeferredResult<String>>> taskRunStatusSubscribers = new ConcurrentHashMap<>();
     @Autowired
     private RestClient restClient;
 
@@ -191,6 +197,7 @@ public class TaskService {
         taskStepRun.setRunState(taskContext.getTaskStepRunDTO().getRunState());
         dbService.save(taskStepRun);
         TaskRun taskRun = dbService.getTaskRun(taskStepRun);
+        publishTaskRunStatus(taskRun);
         logger.info(taskContext.getStepDTO().getSequence() + ". " + taskStepRun.getAgent().getName() + " - " + taskContext.getStepDTO().getDescription() + " - " + taskContext.getTaskStepRunDTO().getRunStatus());
         statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), taskContext.getStepDTO().getSequence() + ". " + taskStepRun.getAgent().getName() + " - " + taskContext.getStepDTO().getDescription() + " - " + taskContext.getTaskStepRunDTO().getRunStatus());
         TaskExecutionContext executionContext = taskRunExecutionContext.get(taskRun);
@@ -205,11 +212,13 @@ public class TaskService {
                 logger.info("Aborting Task Execution after first failure, State = Complete, step failed = " + taskStepRun.getTaskStep().getName());
                 handleCompletion(taskRun, executionContext, RunStatus.FAILURE);
                 statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Aborting Task Execution after first failure, State = Complete");
+                publishTaskRunStatus(taskRun);
                 return;
             } else if (executionContext.isCancelled()) {
                 logger.info("Aborting Task Execution due to User Cancellation, State = Cancelled");
                 handleCompletion(taskRun, executionContext, RunStatus.CANCELLED);
                 statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Aborting Task Execution due to User Cancellation, State = Cancelled");
+                publishTaskRunStatus(taskRun);
                 return;
             }
             processNextStep(taskRun, executionContext);
@@ -248,6 +257,7 @@ public class TaskService {
             handleCompletion(taskRun, executionContext, RunStatus.SUCCESS);
             logger.info("Task has no further steps, " + taskRun.getName() + " Completed with status - " + taskRun.getRunStatus());
             statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), true, "Task - " + taskRun.getName() + ", " + taskRun.getComments() + " Completed, Status - " + taskRun.getRunStatus());
+            publishTaskRunStatus(taskRun);
         }
     }
 
@@ -309,12 +319,14 @@ public class TaskService {
                     } else {
                         executionContext.getTaskStepRunDTO().setLogs("Task Submission Failed - " + Utils.getStackTrace(e));
                     }
+                    executionContext.getTaskStepRunDTO().setStartTime(new Date());
                     executionContext.getTaskStepRunDTO().setFinishTime(new Date());
                     executionContext.getTaskStepRunDTO().setRunStatus(RunStatus.FAILURE);
                     executionContext.getTaskStepRunDTO().setRunState(RunState.COMPLETED);
                     consumeStepResult(executionContext);
                 }
             });
+            publishTaskRunStatus(taskRun);
             logger.info("execution command sent for task step - " + sequence);
         } else {
             logger.warn("execution skipped for task step as there was no agent configured - " + sequence);
@@ -329,7 +341,6 @@ public class TaskService {
             agentList.stream().forEach(agent -> {
                 TaskStepRun taskStepRun = new TaskStepRun();
                 taskStepRun.setSequence(stepData.getSequence());
-                taskStepRun.setStartTime(new Date());
                 taskStepRun.setTaskStep(stepData);
                 taskStepRun.setTaskRun(taskRun);
                 taskStepRun.setAgent(agent);
@@ -360,5 +371,29 @@ public class TaskService {
         TaskStepRunDTO taskStepRunDTO = new TaskStepRunDTO();
         taskStepRunDTO.setId(taskStepRun.getId());
         return taskStepRunDTO;
+    }
+
+    private void publishTaskRunStatus(TaskRun taskRun){
+        if (taskRunStatusSubscribers.get(taskRun) != null && taskRunStatusSubscribers.size() > 0) {
+            try {
+                taskRun = dbService.getTaskRun(taskRun.getId());
+                ObjectMapper mapper = new ObjectMapper();
+//                mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                mapper.writeValue(baos, taskRun);
+                String jsonResults = baos.toString();
+                List<DeferredResult> processed = new ArrayList<>();
+                taskRunStatusSubscribers.get(taskRun).forEach(stringDeferredResult -> {
+                    stringDeferredResult.setResult(jsonResults);
+                    processed.add(stringDeferredResult);});
+                taskRunStatusSubscribers.get(taskRun).removeAll(processed);
+            } catch (IOException e) {
+                logger.error("Exception publishing TaskRun status updates", e);
+            }
+        }
+    }
+
+    public void registerForTaskRunStatus(TaskRun taskRun, DeferredResult<String> deferredResult) {
+        taskRunStatusSubscribers.computeIfAbsent(taskRun, taskRun1 -> new Vector<>()).add(deferredResult);
     }
 }

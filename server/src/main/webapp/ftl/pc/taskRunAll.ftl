@@ -75,7 +75,7 @@
             <tr class="text-success"></#if>
             <td>${taskHistory.id?string}</td>
             <td>
-                <a href="${rc.getContextPath()}/server/taskStepHistory/${taskHistory.id}">${taskHistory.name!?string}</a>
+                <a href="${rc.getContextPath()}/server/taskRun/view/${taskHistory.id}">${taskHistory.name!?string}</a>
             </td>
             <td>${taskHistory.comments!?string}</td>
             <td><#if taskHistory.startTime??>${taskHistory.startTime?datetime?string("dd MMM, yyyy hh.mm aa")}</#if></td>
