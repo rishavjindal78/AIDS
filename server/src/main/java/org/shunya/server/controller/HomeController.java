@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
 @RequestMapping("/")
-public class HelloController {
+public class HomeController {
     private Map<String, DeferredResult> agentMap = new ConcurrentHashMap<>(10);
 
     @RequestMapping(value = {"/", "/index"}, method = RequestMethod.GET)

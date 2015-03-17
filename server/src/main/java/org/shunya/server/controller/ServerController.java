@@ -498,6 +498,31 @@ public class ServerController {
         return taskRun;
     }
 
+    @RequestMapping(value = "runSingleStep/{taskId}/{taskStepId}", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseBody
+    public TaskRun runTaskWithSingleStep(@PathVariable("taskId") Long taskId,
+                                         @RequestParam(defaultValue = "test", required = false) String comment,
+                                         @RequestParam(defaultValue = "false", required = false) boolean notifyStatus,
+                                         Principal principal, @PathVariable("taskStepId") long taskStepId) {
+        logger.info("Run request for {}, user comments ", taskId, comment);
+        Task task = dbService.getTask(taskId);
+        task.getStepDataList().forEach(taskStep -> {
+            if(taskStep.getId()!=taskStepId)
+                taskStep.setActive(false);
+        });
+        TaskRun taskRun = new TaskRun();
+        taskRun.setTask(task);
+        taskRun.setName(task.getName());
+        taskRun.setStartTime(new Date());
+        taskRun.setComments(comment);
+        taskRun.setNotifyStatus(notifyStatus);
+        taskRun.setRunBy(dbService.findUserByUsername(principal.getName()));
+        taskRun.setTeam(task.getTeam());
+        taskService.execute(taskRun, new HashMap<>());
+        return taskRun;
+    }
+
     @RequestMapping(value = "cancel/{taskRunId}", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ResponseBody
