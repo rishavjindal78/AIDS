@@ -68,9 +68,14 @@
         </fieldset>
     </div-->
     <br>
-    <hr/>
-    <a href="../team/${model.taskHistory.team.id}/taskHistory"> << Back To Task History</a>
+    <ol class="breadcrumb">
+        <li><a href="../team/${Session['SELECTED_TEAM'].id}/tasks">Tasks</a></li>
+        <li><a href="../team/${model.taskHistory.team.id}/taskHistory">Task History</a></li>
+        <li class="active"><a href="../taskStepHistory/${model.taskHistory.id}">${model.taskHistory.name!}</a></li>
+    <#--<li class="active">Data</li>-->
+    </ol>
     <div class="well">
+        <legend>${model.taskHistory.id}. ${model.taskHistory.name!}</legend>
         <table class="table table-striped table-condensed">
             <tr>
                 <th>Id</th>

@@ -114,7 +114,7 @@
                 <th width="5%">#</th>
                 <th width="25%">Name</th>
                 <th width="30%">Description</th>
-                <th width="20%">Tags</th>
+                <th width="20%">Schedule</th>
                 <th width="15%">Agents</th>
                 <th width="5%">Operation</th>
             </tr>
@@ -124,7 +124,7 @@
                             class="glyphicon glyphicon-edit"/></a></td>
                     <td><a href="${rc.getContextPath()}/server/task/${td.id}">${td.name?string}</a></td>
                     <td>${td.description?string}</td>
-                    <td>${td.tags?string}</td>
+                    <td>${td.schedule!''?string}</td>
                     <td>
                         <#list td.agentList as agent>
                             <form class="form-horizontal" name="agent"
@@ -137,7 +137,7 @@
                     </td>
                     <td>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-info dropdown-toggle"
+                            <button type="button" class="btn btn-sm btn-info dropdown-toggle"
                                     data-toggle="dropdown"> Action <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu">

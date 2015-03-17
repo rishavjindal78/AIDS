@@ -109,7 +109,12 @@
     </script>
 
     <br/>
-    <a href="../team/${Session['SELECTED_TEAM'].id}/tasks">Tasks</a> -> <a href="../task/${model.task.id}">${model.task.name}</a>
+    <ol class="breadcrumb">
+        <li><a href="../team/${Session['SELECTED_TEAM'].id}/tasks">Tasks</a></li>
+        <li class="active"><a href="../task/${model.task.id}">${model.task.name}</a></li>
+        <#--<li class="active">Data</li>-->
+    </ol>
+
     <legend>Task Details</legend>
     <p>Task Name : ${model.task.name}</p>
     <p>Task Description : ${model.task.description}</p>

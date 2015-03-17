@@ -30,12 +30,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Service
 public class TaskService {
     private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
-
-    Map<TaskRun, TaskExecutionPlan> taskExecutionPlanMap = new ConcurrentHashMap<>(10);
-    Map<TaskRun, List<TaskStepRun>> prepareTaskSteps = new ConcurrentHashMap<>(10);
     Map<TaskStepRun, TaskContext> currentlyRunningStepContext = new ConcurrentHashMap<>(10);
+    Map<TaskRun, TaskExecutionContext> taskRunExecutionContext = new ConcurrentHashMap<>();
     Set<Long> currentlyRunningTasks = new HashSet<>();
-
     @Autowired
     private RestClient restClient;
 
@@ -60,11 +57,11 @@ public class TaskService {
     @Scheduled(cron = "20 0/10 * * * ?")
     public void checkTimeoutSystemFailures() {
         logger.info("Running Timeout System Failures");
-        taskExecutionPlanMap.forEach((taskRun, taskExecutionPlan) -> {
+        taskRunExecutionContext.forEach((taskRun, taskExecutionContext) -> {
             if (LocalDateTime.ofInstant(taskRun.getStartTime().toInstant(), ZoneId.systemDefault()).isBefore(LocalDateTime.now().minusHours(maxSystemFailureTimeInHours))) {
                 logger.warn("System Failures Detected for TaskRun due to timeout - " + taskRun.getName());
-                handleCompletion(taskRun, taskExecutionPlan, RunStatus.FAILURE);
-                prepareTaskSteps.remove(taskRun);
+                handleCompletion(taskRun, taskExecutionContext, RunStatus.FAILURE);
+                taskExecutionContext.getCurrentlyRunningTaskStepRuns().remove(taskRun);
                 logger.warn("Task Kicked due to System Failures, TaskRun - " + taskRun.getName());
             }
         });
@@ -73,8 +70,8 @@ public class TaskService {
     @Scheduled(cron = "0/30 * * * * ?")
     public void checkAgentDiedSystemFailures() {
         logger.info("Running System Failures of Agents");
-        prepareTaskSteps.forEach((taskRun, taskStepRuns) -> {
-            new CopyOnWriteArrayList<>(taskStepRuns).stream().filter(taskStepRun -> currentlyRunningStepContext.containsKey(taskStepRun)).forEach(taskStepRun -> {
+        taskRunExecutionContext.forEach((taskRun, taskExecutionContext) -> {
+            new CopyOnWriteArrayList<>(taskExecutionContext.getCurrentlyRunningTaskStepRuns()).stream().filter(taskStepRun -> currentlyRunningStepContext.containsKey(taskStepRun)).forEach(taskStepRun -> {
                 Boolean stepRunning = false;
                 Boolean agentRunning = false;
                 try {
@@ -93,7 +90,7 @@ public class TaskService {
                 }
                 if (!stepRunning && currentlyRunningStepContext.containsKey(taskStepRun)) {
                     TaskContext executionContext = currentlyRunningStepContext.get(taskStepRun);
-                    taskExecutionPlanMap.get(taskRun).setTaskStatus(false);
+                    taskRunExecutionContext.get(taskRun).setTaskStatus(false);
                     executionContext.getTaskStepRunDTO().setStatus(false);
                     if (!agentRunning) {
                         logger.warn("TaskStep failed due to unreachable Agent, agent probably died." + taskStepRun);
@@ -113,7 +110,7 @@ public class TaskService {
     }
 
     public boolean isTaskRunning(TaskRun taskRun) {
-        return taskExecutionPlanMap.containsKey(taskRun);
+        return taskRunExecutionContext.containsKey(taskRun);
     }
 
     // if task is not started at all - create execution plan and start it
@@ -128,25 +125,34 @@ public class TaskService {
         }
         onStart(taskRun);
         statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "starting execution for - " + taskRun.getName());
-        logger.info("starting execution for TaskRun {}", taskRun.getName());
+        logger.info("Starting execution for TaskRun {}", taskRun.getName());
         dbService.save(taskRun);
-        TaskExecutionPlan executionPlan = taskExecutionPlanMap.computeIfAbsent(taskRun, k -> new TaskExecutionPlan(taskRun.getTask()));
-        Map.Entry<Integer, List<TaskStep>> next = executionPlan.next();
-        if (next != null) {
+        //Build execution map
+        TaskExecutionContext executionContext = taskRunExecutionContext.computeIfAbsent(taskRun, k -> new TaskExecutionContext(taskRun.getTask()));
+        TaskExecutionPlan executionPlan = new TaskExecutionPlan(taskRun.getTask());
+        while (executionPlan.hasNext()) {
+            Map.Entry<Integer, List<TaskStep>> next = executionPlan.next();
+            if (next != null) {
+                executionContext.addTaskStepRun(next.getKey(), prepareAndSaveTaskStepRuns(next.getValue(), taskRun));
+            }
+        }
+        //Start execution now
+        Map.Entry<Integer, List<TaskStepRun>> entry = executionContext.pollNextTaskStepRunList();
+        if (entry != null) {
             taskRun.setRunState(RunState.RUNNING);
             taskRun.setRunStatus(RunStatus.RUNNING);
             dbService.save(taskRun);
-            executionPlan.getSessionMap().putAll(loadAgentNames(taskRun.getTeam().getId()));
-            executionPlan.getSessionMap().putAll(loadProperties(taskRun.getTeam().getTeamProperties()));
+            executionContext.getSessionMap().putAll(loadAgentNames(taskRun.getTeam().getId()));
+            executionContext.getSessionMap().putAll(loadProperties(taskRun.getTeam().getTeamProperties()));
             if (taskRun.getRunBy() != null)
-                executionPlan.getSessionMap().putAll(loadProperties(taskRun.getRunBy().getUserProperties()));
-            executionPlan.getSessionMap().putAll(loadProperties(taskRun.getTask().getTaskProperties()));
-            if(propertiesOverride!=null) {
-                executionPlan.getPropertiesOverride().putAll(propertiesOverride);
+                executionContext.getSessionMap().putAll(loadProperties(taskRun.getRunBy().getUserProperties()));
+            executionContext.getSessionMap().putAll(loadProperties(taskRun.getTask().getTaskProperties()));
+            if (propertiesOverride != null) {
+                executionContext.getPropertiesOverride().putAll(propertiesOverride);
             }
-            delegateStepToAgents(next.getValue(), taskRun);
+            delegateStepToAgents(entry.getValue(), taskRun, entry.getKey());
         } else {
-            handleCompletion(taskRun, executionPlan, RunStatus.NOT_RUN);
+            handleCompletion(taskRun, executionContext, RunStatus.NOT_RUN);
             logger.info("Task has no steps, completing it now");
         }
     }
@@ -155,17 +161,17 @@ public class TaskService {
         currentlyRunningTasks.add(taskRun.getTask().getId());
     }
 
-    protected void handleCompletion(TaskRun taskRun, TaskExecutionPlan taskExecutionPlan, RunStatus runStatus) {
+    protected void handleCompletion(TaskRun taskRun, TaskExecutionContext taskExecutionPlan, RunStatus runStatus) {
         saveTaskRun(taskRun, taskExecutionPlan, runStatus);
-        taskExecutionPlanMap.remove(taskRun);
+        taskRunExecutionContext.remove(taskRun);
         currentlyRunningTasks.remove(taskRun.getTask().getId());
     }
 
     public boolean cancelTaskRun(TaskRun taskRun) {
-        TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);
+        TaskExecutionContext taskExecutionPlan = taskRunExecutionContext.get(taskRun);
         if (taskExecutionPlan != null) {
             taskExecutionPlan.setCancelled(true);
-            List<TaskStepRun> taskStepRuns = prepareTaskSteps.get(taskRun);
+            List<TaskStepRun> taskStepRuns = taskExecutionPlan.getCurrentlyRunningTaskStepRuns();
             new ArrayList<>(taskStepRuns).forEach(taskStepRun -> restClient.interruptTaskStep(taskStepRun.getId(), taskStepRun.getAgent()));
             return true;
         }
@@ -187,26 +193,26 @@ public class TaskService {
         TaskRun taskRun = dbService.getTaskRun(taskStepRun);
         logger.info(taskContext.getStepDTO().getSequence() + ". " + taskStepRun.getAgent().getName() + " - " + taskContext.getStepDTO().getDescription() + " - " + taskContext.getTaskStepRunDTO().getRunStatus());
         statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), taskContext.getStepDTO().getSequence() + ". " + taskStepRun.getAgent().getName() + " - " + taskContext.getStepDTO().getDescription() + " - " + taskContext.getTaskStepRunDTO().getRunStatus());
-        prepareTaskSteps.get(taskRun).remove(taskStepRun);
-        TaskExecutionPlan taskExecutionPlan = taskExecutionPlanMap.get(taskRun);
-        taskExecutionPlan.getSessionMap().putAll(taskContext.getSessionMap());
-        taskExecutionPlan.setTaskStatus(taskExecutionPlan.isTaskStatus() & (taskStepRun.isStatus() || taskStepRun.getTaskStep().isIgnoreFailure()));
+        TaskExecutionContext executionContext = taskRunExecutionContext.get(taskRun);
+        executionContext.getCurrentlyRunningTaskStepRuns().remove(taskStepRun);
+        executionContext.getSessionMap().putAll(taskContext.getSessionMap());
+        executionContext.setTaskStatus(executionContext.isTaskStatus() & (taskStepRun.isStatus() || taskStepRun.getTaskStep().isIgnoreFailure()));
         if (taskStepRun.getTaskStep().isIgnoreFailure() && !taskStepRun.isStatus()) {
             logger.info("Ignoring Step failure, as it is set Optional");
         }
-        if (prepareTaskSteps.get(taskRun).isEmpty()) {
-            if (!taskExecutionPlan.isTaskStatus() && taskExecutionPlan.isAbortOnFirstFailure()) {
+        if (executionContext.getCurrentlyRunningTaskStepRuns().isEmpty()) {
+            if (!executionContext.isTaskStatus() && executionContext.isAbortOnFirstFailure()) {
                 logger.info("Aborting Task Execution after first failure, State = Complete, step failed = " + taskStepRun.getTaskStep().getName());
-                handleCompletion(taskRun, taskExecutionPlan, RunStatus.FAILURE);
+                handleCompletion(taskRun, executionContext, RunStatus.FAILURE);
                 statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Aborting Task Execution after first failure, State = Complete");
                 return;
-            } else if (taskExecutionPlan.isCancelled()) {
+            } else if (executionContext.isCancelled()) {
                 logger.info("Aborting Task Execution due to User Cancellation, State = Cancelled");
-                handleCompletion(taskRun, taskExecutionPlan, RunStatus.CANCELLED);
+                handleCompletion(taskRun, executionContext, RunStatus.CANCELLED);
                 statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Aborting Task Execution due to User Cancellation, State = Cancelled");
                 return;
             }
-            processNextStep(taskRun, taskExecutionPlan);
+            processNextStep(taskRun, executionContext);
         } else {
             logger.info("Waiting for other parallel steps to complete for sequence - " + taskStepRun.getTaskStep().getSequence());
         }
@@ -233,19 +239,19 @@ public class TaskService {
         return Collections.emptyMap();
     }
 
-    private void processNextStep(TaskRun taskRun, TaskExecutionPlan taskExecutionPlan) {
-        Map.Entry<Integer, List<TaskStep>> next = taskExecutionPlan.next();
-        if (next != null) {
-            delegateStepToAgents(next.getValue(), taskRun);
+    private void processNextStep(TaskRun taskRun, TaskExecutionContext executionContext) {
+        Map.Entry<Integer, List<TaskStepRun>> entry = executionContext.pollNextTaskStepRunList();
+        if (entry != null) {
+            delegateStepToAgents(entry.getValue(), taskRun, entry.getKey());
         } else {
-            prepareTaskSteps.remove(taskRun);
-            handleCompletion(taskRun, taskExecutionPlan, RunStatus.SUCCESS);
+            executionContext.getCurrentlyRunningTaskStepRuns().remove(taskRun);
+            handleCompletion(taskRun, executionContext, RunStatus.SUCCESS);
             logger.info("Task has no further steps, " + taskRun.getName() + " Completed with status - " + taskRun.getRunStatus());
             statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), true, "Task - " + taskRun.getName() + ", " + taskRun.getComments() + " Completed, Status - " + taskRun.getRunStatus());
         }
     }
 
-    private void saveTaskRun(TaskRun taskRun, TaskExecutionPlan taskExecutionPlan, RunStatus success) {
+    private void saveTaskRun(TaskRun taskRun, TaskExecutionContext taskExecutionPlan, RunStatus success) {
         synchronized (taskRun) {
             taskRun.setRunState(RunState.COMPLETED);
             taskRun.setFinishTime(new Date());
@@ -265,25 +271,10 @@ public class TaskService {
         logger.info("Destroying the Task Service context");
     }
 
-    private void delegateStepToAgents(List<TaskStep> taskStepDataList, TaskRun taskRun) {
-        taskStepDataList.parallelStream().forEach(stepData -> {
-            Set<Agent> agentList = stepData.getAgentList().size() > 0 ? stepData.getAgentList() : taskExecutionPlanMap.get(taskRun).getTask().getAgentList();
-            agentList.stream().forEach(agent -> {
-                TaskStepRun taskStepRun = new TaskStepRun();
-                taskStepRun.setSequence(stepData.getSequence());
-                taskStepRun.setStartTime(new Date());
-                taskStepRun.setTaskStep(stepData);
-                taskStepRun.setTaskRun(taskRun);
-                taskStepRun.setAgent(agent);
-                taskStepRun.setRunState(RunState.RUNNING);
-                taskStepRun.setRunStatus(RunStatus.RUNNING);
-                dbService.save(taskStepRun);
-                prepareTaskSteps.computeIfAbsent(taskRun, tsr -> new Vector<>()).add(taskStepRun);
-            });
-        });
-        if (prepareTaskSteps.get(taskRun) != null && prepareTaskSteps.get(taskRun).size() > 0) {
-            logger.info("execution started for task step - " + taskStepDataList.get(0).getSequence());
-            new CopyOnWriteArrayList<>(prepareTaskSteps.get(taskRun)).parallelStream().forEach(taskStepRun -> {
+    private void delegateStepToAgents(List<TaskStepRun> taskStepRunList, TaskRun taskRun, Integer sequence) {
+        if (taskRunExecutionContext.get(taskRun).getCurrentlyRunningTaskStepRuns() != null && taskRunExecutionContext.get(taskRun).getCurrentlyRunningTaskStepRuns().size() > 0) {
+            logger.info("execution started for task step - " + sequence);
+            new CopyOnWriteArrayList<>(taskStepRunList).parallelStream().forEach(taskStepRun -> {
                 TaskContext executionContext = new TaskContext();
                 try {
                     String hostAddress = Inet4Address.getLocalHost().getHostAddress();
@@ -291,7 +282,7 @@ public class TaskService {
                     executionContext.setBaseUrl("http://" + hostAddress + ":" + serverPort + contextPath);
                     executionContext.setUsername("agent");
                     executionContext.setPassword("agent");
-                    executionContext.setSessionMap(new HashMap(taskExecutionPlanMap.get(taskRun).getSessionMap()));
+                    executionContext.setSessionMap(new HashMap(taskRunExecutionContext.get(taskRun).getSessionMap()));
                     executionContext.setTaskStepRunDTO(convertToDTO(taskStepRun));
                     TaskStep taskStep = taskStepRun.getTaskStep();
                     executionContext.setStepDTO(convertToDTO(taskStep));
@@ -300,14 +291,17 @@ public class TaskService {
                     executionContext.getSessionMap().putAll(loadProperties(taskRun.getTeam().getTeamProperties()));
                     executionContext.getSessionMap().putAll(loadProperties(taskRun.getTask().getTaskProperties()));
                     executionContext.getSessionMap().putAll(loadProperties(taskStepRun.getAgent().getAgentProperties()));
-                    executionContext.getSessionMap().putAll(taskExecutionPlanMap.get(taskRun).getPropertiesOverride());
+                    executionContext.getSessionMap().putAll(taskRunExecutionContext.get(taskRun).getPropertiesOverride());
                     logger.info("executionContext.getSessionMap() = " + executionContext.getSessionMap());
+                    taskStepRun.setRunState(RunState.RUNNING);
+                    taskStepRun.setRunStatus(RunStatus.RUNNING);
+                    dbService.save(taskStepRun);
                     restClient.submitTaskToAgent(executionContext, taskStepRun.getAgent());
                     currentlyRunningStepContext.put(taskStepRun, executionContext);
                     logger.info("task submitted - " + taskStep.getDescription());
                 } catch (Exception e) {
                     logger.error("Task Submission Failed", e.getMessage());
-                    taskExecutionPlanMap.get(taskRun).setTaskStatus(false);
+                    taskRunExecutionContext.get(taskRun).setTaskStatus(false);
                     executionContext.getTaskStepRunDTO().setStatus(false);
                     if (e.getCause() != null && e.getCause() instanceof IOException) {
                         statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Task Submission Failed, Agent not reachable - " + taskStepRun.getAgent().getName() + e.getMessage());
@@ -321,11 +315,32 @@ public class TaskService {
                     consumeStepResult(executionContext);
                 }
             });
-            logger.info("execution command sent for task step - " + taskStepDataList.get(0).getSequence());
+            logger.info("execution command sent for task step - " + sequence);
         } else {
-            logger.warn("execution skipped for task step as there was no agent configured - " + taskStepDataList.get(0).getSequence());
-            processNextStep(taskRun, taskExecutionPlanMap.get(taskRun));
+            logger.warn("execution skipped for task step as there was no agent configured - " + sequence);
+            processNextStep(taskRun, taskRunExecutionContext.get(taskRun));
         }
+    }
+
+    private List<TaskStepRun> prepareAndSaveTaskStepRuns(List<TaskStep> taskStepDataList, TaskRun taskRun) {
+        List<TaskStepRun> taskStepRuns = new Vector<>();
+        taskStepDataList.parallelStream().forEach(stepData -> {
+            Set<Agent> agentList = stepData.getAgentList().size() > 0 ? stepData.getAgentList() : taskRunExecutionContext.get(taskRun).getTask().getAgentList();
+            agentList.stream().forEach(agent -> {
+                TaskStepRun taskStepRun = new TaskStepRun();
+                taskStepRun.setSequence(stepData.getSequence());
+                taskStepRun.setStartTime(new Date());
+                taskStepRun.setTaskStep(stepData);
+                taskStepRun.setTaskRun(taskRun);
+                taskStepRun.setAgent(agent);
+                taskStepRun.setRunState(RunState.NOT_RUN);
+                taskStepRun.setRunStatus(RunStatus.NOT_RUN);
+                dbService.save(taskStepRun);
+                taskStepRuns.add(taskStepRun);
+//                prepareTaskSteps.computeIfAbsent(taskRun, tsr -> new Vector<>()).add(taskStepRun);
+            });
+        });
+        return taskStepRuns;
     }
 
     private TaskStepDTO convertToDTO(TaskStep taskStep) throws JAXBException {

@@ -65,7 +65,7 @@ public class TaskProcessor {
                     taskContext.getTaskStepRunDTO().setRunState(RunState.COMPLETED);
                     taskStep.afterTaskFinish();
                     postProcess();
-                    restClient.postResultToServer(taskContext);
+                    try{restClient.postResultToServer(taskContext);}catch (Exception e){logger.error("Severe error connecting to the server", e);}
                     cache.remove(taskContext.getTaskStepRunDTO().getId());
                 }
             });

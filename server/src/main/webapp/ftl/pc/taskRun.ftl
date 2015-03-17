@@ -22,7 +22,11 @@
         </fieldset>
     </div>-->
     <br/>
-    <hr/>
+    <ol class="breadcrumb">
+        <li><a href="../team/${Session['SELECTED_TEAM'].id}/tasks">Tasks</a></li>
+        <li><a href="../task/${model.task.id}">${model.task.name}</a></li>
+        <li class="active"><a href="../taskHistory/${model.task.id}">History</a></li>
+    </ol>
         <legend>Task Run History</legend>
         <table class="table table-striped table-condensed">
             <tr>

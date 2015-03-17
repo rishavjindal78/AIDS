@@ -459,6 +459,7 @@ public class ServerController {
     public String viewTaskHistoryForTask(@ModelAttribute("model") ModelMap model, @PathVariable("taskId") long taskId) {
         List<TaskRun> all = dbService.findTaskHistoryForTaskId(taskId);
         model.addAttribute("taskHistoryList", all);
+        model.addAttribute("task", dbService.getTask(taskId));
         model.addAttribute("taskId", taskId);
         return "taskRun";
     }
