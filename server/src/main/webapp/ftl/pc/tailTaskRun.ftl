@@ -113,9 +113,9 @@
     </script>
     <br>
     <ol class="breadcrumb">
-        <li><a href="../team/${Session['SELECTED_TEAM'].id}/tasks">Tasks</a></li>
-        <li><a href="../team/${model.taskRun.team.id}/taskHistory">Task History</a></li>
-        <li class="active"><a href="../../taskRun/view/${model.taskRun.id}">${model.taskRun.name!}</a></li>
+        <li><a href="${rc.getContextPath()}/server/team/${Session['SELECTED_TEAM'].id}/tasks">Tasks</a></li>
+        <li><a href="${rc.getContextPath()}/server/team/${model.taskRun.team.id}/taskHistory">Task History</a></li>
+        <li class="active"><a href="${rc.getContextPath()}/server/taskRun/view/${model.taskRun.id}">${model.taskRun.name!}</a></li>
     </ol>
     <h4 class="text-muted">${model.taskRun.id}. ${model.taskRun.name!} <button id="taskRunStatusId" type="button" class="btn btn-info btn-sm">${model.taskRun.runStatus!?string}</button></h4>
     <div class="progress">
