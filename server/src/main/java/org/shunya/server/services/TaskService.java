@@ -77,7 +77,9 @@ public class TaskService {
     public void checkAgentDiedSystemFailures() {
         logger.info("Running System Failures of Agents");
         taskRunExecutionContext.forEach((taskRun, taskExecutionContext) -> {
-            new CopyOnWriteArrayList<>(taskExecutionContext.getCurrentlyRunningTaskStepRuns()).stream().filter(taskStepRun -> currentlyRunningStepContext.containsKey(taskStepRun)).forEach(taskStepRun -> {
+            List<TaskStepRun> currentlyRunningTaskStepRuns = taskExecutionContext.getCurrentlyRunningTaskStepRuns();
+            if (currentlyRunningTaskStepRuns != null)
+            new CopyOnWriteArrayList<>(currentlyRunningTaskStepRuns).stream().filter(taskStepRun -> currentlyRunningStepContext.containsKey(taskStepRun)).forEach(taskStepRun -> {
                 Boolean stepRunning = false;
                 Boolean agentRunning = false;
                 try {
@@ -388,6 +390,7 @@ public class TaskService {
                     stringDeferredResult.setResult(jsonResults);
                     processed.add(stringDeferredResult);});
                 taskRunStatusSubscribers.get(taskRun).removeAll(processed);
+                logger.info("Published TaskRun updates to all registered clients");
             } catch (IOException e) {
                 logger.error("Exception publishing TaskRun status updates", e);
             }

@@ -53,7 +53,7 @@
                 <!--<prop key="hibernate.current_session_context_class">thread</prop>-->
                 <prop key="hibernate.format_sql">${hibernate.format_sql:true}</prop>
                 <!--<prop key="hibernate.connection.pool_size">1</prop>-->
-                <prop key="hibernate.connection.isolation">2</prop>
+                <!--<prop key="hibernate.connection.isolation">2</prop>-->
                 <prop key="hibernate.max_fetch_depth">3</prop>
                 <prop key="hibernate.jdbc.batch_size">50</prop>
                 <prop key="hibernate.connection.autocommit">false</prop>

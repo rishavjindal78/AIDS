@@ -37,7 +37,7 @@
                 });
                 $('#content_' + this.id).slideToggle(300);
 //                $(this).next('.content').slideToggle(300);
-            })
+            });
         });
 
         function deleteTaskStepRun(stepRunId) {

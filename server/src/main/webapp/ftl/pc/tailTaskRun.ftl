@@ -30,6 +30,8 @@
                         if (data != undefined) {
                             cacheId = data.cacheId;
                             var progress = data.progress;
+                            $('#taskRunStatusId').attr('class', ''+getRowClassForButton(data.runStatus)+'');
+                            $('#taskRunStatusId').html('<strong>'+data.runStatus+'</strong>');
                             $('#progressBarId').attr( 'aria-valuenow',''+progress+'');
                             $('#progressBarId').attr( 'style','width :'+progress+'%');
                             $('#progressBarId').text(progress+'%');
@@ -48,14 +50,7 @@
                                     taskStepRun.startTime='NA';
                                 taskStepRunContent += '<td>'+taskStepRun.startTime+'</td>';
                                 taskStepRunContent += '<td>'+taskStepRun.duration+'</td>';
-                                /*if(taskStepRun.runStatus=='RUNNING'){
-                                    taskStepRunContent += '<td><div class="progress">' +
-                                    '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
-                                    '<span class="sr-only">45%</span>' +
-                                    '</div></div></td>';
-                                }else {*/
-                                    taskStepRunContent += '<td><button type="button" class="' + getRowClassForButton(taskStepRun.runStatus) + '">' + taskStepRun.runStatus + '</button></td>';
-//                                }
+                                taskStepRunContent += '<td><button type="button" class="' + getRowClassForButton(taskStepRun.runStatus) + '">' + taskStepRun.runStatus + '</button></td>';
                                 taskStepRunContent += '<td><a class="btn btn-sm btn-info" href="../../getMemoryLogs/view/'+taskStepRun.id+'" target="_blank">tail logs</a> ';
                                 if(taskStepRun.runState == 'COMPLETED'){
                                     taskStepRunContent += '<a class="btn btn-sm btn-warning" href="#" onclick="deleteTaskStepRun('+taskStepRun.id+')">delete</a>';
@@ -74,7 +69,7 @@
             jqxhr.error(function () {
             });
         };
-        $(document).ready(lpStart);
+//        $(document).ready(lpStart);
 
         var getRowClass = function (runStatus) {
             var classname;
@@ -109,8 +104,12 @@
                     break;
             }
             return classname;
-        }
+        };
 
+        $(document).ready(function () {
+            $('#taskRunStatusId').attr('class', ''+getRowClassForButton('${model.taskRun.runStatus!?string}')+'');
+            lpStart();
+        });
     </script>
     <br>
     <ol class="breadcrumb">
@@ -118,8 +117,7 @@
         <li><a href="../team/${model.taskRun.team.id}/taskHistory">Task History</a></li>
         <li class="active"><a href="../../taskRun/view/${model.taskRun.id}">${model.taskRun.name!}</a></li>
     </ol>
-
-    <h4 class="text-muted">${model.taskRun.id}. ${model.taskRun.name!}</h4>
+    <h4 class="text-muted">${model.taskRun.id}. ${model.taskRun.name!} <button id="taskRunStatusId" type="button" class="btn btn-info btn-sm">${model.taskRun.runStatus!?string}</button></h4>
     <div class="progress">
         <div id="progressBarId" class="progress-bar" role="progressbar" aria-valuenow="${model.taskRun.progress!}" aria-valuemin="0" aria-valuemax="100" style="width: ${model.taskRun.progress!}%;">
         ${model.taskRun.progress!}%
