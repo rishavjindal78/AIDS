@@ -493,6 +493,7 @@ public class ServerController {
         taskRun.setNotifyStatus(notifyStatus);
         taskRun.setRunBy(dbService.findUserByUsername(principal.getName()));
         taskRun.setTeam(task.getTeam());
+        dbService.save(taskRun);
         taskService.execute(taskRun, new HashMap<>());
         return taskRun;
     }

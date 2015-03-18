@@ -305,6 +305,7 @@ public class TaskService {
                     logger.info("executionContext.getSessionMap() = " + executionContext.getSessionMap());
                     taskStepRun.setRunState(RunState.RUNNING);
                     taskStepRun.setRunStatus(RunStatus.RUNNING);
+                    taskStepRun.setStartTime(new Date());
                     dbService.save(taskStepRun);
                     restClient.submitTaskToAgent(executionContext, taskStepRun.getAgent());
                     currentlyRunningStepContext.put(taskStepRun, executionContext);

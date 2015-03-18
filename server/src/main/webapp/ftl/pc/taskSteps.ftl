@@ -83,7 +83,7 @@
             if (userComment != null) {
                 $("#results").empty();
                 $.post(url, { comment: userComment}, function (data) {
-                    $("#results").html('<div class="alert alert-success">Job Submitted Successfully - ' + url + '</div>');
+                    $("#results").html('<div class="alert alert-success">Task Submitted Successfully - <a href="../taskRun/view/'+data.id+'" target="_blank">Logs</a></div>');
                 });
                 $('#myModal').modal('hide');
             }

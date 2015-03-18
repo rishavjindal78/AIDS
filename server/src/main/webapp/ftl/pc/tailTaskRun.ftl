@@ -55,6 +55,8 @@
                                 var taskStepRunContent = '<td>'+taskStepRun.sequence+'</td>';
                                 taskStepRunContent += '<td>'+taskStepRun.taskStep.description+'</td>';
                                 taskStepRunContent += '<td>'+taskStepRun.agent.name+'</td>';
+                                if(taskStepRun.startTime == undefined)
+                                    taskStepRun.startTime='NA';
                                 taskStepRunContent += '<td>'+taskStepRun.startTime+'</td>';
                                 taskStepRunContent += '<td>'+taskStepRun.duration+'</td>';
                                 /*if(taskStepRun.runStatus=='RUNNING'){
