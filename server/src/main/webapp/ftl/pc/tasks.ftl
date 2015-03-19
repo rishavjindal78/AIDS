@@ -59,7 +59,9 @@
         });
     </script>
     <#--<div class="container">-->
-    <div class="heading btn-link">Add New Task</div>
+    <div class="heading alert alert-info" style="padding: 6px;margin-bottom: 2px;margin-top: 2px;">
+        <strong>Add New Task</strong>
+    </div>
     <div class="content alert alert-warning">
         <form role="form" name="agent" action="${rc.contextPath}/server/team/${model.team.id}/addTask/0" method="POST">
             <div class="form-group" style="width: 80%;">
@@ -87,7 +89,9 @@
         </form>
     </div>
 
-    <div class="heading btn-link">Import Task</div>
+    <div class="heading alert alert-info" style="padding: 6px;margin-bottom: 2px; margin-top: 2px;">
+        <strong>Import Task</strong>
+    </div>
     <div class="content">
         <fieldset>
             <form class="form-horizontal" name="upload"

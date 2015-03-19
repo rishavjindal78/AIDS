@@ -113,79 +113,81 @@
         $(document).ready(lpStart);
     </script>
     <#--<div class="container">-->
-        <div class="heading btn-link">Add New Agent</div>
-        <div class="content alert alert-warning">
-            <form role="form" name="agent" action="register" method="POST">
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Agent Name</label>
-                    <input type="text" class="form-control" id="exampleInputEmail1" name="name"
-                           placeholder="Enter Agent Name e.g. Build Machine Agent">
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputPassword1">Agent Description</label>
-                    <input type="text" class="form-control" id="exampleInputPassword1" name="description"
-                           placeholder="Enter Agent Description e.g. Dev Server">
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputTags">Base Url</label>
-                    <input type="text" class="form-control" id="exampleInputTags" name="baseUrl"
-                           placeholder="Enter Base Url e.g. http://localhost:9291/">
-                </div>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox"> Enable It
-                    </label>
-                </div>
-                <button type="submit" class="btn btn-primary">Save</button>
-                <button type="reset" class="btn btn-default">Reset</button>
-            </form>
-        </div>
-        <h2 class="sub-header text-muted">Agents</h2>
+    <div class="heading alert alert-info" style="padding: 6px;margin-bottom: 2px; margin-top: 2px;">
+        <strong>Add New Agent</strong>
+    </div>
+    <div class="content alert alert-warning">
+        <form role="form" name="agent" action="register" method="POST">
+            <div class="form-group">
+                <label for="exampleInputEmail1">Agent Name</label>
+                <input type="text" class="form-control" id="exampleInputEmail1" name="name"
+                       placeholder="Enter Agent Name e.g. Build Machine Agent">
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1">Agent Description</label>
+                <input type="text" class="form-control" id="exampleInputPassword1" name="description"
+                       placeholder="Enter Agent Description e.g. Dev Server">
+            </div>
+            <div class="form-group">
+                <label for="exampleInputTags">Base Url</label>
+                <input type="text" class="form-control" id="exampleInputTags" name="baseUrl"
+                       placeholder="Enter Base Url e.g. http://localhost:9291/">
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox"> Enable It
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="reset" class="btn btn-default">Reset</button>
+        </form>
+    </div>
+    <h2 class="sub-header text-muted">Agents</h2>
 
-        <div class="table-responsive">
-            <table id="agentsTable" class="table table-striped">
-                <tr>
-                    <th width="5%">#</th>
-                    <th width="20%">Name</th>
-                    <th width="30%">Description</th>
-                    <th width="25%">Base URL</th>
-                    <th width="10%">Status <a href="#" onclick="checkStatus()"><span class="glyphicon glyphicon-refresh"/></a></th>
-                    <th width="10%">Operation</th>
-                <#--<th>Comments</th>-->
+    <div class="table-responsive">
+        <table id="agentsTable" class="table table-striped">
+            <tr>
+                <th width="5%">#</th>
+                <th width="20%">Name</th>
+                <th width="30%">Description</th>
+                <th width="25%">Base URL</th>
+                <th width="10%">Status <a href="#" onclick="checkStatus()"><span class="glyphicon glyphicon-refresh"/></a></th>
+                <th width="10%">Operation</th>
+            <#--<th>Comments</th>-->
+            </tr>
+            <#list model["agents"] as agent>
+                <tr id="agent_row_${agent.id}" class="agent_row">
+                    <td>${agent_index+1} &nbsp;<a href="#" onclick="editAgent('${agent.id}')"><span
+                            class="glyphicon glyphicon-edit"/></a></td>
+                    <td>${agent.name?string}</td>
+                    <td>${agent.description?string}</td>
+                    <td>${agent.baseUrl?string}</td>
+                    <td id="td_${agent.id}">
+                        <#if agent.status?exists && agent.status == 'UP'>
+                            <span class="label label-success" id="${agent.id}">${agent.status.version!'N/A'?string}</span>
+                        <#else>
+                            <span class="label label-danger" id="${agent.id}">${agent.status!'N/A'?string}</span>
+                        </#if>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-info dropdown-toggle"
+                                    data-toggle="dropdown">Action<span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="#" onclick="editAgent('${agent.id}')">edit</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#" onclick="deleteAgent('${agent.id}','${agent.name}')">delete</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                <#--<td>${debt.comments?size}</td>-->
                 </tr>
-                <#list model["agents"] as agent>
-                    <tr id="agent_row_${agent.id}" class="agent_row">
-                        <td>${agent_index+1} &nbsp;<a href="#" onclick="editAgent('${agent.id}')"><span
-                                class="glyphicon glyphicon-edit"/></a></td>
-                        <td>${agent.name?string}</td>
-                        <td>${agent.description?string}</td>
-                        <td>${agent.baseUrl?string}</td>
-                        <td id="td_${agent.id}">
-                            <#if agent.status?exists && agent.status == 'UP'>
-                                <span class="label label-success" id="${agent.id}">${agent.status.version!'N/A'?string}</span>
-                            <#else>
-                                <span class="label label-danger" id="${agent.id}">${agent.status!'N/A'?string}</span>
-                            </#if>
-                        </td>
-                        <td>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-info dropdown-toggle"
-                                        data-toggle="dropdown">Action<span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu" role="menu">
-                                    <li><a href="#" onclick="editAgent('${agent.id}')">edit</a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="#" onclick="deleteAgent('${agent.id}','${agent.name}')">delete</a></li>
-                                </ul>
-                            </div>
-                        </td>
-                    <#--<td>${debt.comments?size}</td>-->
-                    </tr>
-                </#list>
-            </table>
-            <span id="spane_edit_agent"></span>
-            <span id="results"></span>
-        </div>
+            </#list>
+        </table>
+        <span id="spane_edit_agent"></span>
+        <span id="results"></span>
+    </div>
     <#--</div>-->
     </@com.page>
 </#escape>

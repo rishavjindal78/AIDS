@@ -87,7 +87,7 @@ public class TelegramService implements StatusObserver {
     }
 
     private synchronized PeerState[] getAllSpamPeers() {
-        ArrayList<PeerState> peerStates = new ArrayList<PeerState>();
+        ArrayList<PeerState> peerStates = new ArrayList<>();
         for (PeerState state : userStates.values()) {
             if (state.isSpamEnabled()) {
                 peerStates.add(state);
