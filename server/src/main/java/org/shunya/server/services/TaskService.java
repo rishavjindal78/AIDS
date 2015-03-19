@@ -377,24 +377,54 @@ public class TaskService {
     }
 
     private void publishTaskRunStatus(TaskRun taskRun){
-        if (taskRunStatusSubscribers.get(taskRun) != null && taskRunStatusSubscribers.size() > 0) {
+        if (taskRunStatusSubscribers.get(taskRun) != null && taskRunStatusSubscribers.get(taskRun).size() > 0) {
             try {
                 taskRun = dbService.getTaskRun(taskRun.getId());
-                ObjectMapper mapper = new ObjectMapper();
-//                mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                mapper.writeValue(baos, taskRun);
-                String jsonResults = baos.toString();
+                String jsonResults = getTaskRunAsJson(taskRun);
                 List<DeferredResult> processed = new ArrayList<>();
-                taskRunStatusSubscribers.get(taskRun).forEach(stringDeferredResult -> {
-                    stringDeferredResult.setResult(jsonResults);
-                    processed.add(stringDeferredResult);});
-                taskRunStatusSubscribers.get(taskRun).removeAll(processed);
-                logger.info("Published TaskRun updates to all registered clients");
+                synchronized (taskRunStatusSubscribers.get(taskRun)) {
+                    taskRunStatusSubscribers.get(taskRun).forEach(stringDeferredResult -> {
+                        stringDeferredResult.setResult(jsonResults);
+                        processed.add(stringDeferredResult);
+                    });
+                    taskRunStatusSubscribers.get(taskRun).removeAll(processed);
+                    logger.info("Published TaskRun updates to all registered clients");
+                }
             } catch (IOException e) {
                 logger.error("Exception publishing TaskRun status updates", e);
             }
         }
+    }
+
+    private String getTaskRunAsJson(TaskRun taskRun) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+//                mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        mapper.writeValue(baos, taskRun);
+        return baos.toString();
+    }
+
+    @Scheduled(cron = "0/30 * * * * ?")
+    public void processStalePublishRequest() {
+        taskRunStatusSubscribers.forEach((taskRun, deferredResults) -> {
+            synchronized (taskRunStatusSubscribers.get(taskRun)) {
+                taskRun = dbService.getTaskRun(taskRun.getId());
+                if(taskRun.getRunState()==RunState.COMPLETED){
+                    try {
+                        String jsonResult = getTaskRunAsJson(taskRun);
+                        List<DeferredResult> processed = new ArrayList<>();
+                        taskRunStatusSubscribers.get(taskRun).forEach(stringDeferredResult -> {
+                            stringDeferredResult.setResult(jsonResult);
+                            processed.add(stringDeferredResult);
+                        });
+                        taskRunStatusSubscribers.get(taskRun).removeAll(processed);
+                        logger.info("Published TaskRun stale updates to all registered clients");
+                    } catch (IOException e) {
+                        logger.error("Exception publishing TaskRun status updates", e);
+                    }
+                }
+            }
+        });
     }
 
     public void registerForTaskRunStatus(TaskRun taskRun, DeferredResult<String> deferredResult) {
