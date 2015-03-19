@@ -1,11 +1,12 @@
 package org.shunya.server.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "AUTHORITY", uniqueConstraints = {@UniqueConstraint(columnNames = {"role"})})
 @TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "AUTHORITY", allocationSize = 1)
-public class Authority {
+public class Authority implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")
     private long id;
@@ -26,5 +27,22 @@ public class Authority {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Authority authority = (Authority) o;
+
+        if (id != authority.id) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (id ^ (id >>> 32));
     }
 }

@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 @Service
 public class RestClient {
     private static final Logger logger = Logger.getLogger(RestClient.class.getName());
-
     private RestTemplate restTemplate = new RestTemplate();
 
     public void postResultToServer(TaskContext taskContext) {
@@ -31,14 +30,10 @@ public class RestClient {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("j_username", user);
         map.add("j_password", password);
-
         String authURL = baseUrl + "/j_spring_security_check";
-
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, requestHeaders);
-
         ResponseEntity<String> result = restTemplate.exchange(authURL, HttpMethod.POST, entity, String.class);
         HttpHeaders respHeaders = result.getHeaders();
 //        System.out.println(respHeaders.toString());
