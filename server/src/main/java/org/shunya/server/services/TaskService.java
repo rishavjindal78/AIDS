@@ -79,40 +79,40 @@ public class TaskService {
         taskRunExecutionContext.forEach((taskRun, taskExecutionContext) -> {
             List<TaskStepRun> currentlyRunningTaskStepRuns = taskExecutionContext.getCurrentlyRunningTaskStepRuns();
             if (currentlyRunningTaskStepRuns != null)
-            new CopyOnWriteArrayList<>(currentlyRunningTaskStepRuns).stream().filter(taskStepRun -> currentlyRunningStepContext.containsKey(taskStepRun)).forEach(taskStepRun -> {
-                Boolean stepRunning = false;
-                Boolean agentRunning = false;
-                try {
-                    for (int i = 0; i < 2; i++) {
-                        stepRunning = restClient.checkStepRunning(taskStepRun.getId(), taskStepRun.getAgent());
-                        Thread.sleep(2000);
-                        if (stepRunning)
-                            break;
-                        logger.warn("Step is not running on the agent, " + taskStepRun + " Agent - " + taskStepRun.getAgent());
+                new CopyOnWriteArrayList<>(currentlyRunningTaskStepRuns).stream().filter(taskStepRun -> currentlyRunningStepContext.containsKey(taskStepRun)).forEach(taskStepRun -> {
+                    Boolean stepRunning = false;
+                    Boolean agentRunning = false;
+                    try {
+                        for (int i = 0; i < 2; i++) {
+                            stepRunning = restClient.checkStepRunning(taskStepRun.getId(), taskStepRun.getAgent());
+                            Thread.sleep(2000);
+                            if (stepRunning)
+                                break;
+                            logger.warn("Step is not running on the agent, " + taskStepRun + " Agent - " + taskStepRun.getAgent());
+                        }
+                        agentRunning = true;
+                    } catch (Exception e) {
+                        agentRunning = false;
+                        stepRunning = false;
+                        logger.warn("Task probably died due to Agent failure, synchronizing it at server.", e);
                     }
-                    agentRunning = true;
-                } catch (Exception e) {
-                    agentRunning = false;
-                    stepRunning = false;
-                    logger.warn("Task probably died due to Agent failure, synchronizing it at server.", e);
-                }
-                if (!stepRunning && currentlyRunningStepContext.containsKey(taskStepRun)) {
-                    TaskContext executionContext = currentlyRunningStepContext.get(taskStepRun);
-                    taskRunExecutionContext.get(taskRun).setTaskStatus(false);
-                    executionContext.getTaskStepRunDTO().setStatus(false);
-                    if (!agentRunning) {
-                        logger.warn("TaskStep failed due to unreachable Agent, agent probably died." + taskStepRun);
-                        executionContext.getTaskStepRunDTO().setLogs("TaskStep failed due to unreachable Agent, agent probably died.");
-                    } else {
-                        logger.warn("TaskStep failed due to unknown reason, Agent is not running this step." + taskStepRun);
-                        executionContext.getTaskStepRunDTO().setLogs("TaskStep failed due to unknown reason, Agent is not running this step.");
+                    if (!stepRunning && currentlyRunningStepContext.containsKey(taskStepRun)) {
+                        TaskContext executionContext = currentlyRunningStepContext.get(taskStepRun);
+                        taskRunExecutionContext.get(taskRun).setTaskStatus(false);
+                        executionContext.getTaskStepRunDTO().setStatus(false);
+                        if (!agentRunning) {
+                            logger.warn("TaskStep failed due to unreachable Agent, agent probably died." + taskStepRun);
+                            executionContext.getTaskStepRunDTO().setLogs("TaskStep failed due to unreachable Agent, agent probably died.");
+                        } else {
+                            logger.warn("TaskStep failed due to unknown reason, Agent is not running this step." + taskStepRun);
+                            executionContext.getTaskStepRunDTO().setLogs("TaskStep failed due to unknown reason, Agent is not running this step.");
+                        }
+                        executionContext.getTaskStepRunDTO().setFinishTime(new Date());
+                        executionContext.getTaskStepRunDTO().setRunStatus(RunStatus.FAILURE);
+                        executionContext.getTaskStepRunDTO().setRunState(RunState.COMPLETED);
+                        consumeStepResult(executionContext);
                     }
-                    executionContext.getTaskStepRunDTO().setFinishTime(new Date());
-                    executionContext.getTaskStepRunDTO().setRunStatus(RunStatus.FAILURE);
-                    executionContext.getTaskStepRunDTO().setRunState(RunState.COMPLETED);
-                    consumeStepResult(executionContext);
-                }
-            });
+                });
         });
         logger.info("Finished Running System Failures of Agents");
     }
@@ -376,7 +376,7 @@ public class TaskService {
         return taskStepRunDTO;
     }
 
-    private void publishTaskRunStatus(TaskRun taskRun){
+    private void publishTaskRunStatus(TaskRun taskRun) {
         if (taskRunStatusSubscribers.get(taskRun) != null && taskRunStatusSubscribers.get(taskRun).size() > 0) {
             try {
                 taskRun = dbService.getTaskRun(taskRun.getId());
@@ -398,7 +398,7 @@ public class TaskService {
 
     private String getTaskRunAsJson(TaskRun taskRun) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-//                mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+//      mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         mapper.writeValue(baos, taskRun);
         return baos.toString();
@@ -407,20 +407,22 @@ public class TaskService {
     @Scheduled(cron = "0/30 * * * * ?")
     public void processStalePublishRequest() {
         taskRunStatusSubscribers.forEach((taskRun, deferredResults) -> {
-            synchronized (taskRunStatusSubscribers.get(taskRun)) {
-                taskRun = dbService.getTaskRun(taskRun.getId());
-                if(taskRun.getRunState()==RunState.COMPLETED){
-                    try {
-                        String jsonResult = getTaskRunAsJson(taskRun);
-                        List<DeferredResult> processed = new ArrayList<>();
-                        taskRunStatusSubscribers.get(taskRun).forEach(stringDeferredResult -> {
-                            stringDeferredResult.setResult(jsonResult);
-                            processed.add(stringDeferredResult);
-                        });
-                        taskRunStatusSubscribers.get(taskRun).removeAll(processed);
-                        logger.info("Published TaskRun stale updates to all registered clients");
-                    } catch (IOException e) {
-                        logger.error("Exception publishing TaskRun status updates", e);
+            if (!deferredResults.isEmpty()) {
+                synchronized (taskRunStatusSubscribers.get(taskRun)) {
+                    taskRun = dbService.getTaskRun(taskRun.getId());
+                    if (taskRun.getRunState() == RunState.COMPLETED) {
+                        try {
+                            String jsonResult = getTaskRunAsJson(taskRun);
+                            List<DeferredResult> processed = new ArrayList<>();
+                            taskRunStatusSubscribers.get(taskRun).forEach(stringDeferredResult -> {
+                                stringDeferredResult.setResult(jsonResult);
+                                processed.add(stringDeferredResult);
+                            });
+                            taskRunStatusSubscribers.get(taskRun).removeAll(processed);
+                            logger.info("Published TaskRun stale updates to all registered clients");
+                        } catch (IOException e) {
+                            logger.error("Exception publishing TaskRun status updates", e);
+                        }
                     }
                 }
             }

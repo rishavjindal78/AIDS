@@ -35,17 +35,17 @@
                             $('#progressBarId').attr( 'aria-valuenow',''+progress+'');
                             $('#progressBarId').attr( 'style','width :'+progress+'%');
                             $('#progressBarId').text(progress+'%');
-                            var content = '<tr><th>Seq</th>';
-                            content += '<th width="30%">Title</th>';
+                            var content = '<tr><th>#</th>';
                             content += '<th>Machine</th>';
+                            content += '<th width="40%">Task Step Details</th>';
                             content += '<th>Start Time</th>';
                             content += '<th>Duration</th>';
                             content += '<th>Status</th>';
                             content += '<th width="15%">Operation</th></tr>';
                             $.each(data.taskStepRuns, function (index, taskStepRun) {
                                 var taskStepRunContent = '<td>'+taskStepRun.sequence+'</td>';
-                                taskStepRunContent += '<td>'+taskStepRun.taskStep.description+'</td>';
                                 taskStepRunContent += '<td>'+taskStepRun.agent.name+'</td>';
+                                taskStepRunContent += '<td>'+taskStepRun.taskStep.taskClass+' - '+taskStepRun.taskStep.description+'</td>';
                                 if(taskStepRun.startTime == undefined)
                                     taskStepRun.startTime='NA';
                                 taskStepRunContent += '<td>'+taskStepRun.startTime+'</td>';
@@ -125,13 +125,6 @@
     </div>
         <table class="table table-striped table-condensed" id="resultDisplayTable">
             <tbody id="taskRunTable">
-                <th>Seq</th>
-                <th>Title</th>
-                <th>Machine</th>
-                <th>Updated</th>
-                <th>Duration</th>
-                <th>Status</th>
-                <th>Operation</th>
             </tbody>
         </table>
     </@com.page>
