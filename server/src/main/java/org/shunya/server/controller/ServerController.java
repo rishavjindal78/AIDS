@@ -510,6 +510,8 @@ public class ServerController {
         task.getStepDataList().forEach(taskStep -> {
             if(taskStep.getId()!=taskStepId)
                 taskStep.setActive(false);
+            else
+                taskStep.setActive(true);
         });
         TaskRun taskRun = new TaskRun();
         taskRun.setTask(task);
@@ -519,6 +521,7 @@ public class ServerController {
         taskRun.setNotifyStatus(notifyStatus);
         taskRun.setRunBy(dbService.findUserByUsername(principal.getName()));
         taskRun.setTeam(task.getTeam());
+        dbService.save(taskRun);
         taskService.execute(taskRun, new HashMap<>());
         return taskRun;
     }

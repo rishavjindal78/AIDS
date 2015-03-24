@@ -36,7 +36,7 @@ public class ReadLargeFile {
         System.out.println("Processing File = " + fileName);
         String sCurrentLine;
         try (PrintWriter bw = new PrintWriter(new FileWriter(fileName + ".err"));
-             BufferedReader br = new BufferedReader(new FileReader(fileName), 1000000);) {
+             BufferedReader br = new BufferedReader(new FileReader(fileName), 1000000)) {
             long line = 0;
             boolean show = false;
             int activeLines = 0;
@@ -49,8 +49,11 @@ public class ReadLargeFile {
                 }
                 if (show) {
                     ++activeLines;
-                    if (activeLines > maxLines)
+                    if (activeLines > maxLines) {
                         show = false;
+                        System.out.println("\n\n\n\n+++++++++++End of Exception++++++++++\n\n\n\n ");
+                        bw.println("\n\n\n\n+++++++++++End of Exception++++++++++\n\n\n\n ");
+                    }
                     bw.println(sCurrentLine);
                     System.out.println(sCurrentLine);
                 }

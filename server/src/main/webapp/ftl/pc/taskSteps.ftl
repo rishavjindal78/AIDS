@@ -89,6 +89,16 @@
             }
         }
 
+        function executeStep(taskStepId) {
+            var userComment = prompt("Please enter comments for the step run .. ?", "Test Step Run");
+            if (userComment != null) {
+                $("#results").empty();
+                $.post("${rc.contextPath}/server/runSingleStep/${model.task.id}/"+taskStepId, { comment: userComment}, function (data) {
+                    $("#results").html('<div class="alert alert-success">Task Submitted Successfully - <a href="../taskRun/view/'+data.id+'" target="_blank">Logs</a></div>');
+                });
+            }
+        }
+
         function addAgent(taskStepId) {
             $.get('${rc.contextPath}/server/team/${model.task.team.id}/taskStep/addAgent/' + taskStepId, function (data) {
                 $('#span_task_agent').empty();
@@ -155,9 +165,11 @@
                         </form>
                     </#list>
                 </td>
-                <td width="12%"><a class="taskStepEdit" id="${taskStep.id?string}">edit</a>
+                <td width="12%">
+                    <a class="taskStepEdit" id="${taskStep.id?string}">edit</a>
                     <a href="../deleteStep/${taskStep.id}">delete</a>
                     <a href="#" onclick="addAgent('${taskStep.id}')">+agent</a>
+                    <a href="#" onclick="executeStep('${taskStep.id}')">execute</a>
                 </td>
             </tr>
         </#list>
@@ -178,7 +190,7 @@
                     <form>
                         <div class="form-group">
                             <label for="recipient-name" class="control-label">User Comments</label>
-                            <input type="text" class="form-control" id="userComments">
+                            <input type="text" class="form-control" id="userComments" placeholder="TaskRun Comments" value="test run">
                         </div>
                     </form>
                 </div>
