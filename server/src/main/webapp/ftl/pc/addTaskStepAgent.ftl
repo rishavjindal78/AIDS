@@ -2,23 +2,35 @@
 <#escape x as x?html>
 <script type="text/javascript">
     $(document).ready(function () {
-        $(".cancel").click(function (e) {
+        /*$(".cancel").click(function (e) {
             $('#span_task_agent').empty();
             e.preventDefault();
             e.stopPropagation();
 //            $(this).parent().parent().parent().remove();
         });
+
+        $('#addAgentSubmitButton').click(function(e){
+            e.preventDefault();
+            alert("submit form");
+
+            $.post('http://path/to/post',
+                    $('#addAgentForm').serialize(),
+                    function(data, status, xhr){
+                        // do something here with response;
+                    });
+
+        });*/
     });
 </script>
 
-<div class="alert alert-warning">
     <fieldset>
-        <legend class="text-muted">Add Agent to TaskStep - ${model.taskStep.description!?string}</legend>
-        <form class="form-horizontal" name="multiAgentVO" action="${rc.contextPath}/server/taskStep/addAgent/${model['taskStepId']?string}" method="post">
+        <form id="addAgentForm" class="form-horizontal" name="multiAgentVO"
+              action="${rc.contextPath}/server/taskStep/addAgent/${model['taskStepId']?string}" method="post">
+            <div class="modal-body">
             <div class="form-group">
-                <div class="col-lg-2">
-                    <#--<@spring.formMultiSelect path="agents" options="" attributes=""/>-->
-                    <#--<#assign selectedLangs = spring.status.value?default(" ")>-->
+                <div class="col-lg-10">
+                <#--<@spring.formMultiSelect path="agents" options="" attributes=""/>-->
+                <#--<#assign selectedLangs = spring.status.value?default(" ")>-->
                     <select id="agent" class="form-control" name="agents" multiple="true">
                         <#list model["agents"] as agent>
                             <#if model.selectedAgents?seq_contains(agent) >
@@ -31,12 +43,13 @@
                         </#list>
                     </select>
                 </div>
-                <div class="control-group">
-                    <button type="submit" class="btn btn-primary" id="save">Save</button>
-                    <button type="reset" class="btn cancel btn-default" id="cancel">Cancel</button>
-                </div>
+            </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="addAgentSubmitButton">Save</button>
             </div>
         </form>
     </fieldset>
-</div>
+
 </#escape>

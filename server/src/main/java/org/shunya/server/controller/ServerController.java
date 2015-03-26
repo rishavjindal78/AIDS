@@ -271,6 +271,9 @@ public class ServerController {
                 taskStep.setId(0L);
                 taskStep.setTask(existingTask);
                 taskStep.setTaskStepRuns(new ArrayList<>());
+//                Set<Agent> taskStepAgentList = new HashSet<>(taskStep.getAgentList());
+                taskStep.setAgentList(new HashSet<>());
+//                taskStepAgentList.forEach(agent -> taskStep.getAgentList().add(dbService.getAgent(agent.getId())));
             });
             dbService.save(existingTask);
         }

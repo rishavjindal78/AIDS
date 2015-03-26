@@ -100,14 +100,15 @@
             }
         }
 
-        function addAgent(taskStepId) {
+        function addAgent(taskStepId, description) {
+            $("#myModalLabelForAgent").text("Add Agent To - " + description);
             $.get('${rc.contextPath}/server/team/${model.task.team.id}/taskStep/addAgent/' + taskStepId, function (data) {
-                $('#span_task_agent').empty();
-                $('#span_task_agent').html(data);
-                $('#span_task_agent').focus();
-                $('html, body').animate({
-                    scrollTop: $("#span_task_agent").offset().top
-                }, 2000);
+                $('#span_task_agent1').empty();
+                $('#span_task_agent1').html(data);
+                $('#span_task_agent1').focus();
+            });
+            $('#myModalForAgent').modal({
+                keyboard: true
             });
         }
 
@@ -185,7 +186,7 @@
                         </button>
                         <ul class="dropdown-menu" role="menu">
                             <li><a class="taskStepEdit" id="${taskStep.id?string}">Edit</a></li>
-                            <li><a href="#" onclick="addAgent('${taskStep.id}')">Add Agent</a></li>
+                            <li><a href="#" onclick="addAgent('${taskStep.id}', '${taskStep.description!?string}')">Add Agent</a></li>
                             <li><a href="#" onclick="executeStep('${taskStep.id}')">Execute Step</a></li>
                             <li class="divider"></li>
                             <li><a href="#" onclick="removeStep('${taskStep.id}','${taskStep.description!?string}')">Delete Step</a></li>
@@ -199,7 +200,7 @@
     <span id="span_edit"></span>
     <br/>
     <span id="results"></span>
-    <!-- Modal -->
+    <!-- Modal for task run -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -219,6 +220,20 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" onclick="runTask('../run/${model.task.id?string}')">Run Task</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for add agent -->
+    <div class="modal fade" id="myModalForAgent" tabindex="-1" role="dialog" aria-labelledby="myModalLabelForAgent" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h5 class="modal-title text-muted" id="myModalLabelForAgent">Add Agent</h5>
+                </div>
+                <span id="span_task_agent1">
+                </span>
             </div>
         </div>
     </div>
