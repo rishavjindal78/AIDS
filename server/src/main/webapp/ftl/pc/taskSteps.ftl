@@ -3,7 +3,7 @@
 <#escape x as x?html>
     <@com.page activeTab="tasks">
     <style>
-        .taskStepEdit {
+        /*.taskStepEdit {
             color: red;
             margin: 5px;
             cursor: pointer;
@@ -11,7 +11,7 @@
 
         .taskStepEdit:hover {
             background: yellow;
-        }
+        }*/
     </style>
 
     <script type="text/javascript">
@@ -26,7 +26,7 @@
 //                    var target = "#" + this.getAttribute('data-target');
                     $('html, body').animate({
                         scrollTop: $("#span_edit").offset().top
-                    }, 2000);
+                    }, 1000);
                 });
             });
 
@@ -134,7 +134,7 @@
     <br/>
     <ol class="breadcrumb">
         <li><a href="../team/${Session['SELECTED_TEAM'].id}/tasks">Tasks</a></li>
-        <li class="active"><a href="../task/${model.task.id}">${model.task.name}</a></li>
+        <li class="active"><a href="../task/${model.task.id}">${model.task.name} <span class="glyphicon glyphicon-refresh"/></a></li>
         <#--<li class="active">Data</li>-->
     </ol>
 
@@ -179,10 +179,18 @@
                     </#list>
                 </td>
                 <td width="12%">
-                    <a class="taskStepEdit" id="${taskStep.id?string}">edit</a>
-                    <a href="#" onclick="removeStep('${taskStep.id}','${taskStep.description!?string}')">delete</a>
-                    <a href="#" onclick="addAgent('${taskStep.id}')">+agent</a>
-                    <a href="#" onclick="executeStep('${taskStep.id}')">execute</a>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-info dropdown-toggle"
+                                data-toggle="dropdown"> Action <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a class="taskStepEdit" id="${taskStep.id?string}">Edit</a></li>
+                            <li><a href="#" onclick="addAgent('${taskStep.id}')">Add Agent</a></li>
+                            <li><a href="#" onclick="executeStep('${taskStep.id}')">Execute Step</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#" onclick="removeStep('${taskStep.id}','${taskStep.description!?string}')">Delete Step</a></li>
+                        </ul>
+                    </div>
                 </td>
             </tr>
         </#list>
