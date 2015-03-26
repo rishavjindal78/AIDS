@@ -68,12 +68,13 @@
             });
         });
 
-        function cloneTask(url) {
-            var userOption = confirm("Are you sure to Clone this Task ?");
-            if (userOption) {
+        function cloneTask(taskId, taskName) {
+            var userComment = prompt("Please provide the new task name - ", taskName + " - clone");
+//            var userOption = confirm("Are you sure to Clone this Task ?");
+            if (userComment != null) {
                 $("#results").empty();
-                $.post(url, {}, function (data) {
-                    $("#results").html('<div class="alert alert-success">Job Submitted Successfully - ' + url + '</div>');
+                $.post("${rc.contextPath}/server/cloneTask/"+taskId, {taskName: userComment}, function (data) {
+                    $("#results").html('<div class="alert alert-success">Task Cloned Successfully - ' + userComment + '</div>');
                 });
             }
         }
@@ -111,10 +112,22 @@
         }
 
         function removeAgent(agentId, taskId) {
-            $.post('${rc.contextPath}/server/taskStep/removeAgent/' + taskId + '/' + agentId, function (data) {
-                $('#span_task_agent').empty();
-                $('#span_task_agent').html(data);
-            });
+            var userOption = confirm("Are you sure to remove this Agent - "+agentId+" ?");
+            if (userOption) {
+                $.post('${rc.contextPath}/server/taskStep/removeAgent/' + taskId + '/' + agentId, function (data) {
+                    $('#span_task_agent').empty();
+                    $('#span_task_agent').html(data);
+                });
+            }
+        }
+
+        function removeStep(taskStepId, description) {
+            var userOption = confirm("Are you sure to remove this Step - " + description + " ?");
+            if (userOption) {
+                $.post('${rc.contextPath}/server/deleteStep/' + taskStepId, function (data) {
+                    location.reload();
+                });
+            }
         }
     </script>
 
@@ -134,7 +147,7 @@
     <a href="../taskHistory/${model.task.id}" class="btn btn-mini  btn btn-primary">history</a>
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal">Execute</button>
-    <a href="#" onclick="cloneTask('../cloneTask/${model.task.id?string}')" class="btn btn-mini  btn btn-danger">Clone</a>
+    <a href="#" onclick="cloneTask('${model.task.id?string}', '${model.task.name!?string}')" class="btn btn-mini  btn btn-danger">Clone</a>
     <table class="table table-striped">
         <tr>
             <th>#</th>
@@ -159,7 +172,7 @@
                     <#list taskStep.agentList as agent>
                         <form class="form-horizontal" name="agent"
                               action="${rc.contextPath}/server/taskStep/removeAgent/${taskStep.id?string}/${agent.id}"
-                              method="post">
+                              method="post" onsubmit="return confirm('Do you really want to remove this agent - ${agent.name} ?');">
                             <span class="label label-primary">${agent.name}</span>
                             <button type="submit" class="btn btn-link" id="save">X</button>
                         </form>
@@ -167,7 +180,7 @@
                 </td>
                 <td width="12%">
                     <a class="taskStepEdit" id="${taskStep.id?string}">edit</a>
-                    <a href="../deleteStep/${taskStep.id}">delete</a>
+                    <a href="#" onclick="removeStep('${taskStep.id}','${taskStep.description!?string}')">delete</a>
                     <a href="#" onclick="addAgent('${taskStep.id}')">+agent</a>
                     <a href="#" onclick="executeStep('${taskStep.id}')">execute</a>
                 </td>

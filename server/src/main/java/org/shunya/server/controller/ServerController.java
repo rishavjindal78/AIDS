@@ -1,6 +1,5 @@
 package org.shunya.server.controller;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.shunya.server.Role;
@@ -260,11 +259,14 @@ public class ServerController {
     @RequestMapping(value = "cloneTask/{taskId}", method = RequestMethod.POST)
     public String cloneTask(@PathVariable("taskId") long taskId,
                             final HttpServletRequest request,
+                            @RequestParam(value = "taskName", defaultValue = "clonedTask", required = false) String taskName,
                             Principal principal) {
         logger.info("Message received for cloning an existing task");
         if (taskId != 0) {
             final Task existingTask = dbService.getTask(taskId);
             existingTask.setId(0L);
+            existingTask.setAuthor(dbService.findUserByUsername(principal.getName()));
+            existingTask.setName(taskName);
             existingTask.getStepDataList().forEach(taskStep -> {
                 taskStep.setId(0L);
                 taskStep.setTask(existingTask);
@@ -413,8 +415,8 @@ public class ServerController {
         return "redirect:../task/" + taskStepDTO.getTaskId();
     }
 
-    @RequestMapping(value = "/deleteStep/{id}", method = RequestMethod.GET)
-    public String deleteStep(@PathVariable("id") long id, @ModelAttribute("stepData") TaskStep stepData) throws IOException {
+    @RequestMapping(value = "/deleteStep/{taskStepId}", method = RequestMethod.POST)
+    public String deleteStep(@PathVariable("taskStepId") long id, @ModelAttribute("stepData") TaskStep stepData) throws IOException {
         if (id != 0) {
             dbService.deleteTaskStep(id);
         }
@@ -423,8 +425,8 @@ public class ServerController {
         return "redirect:" + referer;
     }
 
-    @RequestMapping(value = "delete/{id}", method = RequestMethod.POST)
-    public String deleteTask(@PathVariable("id") long id, @ModelAttribute("model") ModelMap model) throws IOException {
+    @RequestMapping(value = "delete/{taskId}", method = RequestMethod.POST)
+    public String deleteTask(@PathVariable("taskId") long id, @ModelAttribute("model") ModelMap model) throws IOException {
         if (id != 0) {
             dbService.deleteTask(id);
         }
