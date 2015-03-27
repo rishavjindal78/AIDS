@@ -5,7 +5,9 @@ import org.shunya.server.services.*;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.task.TaskExecutor;
 
 import static org.mockito.Mockito.mock;
@@ -20,6 +22,13 @@ public class TestContext {
         messageSource.setBasename(MESSAGE_SOURCE_BASE_NAME);
         messageSource.setUseCodeAsDefaultMessage(true);
         return messageSource;
+    }
+
+    @Bean
+    public PropertySourcesPlaceholderConfigurer propertySource(){
+        PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
+        configurer.setLocations(new ClassPathResource("aids-test.properties"));
+        return configurer;
     }
 
     @Bean

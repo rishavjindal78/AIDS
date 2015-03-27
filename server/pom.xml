@@ -240,29 +240,25 @@
             <groupId>org.telegram</groupId>
             <artifactId>mtproto</artifactId>
             <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${pom.basedir}/lib/mtproto-1.0-SNAPSHOT.jar</systemPath>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.telegram</groupId>
-            <artifactId>api</artifactId>
+            <artifactId>telegram-api</artifactId>
             <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${pom.basedir}/lib/telegram-api-1.0-SNAPSHOT.jar</systemPath>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>tl-api</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${pom.basedir}/lib/tl-api-v11.jar</systemPath>
+            <version>11</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>tl-core</artifactId>
             <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${pom.basedir}/lib/tl-core-1.0-SNAPSHOT.jar</systemPath>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet.jsp.jstl</groupId>
@@ -309,6 +305,18 @@
     </dependencies>
 
     <repositories>
+        <repository>
+            <id>repo</id>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <url>file://${project.basedir}/repo</url>
+        </repository>
+
         <repository>
             <id>spring-milestones</id>
             <name>Spring Milestones</name>
