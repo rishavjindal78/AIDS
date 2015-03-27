@@ -94,6 +94,7 @@
                     classname = 'btn btn-danger btn-sm';
                     break;
                 case 'NOT_RUN':
+                case 'CANCELLED':
                     classname = 'btn btn-warning btn-sm';
                     break;
                 case 'RUNNING':

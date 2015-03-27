@@ -328,7 +328,7 @@
     </repositories>
 
     <build>
-        <finalName>server</finalName>
+        <finalName>aids</finalName>
         <plugins>
             <!-- Force compiler version -->
             <plugin>
