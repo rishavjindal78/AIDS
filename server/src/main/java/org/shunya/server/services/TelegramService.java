@@ -7,7 +7,6 @@ import org.shunya.server.engine.PeerState;
 import org.shunya.server.engine.TelegramTaskRunner;
 import org.shunya.server.model.Task;
 import org.shunya.server.model.TaskRun;
-import org.shunya.server.model.Team;
 import org.shunya.server.model.User;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -236,7 +235,7 @@ public class TelegramService implements StatusObserver {
             if (user != null) {
                 taskRun.setRunBy(user);
             }
-            taskService.execute(taskRun, new HashMap<>());
+            taskService.execute(taskRun, new HashMap<>(), true);
             sendMessage(peerState, "Command Sent to Server - " + task.getName());
         } catch (Exception e) {
             e.printStackTrace();

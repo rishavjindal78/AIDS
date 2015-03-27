@@ -63,6 +63,8 @@ public class TaskRun implements Serializable {
     @Enumerated(EnumType.STRING)
     private RunStatus runStatus = RunStatus.NOT_RUN;
     private boolean clearAlert = false;
+    @OneToOne
+    private Agent agent;
 
     //	@Lob
 //	@Basic(fetch=FetchType.EAGER)
@@ -274,5 +276,13 @@ public class TaskRun implements Serializable {
 
     public void setCacheId(int cacheId) {
         this.cacheId = cacheId;
+    }
+
+    public Agent getAgent() {
+        return agent;
+    }
+
+    public void setAgent(Agent agent) {
+        this.agent = agent;
     }
 }

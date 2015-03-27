@@ -472,12 +472,21 @@ public class ServerController {
     @RequestMapping(value = "run/{taskId}", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ResponseBody
-    public TaskRun runTask(@PathVariable("taskId") Long taskId,
+    public List<TaskRun> runTask(@PathVariable("taskId") Long taskId,
                            @RequestParam(defaultValue = "test", required = false) String comment,
                            @RequestParam(defaultValue = "false", required = false) boolean notifyStatus,
                            Principal principal) {
         logger.info("Run request for {}, user comments ", taskId, comment);
         Task task = dbService.getTask(taskId);
+        List<TaskRun> taskRuns = new ArrayList<>();
+        if (!task.getAgentList().isEmpty())
+            task.getAgentList().forEach(agent -> taskRuns.add(createTaskRun(comment, notifyStatus, principal, task, agent, false)));
+        else
+            taskRuns.add(createTaskRun(comment, notifyStatus, principal, task, null, true));
+        return taskRuns;
+    }
+
+    private TaskRun createTaskRun(String comment, boolean notifyStatus, Principal principal, Task task, Agent agent, boolean singleton) {
         TaskRun taskRun = new TaskRun();
         taskRun.setTask(task);
         taskRun.setName(task.getName());
@@ -486,8 +495,9 @@ public class ServerController {
         taskRun.setNotifyStatus(notifyStatus);
         taskRun.setRunBy(dbService.findUserByUsername(principal.getName()));
         taskRun.setTeam(task.getTeam());
+        taskRun.setAgent(agent);
         dbService.save(taskRun);
-        taskService.execute(taskRun, new HashMap<>());
+        taskService.execute(taskRun, new HashMap<>(), singleton);
         return taskRun;
     }
 
@@ -515,7 +525,7 @@ public class ServerController {
         taskRun.setRunBy(dbService.findUserByUsername(principal.getName()));
         taskRun.setTeam(task.getTeam());
         dbService.save(taskRun);
-        taskService.execute(taskRun, new HashMap<>());
+        taskService.execute(taskRun, new HashMap<>(), true);
         return taskRun;
     }
 

@@ -10,6 +10,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -48,7 +50,7 @@ public class Task implements Serializable {
     @BatchSize(size = 10)
     @OrderBy(clause = "sequence asc, id desc")
     @OneToMany(mappedBy = "task", fetch = FetchType.EAGER)
-    private List<TaskStep> stepDataList;
+    private List<TaskStep> stepDataList = new ArrayList<>();
     /*@OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
     @XmlTransient
     @LazyCollection(LazyCollectionOption.TRUE)
@@ -58,7 +60,7 @@ public class Task implements Serializable {
     @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
     @JsonIgnore
-    private Set<Agent> agentList;
+    private Set<Agent> agentList = new HashSet<>();
     private boolean notifyStatus = false;
     @OneToOne
     @Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE, CascadeType.REMOVE})

@@ -35,7 +35,7 @@ public class ScheduledTaskRunner implements Runnable {
             taskRun.setNotifyStatus(false);
 //        taskRun.setRunBy(dbService.findUserByUsername(principal.getName()));
             taskRun.setTeam(task.getTeam());
-            taskService.execute(taskRun, new HashMap<>());
+            taskService.execute(taskRun, new HashMap<>(), true);
         }
     }
 }

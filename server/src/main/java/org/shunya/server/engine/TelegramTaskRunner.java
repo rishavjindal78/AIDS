@@ -107,7 +107,7 @@ public class TelegramTaskRunner {
                     logger.warn("exception getting user info", e);
                 }
                 logger.info("Properties to override for - " + valuesToOverride);
-                taskService.execute(taskRun, valuesToOverride);
+                taskService.execute(taskRun, valuesToOverride, true);
                 return "Command Sent to Server - " + task.getName();
             } else {
                 return "Chat Channel is not part of Team - " + task.getTeam().getName();

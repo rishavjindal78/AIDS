@@ -9,7 +9,11 @@
             if (userComment != null) {
                 $("#results").empty();
                 $.post(url, { comment: userComment}, function (data) {
-                    $("#results").html('<div class="alert alert-success">Job Submitted Successfully - ' + url + '</div>');
+                    var result = "";
+                    $.each(data, function(index, value){
+                        result += '<div class="alert alert-success">Task Submitted Successfully - <a href="../../taskRun/view/'+value.id+'" target="_blank">' + value.id + ' - Logs</a></div>';
+                    });
+                    $("#results").html(result);
                 });
             }
         }

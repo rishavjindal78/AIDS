@@ -31,6 +31,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static java.util.Arrays.asList;
+
 @Service
 public class TaskService {
     private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
@@ -127,8 +129,8 @@ public class TaskService {
     // if task has start but not completed - then execute rest of steps
     // if all task steps has completed, then do the cleanup
     @Async
-    public void execute(TaskRun taskRun, Map<String, String> propertiesOverride) {
-        if (currentlyRunningTasks.contains(taskRun.getTask().getId())) {
+    public void execute(TaskRun taskRun, Map<String, String> propertiesOverride, boolean singleton) {
+        if (singleton && currentlyRunningTasks.contains(taskRun.getTask().getId())) {
             statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Another instance of this Task is already running, cancelling execution - " + taskRun.getName());
             logger.info("Another instance of this Task is already running, cancelling execution - ", taskRun.getName());
             return;
@@ -342,7 +344,7 @@ public class TaskService {
     private List<TaskStepRun> prepareAndSaveTaskStepRuns(List<TaskStep> taskStepDataList, TaskRun taskRun) {
         List<TaskStepRun> taskStepRuns = new Vector<>();
         taskStepDataList.parallelStream().forEach(stepData -> {
-            Set<Agent> agentList = stepData.getAgentList().size() > 0 ? stepData.getAgentList() : taskRunExecutionContext.get(taskRun).getTask().getAgentList();
+            Set<Agent> agentList = stepData.getAgentList().size() > 0 ? stepData.getAgentList() : new HashSet<>(asList(taskRun.getAgent()));
             agentList.stream().forEach(agent -> {
                 TaskStepRun taskStepRun = new TaskStepRun();
                 taskStepRun.setSequence(stepData.getSequence());

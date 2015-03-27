@@ -7,6 +7,8 @@ import org.hibernate.annotations.LazyCollectionOption;
 import javax.persistence.*;
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -51,11 +53,11 @@ public class TaskStep implements Serializable {
     @OneToMany(cascade = {CascadeType.REMOVE}, mappedBy = "taskStep", fetch = FetchType.LAZY)
     @JsonIgnore
     @LazyCollection(LazyCollectionOption.TRUE)
-    private List<TaskStepRun> taskStepRuns;
+    private List<TaskStepRun> taskStepRuns = new ArrayList<>();
     @ManyToMany
     @JsonIgnore
     @LazyCollection(LazyCollectionOption.FALSE)
-    private Set<Agent> agentList;
+    private Set<Agent> agentList = new HashSet<>();
 
     public long getId() {
         return id;
