@@ -60,7 +60,8 @@ public class TaskService {
 
     private int maxSystemFailureTimeInHours = 3;
 
-    @Scheduled(cron = "20 0/10 * * * ?")
+//    @Scheduled(cron = "20 0/10 * * * ?")
+    @Scheduled(cron = "${task.timeout.cron}")
     public void checkTimeoutSystemFailures() {
         logger.info("Running Timeout System Failures");
         taskRunExecutionContext.forEach((taskRun, taskExecutionContext) -> {
@@ -73,7 +74,8 @@ public class TaskService {
         });
     }
 
-    @Scheduled(cron = "0/30 * * * * ?")
+//    @Scheduled(cron = "0 */3 * * * ?")
+    @Scheduled(cron = "${agent.failure.cron}")
     public void checkAgentDiedSystemFailures() {
         logger.info("Running System Failures of Agents");
         taskRunExecutionContext.forEach((taskRun, taskExecutionContext) -> {

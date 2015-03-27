@@ -106,6 +106,17 @@
             return classname;
         };
 
+        function cancelTaskRun(taskRun) {
+            var option = confirm("Are you sure to Cancel the Step Run ?");
+            if (option == true) {
+                var url = '${rc.contextPath}/server/cancel/' + taskRun;
+                $("#results").empty();
+                $.post(url, {}, function (data) {
+                    $("#results").html('<div class="alert alert-success">Request submitted to cancel the TaskRun - ' + taskRun+ '</div>');
+                });
+            }
+        }
+
         $(document).ready(function () {
             $('#taskRunStatusId').attr('class', ''+getRowClassForButton('${model.taskRun.runStatus!?string}')+'');
             lpStart();
@@ -115,9 +126,11 @@
     <ol class="breadcrumb">
         <li><a href="${rc.getContextPath()}/server/team/${Session['SELECTED_TEAM'].id}/tasks">Tasks</a></li>
         <li><a href="${rc.getContextPath()}/server/team/${model.taskRun.team.id}/taskHistory">Task History</a></li>
-        <li class="active"><a href="${rc.getContextPath()}/server/taskRun/view/${model.taskRun.id}">${model.taskRun.name!}</a></li>
+        <li class="active"><a href="${rc.getContextPath()}/server/taskRun/view/${model.taskRun.id}">${model.taskRun.name!} <span class="glyphicon glyphicon-refresh"/></a></li>
     </ol>
-    <h4 class="text-muted">${model.taskRun.id}. ${model.taskRun.name!} <button id="taskRunStatusId" type="button" class="btn btn-info btn-sm">${model.taskRun.runStatus!?string}</button></h4>
+    <h4 class="text-muted">${model.taskRun.id}. ${model.taskRun.name!} <button id="taskRunStatusId" type="button" class="btn btn-info btn-sm">${model.taskRun.runStatus!?string}</button>
+        <a class="btn btn-sm btn-warning" href="#" onclick="cancelTaskRun('${model.taskRun.id}')">Cancel</a>
+    </h4>
     <div class="progress">
         <div id="progressBarId" class="progress-bar" role="progressbar" aria-valuenow="${model.taskRun.progress!}" aria-valuemin="0" aria-valuemax="100" style="width: ${model.taskRun.progress!}%;">
         ${model.taskRun.progress!}%

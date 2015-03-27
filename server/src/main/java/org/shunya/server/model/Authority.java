@@ -6,7 +6,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "AUTHORITY", uniqueConstraints = {@UniqueConstraint(columnNames = {"role"})})
 @TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "AUTHORITY", allocationSize = 1)
-public class Authority implements Serializable{
+public class Authority implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")
     private long id;
@@ -36,9 +36,8 @@ public class Authority implements Serializable{
 
         Authority authority = (Authority) o;
 
-        if (id != authority.id) return false;
+        return id == authority.id;
 
-        return true;
     }
 
     @Override
