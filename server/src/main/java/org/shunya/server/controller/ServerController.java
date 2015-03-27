@@ -501,7 +501,7 @@ public class ServerController {
         logger.info("Run request for {}, user comments ", taskId, comment);
         Task task = dbService.getTask(taskId);
         task.getStepDataList().forEach(taskStep -> {
-            if(taskStep.getId()!=taskStepId)
+            if (taskStep.getId() != taskStepId)
                 taskStep.setActive(false);
             else
                 taskStep.setActive(true);
@@ -605,7 +605,7 @@ public class ServerController {
                                                  HttpServletResponse response) throws IOException, InterruptedException {
         DeferredResult<String> deferredResult = new DeferredResult<>();
         TaskRun taskRun = dbService.getTaskRun(taskRunId);
-        if(taskRun!=null && (taskRun.getRunState() == RunState.COMPLETED || cacheId ==0)){
+        if (taskRun != null && (taskRun.getRunState() == RunState.COMPLETED || cacheId == 0)) {
             ObjectMapper mapper = new ObjectMapper();
 //            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();

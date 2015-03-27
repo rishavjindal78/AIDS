@@ -39,6 +39,7 @@ public class DBServiceImpl implements DBService {
                 .add(Restrictions.eq("team.id", teamId))
                 .addOrder(Order.desc("id"))
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+                .setCacheable(true)
                 .list();
     }
 
@@ -48,6 +49,7 @@ public class DBServiceImpl implements DBService {
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
                 .addOrder(Order.desc("id"))
                 .add(Restrictions.eq("team.id", teamId))
+                .setCacheable(true)
                 .list();
     }
 
@@ -59,7 +61,7 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public List<User> listUser() {
-        return DBDao.getSessionFactory().getCurrentSession().createCriteria(User.class)
+        return DBDao.getSessionFactory().getCurrentSession().createCriteria(User.class).setCacheable(true)
                 .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).addOrder(Order.desc("id")).list();
     }
 

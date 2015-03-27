@@ -129,7 +129,8 @@
         <li><a href="${rc.getContextPath()}/server/team/${model.taskRun.team.id}/taskHistory">Task History</a></li>
         <li class="active"><a href="${rc.getContextPath()}/server/taskRun/view/${model.taskRun.id}">${model.taskRun.name!} <span class="glyphicon glyphicon-refresh"/></a></li>
     </ol>
-    <h4 class="text-muted">${model.taskRun.id}. ${model.taskRun.name!} <button id="taskRunStatusId" type="button" class="btn btn-info btn-sm">${model.taskRun.runStatus!?string}</button>
+    <h4 class="text-muted"><a href="${rc.getContextPath()}/server/task/${model.taskRun.task.id}">${model.taskRun.id}. ${model.taskRun.name!}</a>
+        <button id="taskRunStatusId" type="button" class="btn btn-info btn-sm">${model.taskRun.runStatus!?string}</button>
         <a class="btn btn-sm btn-warning" href="#" onclick="cancelTaskRun('${model.taskRun.id}')">Cancel</a>
     </h4>
     <div class="progress">

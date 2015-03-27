@@ -18,10 +18,10 @@ public class ScheduledProcessor implements Processor {
     @Qualifier("asyncWorker")
     private Worker worker;
 
-    @Scheduled(fixedDelay = 300000)
+    @Scheduled(fixedDelay = 500 *1000)
     public void process() {
         System.out.println("processing next 10 at " + new Date());
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             worker.work(counter.incrementAndGet());
         }
     }

@@ -106,9 +106,9 @@
                 $('#span_task_agent1').empty();
                 $('#span_task_agent1').html(data);
                 $('#span_task_agent1').focus();
-            });
-            $('#myModalForAgent').modal({
-                keyboard: true
+                $('#myModalForAgent').modal({
+                    keyboard: true
+                });
             });
         }
 

@@ -24,8 +24,8 @@
     </bean>
 
     <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
-    <task:executor id="myExecutor" pool-size="5-10" queue-capacity="100"/>
-    <task:scheduler id="myScheduler" pool-size="5"/>
+    <task:executor id="myExecutor" pool-size="4-6" queue-capacity="100"/>
+    <task:scheduler id="myScheduler" pool-size="4"/>
 
     <context:component-scan base-package="org.shunya.server"/>
     <context:annotation-config />
@@ -57,6 +57,10 @@
                 <prop key="hibernate.max_fetch_depth">3</prop>
                 <prop key="hibernate.jdbc.batch_size">50</prop>
                 <prop key="hibernate.connection.autocommit">false</prop>
+                <prop key="hibernate.cache.use_query_cache">true</prop>
+                <prop key="hibernate.cache.use_second_level_cache">true</prop>
+                <prop key="hibernate.cache.use_structured_entries">true</prop>
+                <prop key="hibernate.cache.region.factory_class">org.hibernate.cache.EhCacheRegionFactory</prop>
                 <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto:update}</prop>
                 <prop key="javax.persistence.lock.timeout">1000</prop>
                 <!--<prop key="hibernate.search.default.directory_provider">filesystem</prop>-->
