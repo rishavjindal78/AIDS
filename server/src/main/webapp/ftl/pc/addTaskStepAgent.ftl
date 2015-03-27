@@ -28,10 +28,11 @@
               action="${rc.contextPath}/server/taskStep/addAgent/${model['taskStepId']?string}" method="post">
             <div class="modal-body">
             <div class="form-group">
-                <div class="col-lg-10">
+                <div class="col-lg-6">
                 <#--<@spring.formMultiSelect path="agents" options="" attributes=""/>-->
                 <#--<#assign selectedLangs = spring.status.value?default(" ")>-->
-                    <select id="agent" class="form-control" name="agents" multiple="true">
+                    <label for="agentList">Select Agent(s)</label>
+                    <select id="agentList" class="form-control" name="agents" multiple="true">
                         <#list model["agents"] as agent>
                             <#if model.selectedAgents?seq_contains(agent) >
                                 <#assign isSelected = true>

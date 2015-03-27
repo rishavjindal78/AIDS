@@ -9,15 +9,15 @@ import org.shunya.server.dao.DBDao;
 import org.shunya.server.model.*;
 import org.shunya.shared.RunState;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -306,6 +306,25 @@ public class DBServiceImpl implements DBService {
         criteria.setMaxResults(50);
         criteria.setCacheable(true);
         return criteria.list();
+    }
+
+    @Override
+    public void cloneTask(long taskId, String taskName, String username) {
+        final Task existingTask = getTask(taskId);
+        DBDao.getSessionFactory().getCurrentSession().evict(existingTask);
+        existingTask.setId(0);
+        existingTask.setAuthor(findUserByUsername(username));
+        existingTask.setName(taskName);
+        existingTask.getStepDataList().forEach(taskStep -> {
+            DBDao.getSessionFactory().getCurrentSession().evict(taskStep);
+            taskStep.setId(0);
+            taskStep.setTask(existingTask);
+            taskStep.setTaskStepRuns(new ArrayList<>());
+            Set<Agent> taskStepAgentList = new HashSet<>(taskStep.getAgentList());
+            taskStep.setAgentList(new HashSet<>());
+            taskStepAgentList.forEach(agent -> taskStep.getAgentList().add(getAgent(agent.getId())));
+        });
+        save(existingTask);
     }
 
     @Override

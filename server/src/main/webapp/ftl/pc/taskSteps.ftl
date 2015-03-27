@@ -101,7 +101,7 @@
         }
 
         function addAgent(taskStepId, description) {
-            $("#myModalLabelForAgent").text("Add Agent To - " + description);
+            $("#myModalLabelForAgent").text("Step - " + description);
             $.get('${rc.contextPath}/server/team/${model.task.team.id}/taskStep/addAgent/' + taskStepId, function (data) {
                 $('#span_task_agent1').empty();
                 $('#span_task_agent1').html(data);
@@ -145,10 +145,10 @@
 
     <a href="../addTaskStep/${model.task.id?string}" class="btn btn-mini btn-primary">Add Step</a>
     <#--<a href="#" onclick="execute('../run/${model.task.id?string}')" class="btn btn-mini  btn btn-danger">Run</a>-->
-    <a href="../taskHistory/${model.task.id}" class="btn btn-mini  btn btn-primary">history</a>
+    <a href="../taskHistory/${model.task.id}" class="btn btn-mini  btn btn-primary">Run History</a>
     <!-- Button trigger modal -->
+    <a href="#" onclick="cloneTask('${model.task.id?string}', '${model.task.name!?string}')" class="btn btn-mini  btn btn-warning">Clone Task</a>
     <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal">Execute</button>
-    <a href="#" onclick="cloneTask('${model.task.id?string}', '${model.task.name!?string}')" class="btn btn-mini  btn btn-danger">Clone</a>
     <table class="table table-striped">
         <tr>
             <th>#</th>
@@ -181,15 +181,15 @@
                 </td>
                 <td width="12%">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-info dropdown-toggle"
-                                data-toggle="dropdown"> Action <span class="caret"></span>
+                        <button type="button" class="btn btn-sm btn-primary dropdown-toggle"
+                                data-toggle="dropdown" aria-expanded="false"> Action <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
                             <li><a class="taskStepEdit" id="${taskStep.id?string}">Edit</a></li>
                             <li><a href="#" onclick="addAgent('${taskStep.id}', '${taskStep.description!?string}')">Add Agent</a></li>
                             <li><a href="#" onclick="executeStep('${taskStep.id}')">Execute Step</a></li>
                             <li class="divider"></li>
-                            <li><a href="#" onclick="removeStep('${taskStep.id}','${taskStep.description!?string}')">Delete Step</a></li>
+                            <li><a class="" href="#" onclick="removeStep('${taskStep.id}','${taskStep.description!?string}')">Delete Step</a></li>
                         </ul>
                     </div>
                 </td>
@@ -226,7 +226,7 @@
 
     <!-- Modal for add agent -->
     <div class="modal fade" id="myModalForAgent" tabindex="-1" role="dialog" aria-labelledby="myModalLabelForAgent" aria-hidden="true">
-        <div class="modal-dialog modal-sm">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>

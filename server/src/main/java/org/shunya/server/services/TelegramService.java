@@ -9,6 +9,7 @@ import org.shunya.server.model.Task;
 import org.shunya.server.model.TaskRun;
 import org.shunya.server.model.Team;
 import org.shunya.server.model.User;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,8 @@ Todo:
 */
 @Service
 public class TelegramService implements StatusObserver {
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(TelegramService.class);
+
     private HashMap<Integer, PeerState> userStates = new HashMap<>();
     private HashMap<Integer, PeerState> chatStates = new HashMap<>();
     private MemoryApiState apiState;
@@ -66,16 +69,23 @@ public class TelegramService implements StatusObserver {
     @Value("${telegram.api.key.location}")
     private String telegramApiLocation;
 
+    @Value("${telegram.enabled}")
+    private boolean telegramEnabled;
+
     @PostConstruct
     public void start() throws IOException {
-        System.out.println("telegramApiLocation = " + telegramApiLocation);
-        telegramStatusObserver.register(this);
-        disableLogging();
+        if (telegramEnabled) {
+            logger.info("Telegram Service is enabled on this server, telegramApiLocation = {} ",telegramApiLocation);
+            telegramStatusObserver.register(this);
+            disableLogging();
 //        apiState = JavaSerializer.load(FileSystems.getDefault().getPath(System.getProperty("user.home")).toString());
-        apiState = JavaSerializer.load(telegramApiLocation);
-        createApi();
-//        login();
+            apiState = JavaSerializer.load(telegramApiLocation);
+            createApi();
+            login();
 //        workLoop();
+        } else {
+            logger.info("Telegram Service is disabled on this server");
+        }
     }
 
     private synchronized String generateRandomString(int size) {

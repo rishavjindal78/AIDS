@@ -50,4 +50,6 @@ public interface DBService {
     List<TaskRun> findTaskHistoryForTaskId(long taskId);
     List<TaskRun> findTaskHistoryByTeam(long teamId);
     List<TaskRun> findTaskHistoryByAge(int ageInDays);
+
+    void cloneTask(long taskId, String taskName, String username);
 }

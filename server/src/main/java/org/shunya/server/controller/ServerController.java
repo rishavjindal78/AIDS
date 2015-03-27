@@ -263,19 +263,7 @@ public class ServerController {
                             Principal principal) {
         logger.info("Message received for cloning an existing task");
         if (taskId != 0) {
-            final Task existingTask = dbService.getTask(taskId);
-            existingTask.setId(0L);
-            existingTask.setAuthor(dbService.findUserByUsername(principal.getName()));
-            existingTask.setName(taskName);
-            existingTask.getStepDataList().forEach(taskStep -> {
-                taskStep.setId(0L);
-                taskStep.setTask(existingTask);
-                taskStep.setTaskStepRuns(new ArrayList<>());
-//                Set<Agent> taskStepAgentList = new HashSet<>(taskStep.getAgentList());
-                taskStep.setAgentList(new HashSet<>());
-//                taskStepAgentList.forEach(agent -> taskStep.getAgentList().add(dbService.getAgent(agent.getId())));
-            });
-            dbService.save(existingTask);
+            dbService.cloneTask(taskId, taskName, principal.getName());
         }
         final String referer = request.getHeader("referer");
         System.out.println("referer = " + referer);
