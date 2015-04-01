@@ -6,6 +6,7 @@ import org.shunya.server.model.Task;
 import org.shunya.server.model.User;
 import org.shunya.server.UserBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -22,6 +23,9 @@ public class DbBootstrapService {
 
     @Autowired
     private MyJobScheduler myJobScheduler;
+
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
 
     @PostConstruct
     public void init() {
@@ -52,26 +56,41 @@ public class DbBootstrapService {
 
     public void loadDefaultUsers() {
         Authority role_admin = dbService.findAuthorityByName(Role.ROLE_ADMIN);
-        User adminUser = UserBuilder.anUser().withName("Admin").withUsername("admin").withPassword("admin").withAuthorities(asList(role_admin)).withEnabled(true).build();
+        User adminUser = UserBuilder.anUser().withName("Admin").withUsername("admin").withPassword(passwordEncoder.encode("admin")).withAuthorities(asList(role_admin)).withEnabled(true).build();
         try {
             dbService.save(adminUser);
         } catch (Exception e) {
+            User admin = dbService.findUserByUsername("admin");
+            if(admin.getPassword().equalsIgnoreCase("admin")){
+                admin.setPassword(passwordEncoder.encode("admin"));
+                dbService.save(admin);
+            }
             e.printStackTrace();
         }
 
         Authority role_user = dbService.findAuthorityByName(Role.ROLE_USER);
-        User user = UserBuilder.anUser().withName("User").withUsername("user").withPassword("user").withAuthorities(asList(role_user)).withEnabled(true).build();
+        User user = UserBuilder.anUser().withName("User").withUsername("user").withPassword(passwordEncoder.encode("user")).withAuthorities(asList(role_user)).withEnabled(true).build();
         try {
             dbService.save(user);
         } catch (Exception e) {
+            User userByUsername = dbService.findUserByUsername("user");
+            if(userByUsername.getPassword().equalsIgnoreCase("user")){
+                userByUsername.setPassword(passwordEncoder.encode("user"));
+                dbService.save(userByUsername);
+            }
             e.printStackTrace();
         }
 
         Authority role_agent = dbService.findAuthorityByName(Role.ROLE_AGENT);
-        User agentUser = UserBuilder.anUser().withName("Agent").withUsername("agent").withPassword("agent").withAuthorities(asList(role_agent)).withEnabled(true).build();
+        User agentUser = UserBuilder.anUser().withName("Agent").withUsername("agent").withPassword(passwordEncoder.encode("agent")).withAuthorities(asList(role_agent)).withEnabled(true).build();
         try {
             dbService.save(agentUser);
         } catch (Exception e) {
+            User userByUsername = dbService.findUserByUsername("agent");
+            if(userByUsername.getPassword().equalsIgnoreCase("agent")){
+                userByUsername.setPassword(passwordEncoder.encode("agent"));
+                dbService.save(userByUsername);
+            }
             e.printStackTrace();
         }
     }
