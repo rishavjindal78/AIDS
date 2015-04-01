@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Logs Tail</title>
-    <script src="${rc.getContextPath()}/resources/js/jquery-2.1.0.min.js"></script>
+    <script src="${rc.getContextPath()}/js/jquery-2.1.0.min.js"></script>
 </head>
 <body>
 <script type="text/javascript">

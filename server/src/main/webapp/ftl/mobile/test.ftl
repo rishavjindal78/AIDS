@@ -1,12 +1,13 @@
+<#import "/spring.ftl" as spring />
 <!DOCTYPE html>
 <html lang="en">
 <#escape x as x?html>
 <head>
-    <link href="${rc.getContextPath()}/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="${rc.getContextPath()}/resources/bootstrap/css/navbar-fixed-top.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="<@spring.url '/bootstrap/css/bootstrap.min.css'/>"/>
+    <link rel="stylesheet" type="text/css" href="<@spring.url '/bootstrap/css/navbar-fixed-top.css'/>"/>
 
-    <script src="${rc.getContextPath()}/resources/js/jquery-2.1.0.min.js"></script>
-    <script src="${rc.getContextPath()}/resources/bootstrap/js/bootstrap.min.js"></script>
+    <script src="${rc.getContextPath()}/js/jquery-2.1.0.min.js"></script>
+    <script src="<@spring.url '/bootstrap/js/bootstrap.min.js'/>"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>

@@ -50,7 +50,12 @@
                                     taskStepRun.startTime='NA';
                                 taskStepRunContent += '<td>'+taskStepRun.startTime+'</td>';
                                 taskStepRunContent += '<td>'+taskStepRun.duration+'</td>';
-                                taskStepRunContent += '<td><button type="button" class="' + getRowClassForButton(taskStepRun.runStatus) + '">' + taskStepRun.runStatus + '</button></td>';
+                                if (taskStepRun.runStatus == 'RUNNING') {
+                                    taskStepRunContent += '<td><img src="${rc.contextPath}/images/ajax-loader.gif"/></td>';
+                                }
+                                else {
+                                    taskStepRunContent += '<td><button type="button" class="' + getRowClassForButton(taskStepRun.runStatus) + '">' + taskStepRun.runStatus + '</button></td>';
+                                }
                                 taskStepRunContent += '<td><a class="btn btn-sm btn-info" href="../../getMemoryLogs/view/'+taskStepRun.id+'" target="_blank">tail logs</a> ';
                                 if(taskStepRun.runState == 'COMPLETED'){
                                     taskStepRunContent += '<a class="btn btn-sm btn-warning" href="#" onclick="deleteTaskStepRun('+taskStepRun.id+')">delete</a>';
