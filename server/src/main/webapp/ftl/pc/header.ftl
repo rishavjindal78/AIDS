@@ -21,7 +21,15 @@
         });
     });
 
+    function formSubmit() {
+        document.getElementById("logoutForm").submit();
+    }
+
 </script>
+
+<form action="${rc.contextPath}/j_spring_security_logout" method="post" id="logoutForm">
+    <#--<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />-->
+</form>
 
 <div class="container">
     <form class="form-inline" id="team_form" action="${rc.contextPath}/server/team" method="post">
@@ -66,7 +74,7 @@
                 </li>
 
             </@security.authorize>
-                <li id="logout"><a id="logoutLink" href="${rc.contextPath}/j_spring_security_logout"><span
+                <li id="logout"><a id="logoutLink" href="javascript:formSubmit()"><span
                         class="glyphicon glyphicon-log-out"></span></a></li>
             </ul>
             <h3 class="text-muted"><@spring.message code="application.title"/></h3>

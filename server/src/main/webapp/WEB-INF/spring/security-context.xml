@@ -46,6 +46,7 @@
             </security:user-service>
         </security:authentication-provider>-->
         <security:authentication-provider>
+            <security:password-encoder ref="encoder" />
             <security:jdbc-user-service data-source-ref="dataSource"
                                users-by-username-query=
                                        "select username, password, enabled from USER where username=?"
@@ -53,4 +54,8 @@
                                        "select username, role from USER a, AUTHORITY B, USER_AUTHORITY c where a.id=c.user_id and b.id=c.authorities_id and username=?" />
         </security:authentication-provider>
     </security:authentication-manager>
+
+    <bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
+        <constructor-arg name="strength" value="10" />
+    </bean>
 </beans>

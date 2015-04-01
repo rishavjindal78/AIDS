@@ -12,7 +12,7 @@
 <div class="container">
     <fieldset>
         <form name="login_form" class="form-horizontal" role="form" action="${rc.contextPath}/user/register" method="POST">
-            <h3 class="text-muted">Registration Form</h3>
+            <h3 class="text-muted">User Registration Form</h3>
             <br/>
             <div class="form-group">
                 <label for="inputEmail3" class="col-sm-2 control-label">Username</label>

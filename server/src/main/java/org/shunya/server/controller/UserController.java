@@ -5,6 +5,7 @@ import org.shunya.server.model.Authority;
 import org.shunya.server.model.User;
 import org.shunya.server.services.DBService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -27,6 +28,8 @@ public class UserController {
     @Autowired
     private HttpServletRequest request;
 
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     @RequestMapping(value = "register", method = RequestMethod.GET)
     public String registerUser() {
         return "registerUser";
@@ -36,6 +39,7 @@ public class UserController {
     public String registerUser(@ModelAttribute("user") User user) throws Exception {
         user.setAuthorities(asList(dbService.findAuthorityByName(Role.ROLE_USER)));
         user.setEnabled(true);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         dbService.save(user);
         return "redirect:/server";
     }
