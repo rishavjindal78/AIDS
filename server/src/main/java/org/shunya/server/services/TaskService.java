@@ -25,6 +25,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Inet4Address;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -119,6 +120,22 @@ public class TaskService {
                 });
         });
         logger.info("Finished Running System Failures of Agents");
+    }
+
+    public TaskRun createTaskRun(String comment, boolean notifyStatus, Principal principal, Task task, Agent agent, boolean singleton) {
+        TaskRun taskRun = new TaskRun();
+        taskRun.setTask(task);
+        taskRun.setName(task.getName());
+        taskRun.setStartTime(new Date());
+        taskRun.setComments(comment);
+        taskRun.setNotifyStatus(notifyStatus);
+        if(principal!=null)
+        taskRun.setRunBy(dbService.findUserByUsername(principal.getName()));
+        taskRun.setTeam(task.getTeam());
+        taskRun.setAgent(agent);
+        dbService.save(taskRun);
+        execute(taskRun, new HashMap<>(), singleton);
+        return taskRun;
     }
 
     public boolean isTaskRunning(TaskRun taskRun) {
@@ -345,7 +362,7 @@ public class TaskService {
         List<TaskStepRun> taskStepRuns = new Vector<>();
         taskStepDataList.parallelStream().forEach(stepData -> {
             Set<Agent> agentList = stepData.getAgentList().size() > 0 ? stepData.getAgentList() : new HashSet<>(asList(taskRun.getAgent()));
-            agentList.stream().forEach(agent -> {
+            agentList.stream().filter(agent1 -> agent1 != null).forEach(agent -> {
                 TaskStepRun taskStepRun = new TaskStepRun();
                 taskStepRun.setSequence(stepData.getSequence());
                 taskStepRun.setTaskStep(stepData);

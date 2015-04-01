@@ -24,14 +24,16 @@
         <processorPath useClasspath="true" />
         <module name="agent" />
         <module name="server" />
+        <module name="serverwatcher" />
         <module name="shared" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="agent" target="1.8" />
+      <module name="aids" target="1.5" />
       <module name="server" target="1.8" />
+      <module name="serverwatcher" target="1.8" />
       <module name="shared" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
-

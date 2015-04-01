@@ -5,6 +5,7 @@ import org.shunya.server.model.TaskRun;
 import org.shunya.server.services.DBService;
 import org.shunya.server.services.TaskService;
 
+import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Logger;
@@ -26,16 +27,10 @@ public class ScheduledTaskRunner implements Runnable {
     public void run() {
         logger.info("Executing scheduled Task - " + taskId);
         Task task = dbService.getTask(taskId);
-        if (task != null) {
-            TaskRun taskRun = new TaskRun();
-            taskRun.setTask(task);
-            taskRun.setName(task.getName());
-            taskRun.setStartTime(new Date());
-            taskRun.setComments("Scheduled execution");
-            taskRun.setNotifyStatus(false);
-//        taskRun.setRunBy(dbService.findUserByUsername(principal.getName()));
-            taskRun.setTeam(task.getTeam());
-            taskService.execute(taskRun, new HashMap<>(), true);
+        if (!task.getAgentList().isEmpty())
+            task.getAgentList().forEach(agent -> taskService.createTaskRun("User Scheduled Execution", true, null, task, agent, false));
+        else {
+            taskService.createTaskRun("User Scheduled Execution", true, null, task, null, true);
         }
     }
 }

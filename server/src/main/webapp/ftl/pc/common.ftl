@@ -9,12 +9,16 @@
     <link rel="Shortcut Icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link href="${rc.getContextPath()}/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="${rc.getContextPath()}/resources/bootstrap/css/navbar-fixed-top.css" rel="stylesheet">
+    <link href="${rc.getContextPath()}/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="${rc.getContextPath()}/bootstrap/css/navbar-fixed-top.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="<@spring.url '/bootstrap/css/bootstrap.min.css'/>"/>
+    <link rel="stylesheet" type="text/css" href="<@spring.url '/bootstrap/css/navbar-fixed-top.css'/>"/>
+
 <#--<link href="${rc.getContextPath()}/resources/bootstrap/css/sticky-footer-navbar.css" rel="stylesheet">-->
 
-    <script src="${rc.getContextPath()}/resources/js/jquery-2.1.0.min.js"></script>
-    <script src="${rc.getContextPath()}/resources/bootstrap/js/bootstrap.min.js"></script>
+    <script src="${rc.getContextPath()}/js/jquery-2.1.0.min.js"></script>
+    <#--<script src="${rc.getContextPath()}/bootstrap/js/bootstrap.min.js"></script>-->
+    <script src="<@spring.url '/bootstrap/js/bootstrap.min.js'/>"></script>
 
     <meta name="description" content="AIDS">
     <meta name="author" content="aids">

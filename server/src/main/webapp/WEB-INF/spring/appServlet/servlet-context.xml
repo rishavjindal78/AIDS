@@ -30,10 +30,10 @@
     <context:component-scan base-package="org.shunya.server"/>
     <context:annotation-config />
 
-    <mvc:resources mapping="/resources/**" location="/resources/" />
-    <mvc:resources mapping="/css/**" location="/resources/bootstrap" />
-    <mvc:resources mapping="/js/**" location="/resources/js/" />
-    <!--<mvc:resources mapping="/images/**" location="/images/" />-->
+    <!--<mvc:resources mapping="/resources/**" location="/resources/" />-->
+    <mvc:resources mapping="/bootstrap/**" location="/resources/bootstrap/" />
+    <mvc:resources mapping="/js/**" location="/resources/js/" cache-period="315569"/>
+    <mvc:resources mapping="/images/**" location="/resources/images/" />
 
     <bean id="messageSource"
           class="org.springframework.context.support.ResourceBundleMessageSource">
@@ -61,7 +61,7 @@
                 <prop key="hibernate.cache.use_second_level_cache">true</prop>
                 <prop key="hibernate.cache.use_structured_entries">true</prop>
                 <prop key="hibernate.cache.region.factory_class">org.hibernate.cache.EhCacheRegionFactory</prop>
-                <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto:update}</prop>
+                <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto:create}</prop>
                 <prop key="javax.persistence.lock.timeout">1000</prop>
                 <!--<prop key="hibernate.search.default.directory_provider">filesystem</prop>-->
                 <!--<prop key="hibernate.search.default.indexBase">${lucene.indexBase}</prop>-->

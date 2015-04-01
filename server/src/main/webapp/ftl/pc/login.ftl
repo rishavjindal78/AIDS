@@ -3,10 +3,10 @@
 <html>
 <head>
     <title>AIDS Login</title>
-    <link href="${rc.contextPath}/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="${rc.contextPath}/resources/bootstrap/css/navbar-fixed-top.css" rel="stylesheet">
-    <script src="${rc.contextPath}/resources/js/jquery-2.1.0.min.js"></script>
-    <script src="${rc.contextPath}/resources/bootstrap/js/bootstrap.min.js"></script>
+    <link href="${rc.contextPath}/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="${rc.contextPath}/bootstrap/css/navbar-fixed-top.css" rel="stylesheet" type="text/css">
+    <#--<script src="${rc.contextPath}/js/jquery-2.1.0.min.js" type="text/jsx"></script>-->
+    <#--<script src="${rc.contextPath}/bootstrap/js/bootstrap.min.js" type="text/jsx"></script>-->
 </head>
 <body onload="document.login_form.j_username.focus();">
 <div class="container">

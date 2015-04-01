@@ -12,10 +12,38 @@
         .taskStepEdit:hover {
             background: yellow;
         }*/
+
+        #ajaxBusy {
+            display: none;
+            margin: 0px 0px 0px -50px; /* left margin is half width of the div, to centre it */
+            padding: 30px 10px 10px 10px;
+            position: absolute;
+            left: 30%;
+            top: 325px;
+            width: 500px;
+            height: 150px;
+            text-align: center;
+            background: #f7f7f7 url(${rc.contextPath}/images/ajax-loader.gif) no-repeat center center;
+            border: 1px solid #8597d1;
+            z-index: 999;
+        }
+
+
     </style>
 
     <script type="text/javascript">
+
+   /*     $(document).bind("ajaxSend", function(){
+            alert('start');
+            $(".busyindicatorClass").addClass('busyindicatorClass');
+        }).bind("ajaxComplete", function(){
+            alert('complete');
+            $(".busyindicatorClass").removeClass('busyindicatorClass');
+        });*/
+
         $(document).ready(function () {
+            $('body').append('<div id="ajaxBusy"><p id="ajaxBusyMsg">Please wait...</p></div>');
+
             $(".taskStepEdit").click(function () {
                 $('.taskstep_row').removeClass('alert-warning');
                 $('#taskstep_row_' + this.id).addClass('alert-warning');
@@ -134,6 +162,13 @@
                 });
             }
         }
+
+        // AJAX activity indicator bound to ajax start/stop document events
+        $(document).ajaxStart(function () {
+            $('#ajaxBusy').show();
+        }).ajaxStop(function () {
+            $('#ajaxBusy').hide();
+        });
     </script>
 
     <br/>

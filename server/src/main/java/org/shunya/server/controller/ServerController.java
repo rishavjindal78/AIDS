@@ -480,26 +480,13 @@ public class ServerController {
         Task task = dbService.getTask(taskId);
         List<TaskRun> taskRuns = new ArrayList<>();
         if (!task.getAgentList().isEmpty())
-            task.getAgentList().forEach(agent -> taskRuns.add(createTaskRun(comment, notifyStatus, principal, task, agent, false)));
+            task.getAgentList().forEach(agent -> taskRuns.add(taskService.createTaskRun(comment, notifyStatus, principal, task, agent, false)));
         else
-            taskRuns.add(createTaskRun(comment, notifyStatus, principal, task, null, true));
+            taskRuns.add(taskService.createTaskRun(comment, notifyStatus, principal, task, null, true));
         return taskRuns;
     }
 
-    private TaskRun createTaskRun(String comment, boolean notifyStatus, Principal principal, Task task, Agent agent, boolean singleton) {
-        TaskRun taskRun = new TaskRun();
-        taskRun.setTask(task);
-        taskRun.setName(task.getName());
-        taskRun.setStartTime(new Date());
-        taskRun.setComments(comment);
-        taskRun.setNotifyStatus(notifyStatus);
-        taskRun.setRunBy(dbService.findUserByUsername(principal.getName()));
-        taskRun.setTeam(task.getTeam());
-        taskRun.setAgent(agent);
-        dbService.save(taskRun);
-        taskService.execute(taskRun, new HashMap<>(), singleton);
-        return taskRun;
-    }
+
 
     @RequestMapping(value = "runSingleStep/{taskId}/{taskStepId}", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.ACCEPTED)
