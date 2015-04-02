@@ -473,9 +473,9 @@ public class ServerController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ResponseBody
     public List<TaskRun> runTask(@PathVariable("taskId") Long taskId,
-                           @RequestParam(defaultValue = "test", required = false) String comment,
-                           @RequestParam(defaultValue = "false", required = false) boolean notifyStatus,
-                           Principal principal) {
+                                 @RequestParam(defaultValue = "test", required = false) String comment,
+                                 @RequestParam(defaultValue = "false", required = false) boolean notifyStatus,
+                                 Principal principal) {
         logger.info("Run request for {}, user comments ", taskId, comment);
         Task task = dbService.getTask(taskId);
         List<TaskRun> taskRuns = new ArrayList<>();
@@ -485,7 +485,6 @@ public class ServerController {
             taskRuns.add(taskService.createTaskRun(comment, notifyStatus, principal, task, null, true));
         return taskRuns;
     }
-
 
 
     @RequestMapping(value = "runSingleStep/{taskId}/{taskStepId}", method = RequestMethod.POST)
@@ -625,5 +624,11 @@ public class ServerController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public List<String> schedulePrediction(@ModelAttribute("model") ModelMap model, @RequestParam("cronString") String cronString) {
         return myJobScheduler.predict(cronString, 10);
+    }
+
+    @RequestMapping(value = "shutdown", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void shutdownCompact(@ModelAttribute("model") ModelMap model) {
+        dbService.shutdownCompact();
     }
 }

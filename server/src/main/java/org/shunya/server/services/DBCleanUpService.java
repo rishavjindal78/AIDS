@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -44,13 +47,13 @@ public class DBCleanUpService {
         logger.info(() -> "Job TaskRun Cleanup completed for Max Age - " + maxTaskRunAge + ", deleted entries - " + taskHistoryByAge.size());
     }
 
-//    @Scheduled(cron = "0 0/2 * * * ?")
+    //    @Scheduled(cron = "0 0/2 * * * ?")
     @PostConstruct
-    public void synchronizeTasksWhenServerIsRestarted(){
+    public void synchronizeTasksWhenServerIsRestarted() {
         logger.info(() -> "Running TaskRun Synchronization after server startup");
         List<TaskRun> runningTasks = dbService.findRunningTasks();
         runningTasks.forEach(taskRun -> {
-            if(!taskService.isTaskRunning(taskRun)){
+            if (!taskService.isTaskRunning(taskRun)) {
                 taskRun.setRunState(RunState.COMPLETED);
                 taskRun.setRunStatus(RunStatus.FAILURE);
                 dbService.save(taskRun);
@@ -61,16 +64,24 @@ public class DBCleanUpService {
     @Scheduled(cron = "${backupTasks.cron.expression}")
     public void backUpTasks() {
         logger.info(() -> "running daily backup all the Tasks into aids home - " + aids_home);
-        List<Task> tasks = dbService.listTasks();
+        List<Task> tasks = dbService.listAllTasks();
         tasks.forEach(task -> {
             Task taskToSave = dbService.getTask(task.getId());
-            ObjectMapper mapper = new ObjectMapper();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            try (FileWriter fileWriter = new FileWriter(new File(aids_home, task.getId() + ".json"))) {
-                mapper.writeValue(baos, taskToSave);
-                IOUtils.write(baos.toByteArray(), fileWriter);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (taskToSave.getDateUpdated() != null) {
+                SimpleDateFormat sdf = new SimpleDateFormat("ddMMMyyyy_HHmm");
+                String fileName = task.getId() + "_" + sdf.format(taskToSave.getDateUpdated()) + ".json";
+                File targetFile = new File(aids_home, fileName);
+                if (!targetFile.exists()) {
+                    logger.info(() -> "Backing up Task - " + fileName);
+                    ObjectMapper mapper = new ObjectMapper();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    try (FileWriter fileWriter = new FileWriter(targetFile)) {
+                        mapper.writeValue(baos, taskToSave);
+                        IOUtils.write(baos.toByteArray(), fileWriter);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         });
     }

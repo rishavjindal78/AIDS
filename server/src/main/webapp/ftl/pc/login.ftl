@@ -43,6 +43,7 @@
             <div class="col-sm-offset-2 col-sm-10">
                 <button type="submit" name="submit" class="btn btn-primary">Sign in</button>
                 <a class="btn btn-link" type="button" href="${rc.contextPath}/user/register">Register Here</a>
+                <a class="btn btn-link" type="button" href="${rc.contextPath}/user/reset">Forgot Password</a>
             </div>
         </div>
     </form>

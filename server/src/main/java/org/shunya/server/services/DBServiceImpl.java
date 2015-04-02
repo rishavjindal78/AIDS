@@ -14,10 +14,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @Transactional
@@ -121,6 +118,7 @@ public class DBServiceImpl implements DBService {
 
     @Transactional(readOnly = false)
     public void save(Task task) {
+        task.setDateUpdated(new Date());
         DBDao.saveOrUpdate(task);
         myJobScheduler.unSchedule(task.getId());
         if (task.getSchedule() != null && !task.getSchedule().isEmpty())
@@ -130,6 +128,8 @@ public class DBServiceImpl implements DBService {
     @Transactional(readOnly = false)
     public void save(TaskStep taskStepData) {
         DBDao.saveOrUpdate(taskStepData);
+        Task task = (Task) DBDao.getSessionFactory().getCurrentSession().get(Task.class, taskStepData.getTask().getId());
+        task.setDateUpdated(new Date());
     }
 
     @Transactional(readOnly = false)
@@ -330,6 +330,11 @@ public class DBServiceImpl implements DBService {
     }
 
     @Override
+    public void shutdownCompact() {
+        DBDao.getSessionFactory().getCurrentSession().createQuery("SHUTDOWN COMPACT").executeUpdate();
+    }
+
+    @Override
     public List<TaskRun> findRunningTasks() {
         Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(TaskRun.class);
         criteria.setFetchSize(50);
@@ -346,6 +351,16 @@ public class DBServiceImpl implements DBService {
         criteria.add(Restrictions.isNotNull("schedule"));
         criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         criteria.setMaxResults(50);
+        criteria.setCacheable(true);
+        return criteria.list();
+    }
+
+    @Override
+    public List<Task> listAllTasks() {
+        Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(Task.class);
+        criteria.setFetchSize(500);
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+        criteria.setMaxResults(500);
         criteria.setCacheable(true);
         return criteria.list();
     }

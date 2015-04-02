@@ -44,6 +44,19 @@ public class UserController {
         return "redirect:/server";
     }
 
+    @RequestMapping(value = "reset", method = RequestMethod.GET)
+    public String resetPassword() {
+        return "resetPassword";
+    }
+
+    @RequestMapping(value = "reset", method = RequestMethod.POST)
+    public String resetPassword(@ModelAttribute("user") User user) throws Exception {
+        User userByUsername = dbService.findUserByUsername(user.getUsername());
+        userByUsername.setPassword(passwordEncoder.encode(user.getPassword()));
+        dbService.save(userByUsername);
+        return "redirect:/server";
+    }
+
     @RequestMapping(value = "update", method = RequestMethod.POST)
     public String updateUser(@ModelAttribute("user") User user) throws Exception {
         dbService.update(user);

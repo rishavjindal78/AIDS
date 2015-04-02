@@ -52,4 +52,7 @@ public interface DBService {
     List<TaskRun> findTaskHistoryByAge(int ageInDays);
 
     void cloneTask(long taskId, String taskName, String username);
+    void shutdownCompact();
+
+    List<Task> listAllTasks();
 }

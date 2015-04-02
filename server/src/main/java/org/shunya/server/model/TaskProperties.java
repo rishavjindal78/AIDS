@@ -1,5 +1,7 @@
 package org.shunya.server.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -8,6 +10,7 @@ import javax.persistence.*;
 public class TaskProperties implements CustomProperties{
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")
+    @JsonIgnore
     private long id;
     @Lob
     private String properties;

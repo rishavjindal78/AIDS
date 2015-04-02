@@ -10,10 +10,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static org.hibernate.annotations.CascadeType.DELETE;
 import static org.hibernate.annotations.CascadeType.REMOVE;
@@ -36,6 +34,8 @@ public class Task implements Serializable {
     private String description;
     private String tags;
     private String schedule;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateUpdated;
     @ManyToOne
     @JsonIgnore
     private Team team;
@@ -140,9 +140,7 @@ public class Task implements Serializable {
         if (!(obj instanceof Task))
             return false;
         Task other = (Task) obj;
-        if (id != other.id)
-            return false;
-        return true;
+        return id == other.id;
     }
 
     public User getAuthor() {
@@ -207,5 +205,13 @@ public class Task implements Serializable {
 
     public void setSchedule(String schedule) {
         this.schedule = schedule;
+    }
+
+    public Date getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(Date dateUpdated) {
+        this.dateUpdated = dateUpdated;
     }
 }

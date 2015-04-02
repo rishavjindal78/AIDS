@@ -13,6 +13,8 @@
         <!-- Restrict URLs based on role -->
         <security:intercept-url pattern="/user/login*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <security:intercept-url pattern="/user/register*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+        <security:intercept-url pattern="/user/reset*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+        <security:intercept-url pattern="/documents/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <security:intercept-url pattern="/server/submitTaskStepResults*" access="ROLE_AGENT" />
         <security:intercept-url pattern="/server/logoutSuccess*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 
