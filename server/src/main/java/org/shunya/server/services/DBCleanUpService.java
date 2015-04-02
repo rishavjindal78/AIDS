@@ -6,6 +6,8 @@ import org.shunya.server.model.Task;
 import org.shunya.server.model.TaskRun;
 import org.shunya.shared.RunState;
 import org.shunya.shared.RunStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,11 +19,10 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.logging.Logger;
 
 @Service
 public class DBCleanUpService {
-    private static final Logger logger = Logger.getLogger(DBCleanUpService.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(DBCleanUpService.class.getName());
 
     @Value("${maxTaskRunAge}")
     private int maxTaskRunAge;
@@ -41,16 +42,16 @@ public class DBCleanUpService {
     //    @Scheduled(cron = "0 0/2 * * * ?")
     @Scheduled(cron = "${cleanOldTaskHistory.cron.expression}")
     public void cleanOldTaskHistory() {
-        logger.info(() -> "Running TaskRun Cleanup Job for Max Age - " + maxTaskRunAge);
+        logger.info("Running TaskRun Cleanup Job for Max Age - " + maxTaskRunAge);
         List<TaskRun> taskHistoryByAge = dbService.findTaskHistoryByAge(maxTaskRunAge);
         taskHistoryByAge.forEach(taskRun -> dbService.deleteTaskRun(taskRun.getId()));
-        logger.info(() -> "Job TaskRun Cleanup completed for Max Age - " + maxTaskRunAge + ", deleted entries - " + taskHistoryByAge.size());
+        logger.info("Job TaskRun Cleanup completed for Max Age - " + maxTaskRunAge + ", deleted entries - " + taskHistoryByAge.size());
     }
 
     //    @Scheduled(cron = "0 0/2 * * * ?")
     @PostConstruct
     public void synchronizeTasksWhenServerIsRestarted() {
-        logger.info(() -> "Running TaskRun Synchronization after server startup");
+        logger.info("Running TaskRun Synchronization after server startup");
         List<TaskRun> runningTasks = dbService.findRunningTasks();
         runningTasks.forEach(taskRun -> {
             if (!taskService.isTaskRunning(taskRun)) {
@@ -63,7 +64,7 @@ public class DBCleanUpService {
 
     @Scheduled(cron = "${backupTasks.cron.expression}")
     public void backUpTasks() {
-        logger.info(() -> "running daily backup all the Tasks into aids home - " + aids_home);
+        logger.info("running daily backup all the Tasks into aids home - " + aids_home);
         List<Task> tasks = dbService.listAllTasks();
         tasks.forEach(task -> {
             Task taskToSave = dbService.getTask(task.getId());
@@ -72,11 +73,11 @@ public class DBCleanUpService {
                 String fileName = task.getId() + "_" + sdf.format(taskToSave.getDateUpdated()) + ".json";
                 File targetFile = new File(aids_home, fileName);
                 if (!targetFile.exists()) {
-                    logger.info(() -> "Backing up Task - " + fileName);
+                    logger.info("Backing up Task - " + fileName);
                     ObjectMapper mapper = new ObjectMapper();
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     try (FileWriter fileWriter = new FileWriter(targetFile)) {
-                        mapper.writeValue(baos, taskToSave);
+                        mapper.writerWithDefaultPrettyPrinter().writeValue(baos, taskToSave);
                         IOUtils.write(baos.toByteArray(), fileWriter);
                     } catch (IOException e) {
                         e.printStackTrace();
