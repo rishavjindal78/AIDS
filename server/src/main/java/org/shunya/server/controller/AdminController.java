@@ -68,11 +68,7 @@ public class AdminController {
 
     @RequestMapping(value = "team/{teamId}/addUser", method = POST)
     public String addAgentPOST(@ModelAttribute("user") User user, @PathVariable("teamId") long teamId) throws Exception {
-        Team team = dbService.findTeamById(teamId);
-        User existingUser = dbService.getUser(user.getId());
-        team.getUserList().add(existingUser);
-        dbService.save(team);
-        dbService.addTeamToUser(existingUser, team);
+        dbService.addTeamToUser(user, teamId);
         return "redirect:../index";
     }
 

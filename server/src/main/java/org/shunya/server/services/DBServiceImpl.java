@@ -9,6 +9,7 @@ import org.shunya.server.dao.DBDao;
 import org.shunya.server.model.*;
 import org.shunya.shared.RunState;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,8 @@ public class DBServiceImpl implements DBService {
 
     @Autowired
     private AidsJobScheduler aidsJobScheduler;
+
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
     public List<Agent> listAgents() {
@@ -153,13 +156,15 @@ public class DBServiceImpl implements DBService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public void update(User user) {
         User existingUser = getUser(user.getId());
         existingUser.setPhone(user.getPhone());
         existingUser.setTelegramId(user.getTelegramId());
         existingUser.setEmail(user.getEmail());
         existingUser.setName(user.getName());
-        existingUser.setPassword(user.getPassword());
+        if (!existingUser.getPassword().equals(user.getPassword()))
+            existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
         DBDao.saveOrUpdate(existingUser);
     }
 
@@ -191,12 +196,13 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public User findUserByUsername(String username) {
-        User user= (User) DBDao.getSessionFactory().getCurrentSession()
+        User user = (User) DBDao.getSessionFactory().getCurrentSession()
                 .createCriteria(User.class)
                 .add(Restrictions.eq("username", username))
                 .setCacheable(true)
                 .uniqueResult();
-        Hibernate.initialize(user.getTeamList());
+        if (user != null)
+            Hibernate.initialize(user.getTeamList());
         return user;
     }
 
@@ -242,7 +248,9 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public Team findTeamById(long id) {
-        return (Team) DBDao.getSessionFactory().getCurrentSession().get(Team.class, id);
+        Team team = (Team) DBDao.getSessionFactory().getCurrentSession().get(Team.class, id);
+        Hibernate.initialize(team.getUserList());
+        return team;
     }
 
     @Override
@@ -255,7 +263,9 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public User getUser(long id) {
-        return (User) DBDao.getSessionFactory().getCurrentSession().get(User.class, id);
+        User user = (User) DBDao.getSessionFactory().getCurrentSession().get(User.class, id);
+        Hibernate.initialize(user.getTeamList());
+        return user;
     }
 
     @Override
@@ -368,9 +378,11 @@ public class DBServiceImpl implements DBService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public void addTeamToUser(User user, Team team) {
+    @Transactional(readOnly = false)
+    public void addTeamToUser(User user, long teamId) {
+        Team team = findTeamById(teamId);
         User existingUser = getUser(user.getId());
+        team.getUserList().add(existingUser);
         existingUser.getTeamList().add(team);
     }
 }

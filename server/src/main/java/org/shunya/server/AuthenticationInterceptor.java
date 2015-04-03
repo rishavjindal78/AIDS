@@ -2,6 +2,8 @@ package org.shunya.server;
 
 import org.shunya.server.model.User;
 import org.shunya.server.services.DBService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -11,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class AuthenticationInterceptor implements HandlerInterceptor {
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationInterceptor.class);
+
     @Autowired
     private DBService dbService;
 
@@ -23,7 +27,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                 httpServletRequest.getSession().setAttribute("LOGGED_USER", byUsername);
                 if (byUsername.getTeamList().size() > 0)
                     httpServletRequest.getSession().setAttribute("SELECTED_TEAM", byUsername.getTeamList().get(0));
-                System.out.println("Name of the user = " + byUsername.getName());
+                logger.debug("Name of the user = " + byUsername.getName());
             }
         }
         return true;

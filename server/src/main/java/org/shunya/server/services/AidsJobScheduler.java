@@ -1,6 +1,5 @@
 package org.shunya.server.services;
 
-import java.util.Date;
 import java.util.List;
 
 public interface AidsJobScheduler {

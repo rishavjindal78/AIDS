@@ -114,7 +114,7 @@
     </script>
     <#--<div class="container">-->
     <div class="heading alert alert-info" style="padding: 6px;margin-bottom: 2px; margin-top: 2px;">
-        <strong>Add New Agent</strong>
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span><strong> Add New Agent</strong>
     </div>
     <div class="content alert alert-warning">
         <form role="form" name="agent" action="register" method="POST">
@@ -144,7 +144,7 @@
     </div>
     <h2 class="sub-header text-muted">Agents</h2>
 
-    <div class="table-responsive">
+    <div class="table">
         <table id="agentsTable" class="table table-striped">
             <tr>
                 <th width="5%">#</th>
@@ -171,8 +171,8 @@
                     </td>
                     <td>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-info dropdown-toggle"
-                                    data-toggle="dropdown">Action<span class="caret"></span>
+                            <button type="button" class="btn btn-sm btn-default dropdown-toggle"
+                                    data-toggle="dropdown" aria-expanded="false">Action<span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
                                 <li><a href="#" onclick="editAgent('${agent.id}')">edit</a></li>

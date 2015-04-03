@@ -179,9 +179,15 @@
         <#--<li class="active">Data</li>-->
     </ol>
 
-    <legend>Task Details</legend>
-    <p>Task Name : ${model.task.name}</p>
-    <p>Task Description : ${model.task.description}</p>
+    <ul class="nav nav-tabs">
+        <li role="presentation" class="active"><a href="../task/${model.task.id}">Task Details</a></li>
+        <li role="presentation"><a href="../taskHistory/${model.task.id}">Activity</a></li>
+        <li role="presentation"><a href="#">Configuration</a></li>
+    </ul>
+
+    <#--<legend>Task Details</legend>-->
+    <p><strong>Task Name </strong>: ${model.task.name}</p>
+    <p><strong>Task Description </strong>: ${model.task.description}</p>
 
     <a href="../addTaskStep/${model.task.id?string}" class="btn btn-mini btn-primary">Add Step</a>
     <#--<a href="#" onclick="execute('../run/${model.task.id?string}')" class="btn btn-mini  btn btn-danger">Run</a>-->

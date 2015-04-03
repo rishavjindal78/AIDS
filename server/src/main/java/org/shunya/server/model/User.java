@@ -8,6 +8,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.hibernate.annotations.CascadeType.DELETE;
@@ -16,7 +17,7 @@ import static org.hibernate.annotations.CascadeType.SAVE_UPDATE;
 @Entity
 @Table(name="USER", uniqueConstraints = {@UniqueConstraint(columnNames = {"username"})}, indexes = {
         @Index(name = "user_username_index", columnList = "username", unique = true),
-        @Index(name = "user_telegram_index", columnList = "telegramId", unique = true),
+        @Index(name = "user_telegram_index", columnList = "telegramId", unique = false),
 })
 @TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "USER", allocationSize = 1)
 @Cacheable(true)
@@ -33,11 +34,15 @@ public class User implements Serializable{
     private String email;
     private String phone;
     private int telegramId;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @LazyCollection(LazyCollectionOption.TRUE)
     @JsonManagedReference
     @JsonIgnore
-    private List<Team> teamList;
+    @JoinTable(name = "TEAM_USER", joinColumns = {
+            @JoinColumn(name = "USER_ID", nullable = false, updatable = false) },
+            inverseJoinColumns = { @JoinColumn(name = "TEAM_ID",
+                    nullable = false, updatable = false)})
+    private List<Team> teamList = new ArrayList<>();
     @ManyToMany
     @LazyCollection(LazyCollectionOption.TRUE)
     @JsonIgnore

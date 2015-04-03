@@ -37,6 +37,8 @@ public class Task implements Serializable {
     private String description;
     private String tags;
     private String schedule;
+    @Transient
+    private boolean scheduleEnabled = false;
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
     @ManyToOne
@@ -216,5 +218,13 @@ public class Task implements Serializable {
 
     public void setDateUpdated(Date dateUpdated) {
         this.dateUpdated = dateUpdated;
+    }
+
+    public boolean isScheduleEnabled() {
+        return scheduleEnabled;
+    }
+
+    public void setScheduleEnabled(boolean scheduleEnabled) {
+        this.scheduleEnabled = scheduleEnabled;
     }
 }

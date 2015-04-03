@@ -64,7 +64,7 @@
     </script>
     <#--<div class="container">-->
     <div class="heading alert alert-info" style="padding: 6px;margin-bottom: 2px;margin-top: 2px;">
-        <strong>Add New Task</strong>
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span><strong> Add New Task</strong>
     </div>
     <div class="content alert alert-warning">
         <form role="form" name="agent" action="${rc.contextPath}/server/team/${model.team.id}/addTask/0" method="POST">
@@ -115,16 +115,15 @@
     </div>
 
     <h2 class="sub-header text-muted">Tasks</h2>
-
-    <div class="table-responsive">
+    <div class="table">
         <table id="tasksTable" class="table table-striped">
             <tr>
                 <th width="5%">#</th>
                 <th width="25%">Name</th>
                 <th width="30%">Description</th>
-                <th width="20%">Schedule</th>
+                <th width="15%">Schedule</th>
                 <th width="15%">Agents</th>
-                <th width="5%">Operation</th>
+                <th width="10%">Operation</th>
             </tr>
             <#list model["tasks"] as td>
                 <tr id="table_row_${td.id}" class="task_row">
@@ -145,7 +144,7 @@
                     </td>
                     <td>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-sm btn-info dropdown-toggle"
+                            <button type="button" class="btn btn-sm btn-default dropdown-toggle"
                                     data-toggle="dropdown"> Action <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu">

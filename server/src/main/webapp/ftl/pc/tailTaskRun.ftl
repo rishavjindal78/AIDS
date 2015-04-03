@@ -2,8 +2,8 @@
 <#escape x as x?html>
     <@com.page activeTab="history">
     <style>
-        body {
-            font-size: 12px;
+        table {
+            /*font-size: 12px;*/
             /*background-color: #f5f5f5;*/
         }
     </style>

@@ -24,9 +24,9 @@ public class Team {
     private String phone;
     private String email;
     private int telegramId;
-    @ManyToMany
-    @LazyCollection(LazyCollectionOption.FALSE)
     @JsonBackReference
+    @LazyCollection(LazyCollectionOption.TRUE)
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "teamList")
     private List<User> userList;
     @OneToOne
     @Cascade({SAVE_UPDATE, DELETE})

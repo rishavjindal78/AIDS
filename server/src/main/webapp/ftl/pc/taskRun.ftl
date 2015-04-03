@@ -27,14 +27,19 @@
         <li><a href="../task/${model.task.id}">${model.task.name}</a></li>
         <li class="active"><a href="../taskHistory/${model.task.id}">History</a></li>
     </ol>
-        <legend>Task Run History</legend>
+
+    <ul class="nav nav-tabs">
+        <li role="presentation"><a href="../task/${model.task.id}">Task Details</a></li>
+        <li role="presentation" class="active"><a href="../taskHistory/${model.task.id}">Activity</a></li>
+        <li role="presentation"><a href="#">Configuration</a></li>
+    </ul>
         <table class="table table-striped table-condensed">
             <tr>
-                <th>Id</th>
+                <th>#</th>
                 <th>Task Title</th>
                 <th>Comments</th>
                 <th>Updated</th>
-                <th>Time Consumed</th>
+                <th>Duration (hh:mm:ss)</th>
                 <th>Status</th>
                 <th>Operation</th>
             </tr>
@@ -46,10 +51,10 @@
                 <#else >
                 <tr class="text-success"></#if>
                 <td>${taskHistory.id?string}</td>
-                <td><a href="../taskStepHistory/${taskHistory.id}">${taskHistory.name!?string}</a></td>
+                <td><a href="${rc.getContextPath()}/server/taskRun/view/${taskHistory.id}">${taskHistory.name!?string}</a></td>
                 <td>${taskHistory.comments!?string}</td>
                 <td><#if taskHistory.startTime??>${taskHistory.startTime?datetime?string("dd MMM, yyyy hh.mm aa")}</#if></td>
-                <td>${taskHistory.runDuration!?string}</td>
+                <td><#if taskHistory.finishTime??>${taskHistory.timeConsumed()}</#if></td>
                 <#if taskHistory.runStatus?string == 'FAILURE'>
                     <td>
                         <button type="button" class="btn btn-sm btn-danger">${taskHistory.runStatus!?string}</button>

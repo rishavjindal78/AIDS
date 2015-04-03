@@ -9,8 +9,8 @@
     <link rel="Shortcut Icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link href="${rc.getContextPath()}/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="${rc.getContextPath()}/bootstrap/css/navbar-fixed-top.css" rel="stylesheet">
+    <#--<link href="${rc.getContextPath()}/bootstrap/css/bootstrap.min.css" rel="stylesheet">-->
+    <#--<link href="${rc.getContextPath()}/bootstrap/css/navbar-fixed-top.css" rel="stylesheet">-->
     <link rel="stylesheet" type="text/css" href="<@spring.url '/bootstrap/css/bootstrap.min.css'/>"/>
     <link rel="stylesheet" type="text/css" href="<@spring.url '/bootstrap/css/navbar-fixed-top.css'/>"/>
 

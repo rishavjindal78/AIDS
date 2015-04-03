@@ -3,16 +3,12 @@
     <@com.page activeTab="history">
     <style type="text/css">
         body {
-            font-size: 12px;
+            /*font-size: 12px;*/
             /*background-color: #f5f5f5;*/
         }
     </style>
     <script type="text/javascript">
         /* $(prettyPrint);*/
-        $(document).ready(function () {
-
-        });
-
         function deleteTaskRun(taskRun) {
             var option = confirm("Are you sure to delete the Step Run ?");
             if (option == true) {
@@ -61,7 +57,7 @@
             <th>Task Title</th>
             <th>Comments</th>
             <th>Updated</th>
-            <th>Time Consumed</th>
+            <th>Duration (hh:mm:ss)</th>
             <th>Status</th>
             <th>RunBy</th>
             <th>Operation</th>

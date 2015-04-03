@@ -56,5 +56,5 @@ public interface DBService {
 
     List<Task> listAllTasks();
 
-    void addTeamToUser(User user, Team team);
+    void addTeamToUser(User user, long teamId);
 }

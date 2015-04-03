@@ -42,7 +42,7 @@
                         href='<@spring.url "/server/team/${Session['SELECTED_TEAM'].id}/tasks" />'>Tasks</a>
                 </li>
                 <li id="history"><a
-                        href='<@spring.url "/server/team/${Session['SELECTED_TEAM'].id}/taskHistory" />'>History</a>
+                        href='<@spring.url "/server/team/${Session['SELECTED_TEAM'].id}/taskHistory" />'>Activity</a>
                 </li>
                 <li id="documents"><a
                         href='<@spring.url "/documents/team/${Session['SELECTED_TEAM'].id}/search" />'>Docs</a>
