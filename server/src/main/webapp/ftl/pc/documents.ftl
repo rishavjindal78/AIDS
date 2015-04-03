@@ -104,13 +104,12 @@
                             ]<BR>
                             Total downloads : ${doc.downloads!''}
                             <BR>
-                            <a href="${rc.contextPath}/documents/download/${doc.id}">Download</a>
-
-                        <form action="${rc.contextPath}/documents/team/${Session['SELECTED_TEAM'].id}/delete/${doc.id}" method="POST"><input type="submit"
+                            <button class="btn btn-xs" href="${rc.contextPath}/documents/download/${doc.id}">Download</button>
+                            <form action="${rc.contextPath}/documents/team/${Session['SELECTED_TEAM'].id}/delete/${doc.id}" method="POST"><input type="submit"
                                                                                                          class="btn btn-xs"
                                                                                                          value="Delete"
-                                                                                                         onclick="return confirm('Please click on to confirm ?')"/>
-                        </form>
+                                                                                                         onclick="return confirm('Please click ok to confirm ?')"/>
+                            </form>
                         </p>
                     </div>
                     <span id="edit_document_${doc.id!''}"></span>

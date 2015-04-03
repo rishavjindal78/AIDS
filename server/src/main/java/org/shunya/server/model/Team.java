@@ -14,6 +14,7 @@ import static org.hibernate.annotations.CascadeType.SAVE_UPDATE;
 @Entity
 @Table(name="TEAM")
 @TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "TEAM", allocationSize = 2)
+@Cacheable(true)
 public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")
@@ -65,9 +66,8 @@ public class Team {
 
         Team agent = (Team) o;
 
-        if (id != agent.id) return false;
+        return id == agent.id;
 
-        return true;
     }
 
     @Override

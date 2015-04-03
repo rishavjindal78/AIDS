@@ -18,7 +18,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.logging.Logger;
 
 @Service
-public class DynamicJobScheduler implements MyJobScheduler {
+public class DynamicJobScheduler implements AidsJobScheduler {
 
     private static final Logger logger = Logger.getLogger(DynamicJobScheduler.class.getName());
 

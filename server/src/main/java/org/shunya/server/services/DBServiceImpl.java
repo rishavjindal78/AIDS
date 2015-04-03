@@ -23,7 +23,7 @@ public class DBServiceImpl implements DBService {
     private DBDao DBDao;
 
     @Autowired
-    private MyJobScheduler myJobScheduler;
+    private AidsJobScheduler aidsJobScheduler;
 
     @Override
     public List<Agent> listAgents() {
@@ -87,7 +87,7 @@ public class DBServiceImpl implements DBService {
     @Transactional(readOnly = false)
     public void deleteTask(long id) {
         Task task = getTask(id);
-        myJobScheduler.unSchedule(task.getId());
+        aidsJobScheduler.unSchedule(task.getId());
         List taskRunIds = DBDao.getSessionFactory().getCurrentSession().createQuery("select id from TaskRun tr where tr.task = :task").setEntity("task", task).list();
         DBDao.getSessionFactory().getCurrentSession().createQuery("delete from TaskStepRun tr where tr.taskRun.id in (:taskRunIds)").setParameterList("taskRunIds", taskRunIds).executeUpdate();
         DBDao.getSessionFactory().getCurrentSession().createQuery("delete from TaskRun tr where tr.task = :task").setEntity("task", task).executeUpdate();
@@ -120,9 +120,9 @@ public class DBServiceImpl implements DBService {
     public void save(Task task) {
         task.setDateUpdated(new Date());
         DBDao.saveOrUpdate(task);
-        myJobScheduler.unSchedule(task.getId());
+        aidsJobScheduler.unSchedule(task.getId());
         if (task.getSchedule() != null && !task.getSchedule().isEmpty())
-            myJobScheduler.schedule(task.getSchedule(), task.getId());
+            aidsJobScheduler.schedule(task.getSchedule(), task.getId());
     }
 
     @Transactional(readOnly = false)
@@ -191,11 +191,13 @@ public class DBServiceImpl implements DBService {
 
     @Override
     public User findUserByUsername(String username) {
-        return (User) DBDao.getSessionFactory().getCurrentSession()
+        User user= (User) DBDao.getSessionFactory().getCurrentSession()
                 .createCriteria(User.class)
                 .add(Restrictions.eq("username", username))
                 .setCacheable(true)
                 .uniqueResult();
+        Hibernate.initialize(user.getTeamList());
+        return user;
     }
 
     @Override
@@ -345,7 +347,7 @@ public class DBServiceImpl implements DBService {
     }
 
     @Override
-    public List<Task> listTasks() {
+    public List<Task> listScheduledTasks() {
         Criteria criteria = DBDao.getSessionFactory().getCurrentSession().createCriteria(Task.class);
         criteria.setFetchSize(50);
         criteria.add(Restrictions.isNotNull("schedule"));
@@ -363,5 +365,12 @@ public class DBServiceImpl implements DBService {
         criteria.setMaxResults(500);
         criteria.setCacheable(true);
         return criteria.list();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void addTeamToUser(User user, Team team) {
+        User existingUser = getUser(user.getId());
+        existingUser.getTeamList().add(team);
     }
 }

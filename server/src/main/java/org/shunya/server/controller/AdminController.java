@@ -72,8 +72,7 @@ public class AdminController {
         User existingUser = dbService.getUser(user.getId());
         team.getUserList().add(existingUser);
         dbService.save(team);
-        existingUser.getTeamList().add(team);
-        dbService.save(existingUser);
+        dbService.addTeamToUser(existingUser, team);
         return "redirect:../index";
     }
 

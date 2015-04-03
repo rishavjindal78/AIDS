@@ -55,9 +55,18 @@ public class DBCleanUpService {
         List<TaskRun> runningTasks = dbService.findRunningTasks();
         runningTasks.forEach(taskRun -> {
             if (!taskService.isTaskRunning(taskRun)) {
+                logger.warn("Fixing TaskRun - " + taskRun.getId() + " - " + taskRun.getName());
                 taskRun.setRunState(RunState.COMPLETED);
                 taskRun.setRunStatus(RunStatus.FAILURE);
                 dbService.save(taskRun);
+                taskRun = dbService.getTaskRun(taskRun.getId());
+                taskRun.getTaskStepRuns().forEach(taskStepRun -> {
+                    if (taskStepRun.getRunState() == RunState.RUNNING || taskStepRun.getRunStatus() == RunStatus.RUNNING) {
+                        taskStepRun.setRunState(RunState.COMPLETED);
+                        taskStepRun.setRunStatus(RunStatus.FAILURE);
+                        dbService.save(taskStepRun);
+                    }
+                });
             }
         });
     }

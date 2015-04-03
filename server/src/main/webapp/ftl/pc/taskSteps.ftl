@@ -15,17 +15,18 @@
 
         #ajaxBusy {
             display: none;
-            margin: 0px 0px 0px -50px; /* left margin is half width of the div, to centre it */
-            padding: 30px 10px 10px 10px;
-            position: absolute;
-            left: 30%;
-            top: 325px;
-            width: 500px;
-            height: 150px;
+            opacity: 0.9;
+            /*margin: 0px 0px 0px -50px; /!* left margin is half width of the div, to centre it *!/*/
+            /*padding: 30px 10px 10px 10px;*/
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
             text-align: center;
-            background: #f7f7f7 url(${rc.contextPath}/images/ajax-loader.gif) no-repeat center center;
+            background: rgba(0,0,0,0.6) url(${rc.contextPath}/images/ajax-loader-big.gif) no-repeat center center;
             border: 1px solid #8597d1;
-            z-index: 999;
+            z-index: 5;
         }
 
 

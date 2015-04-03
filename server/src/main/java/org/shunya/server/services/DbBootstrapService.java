@@ -22,7 +22,7 @@ public class DbBootstrapService {
     private DBService dbService;
 
     @Autowired
-    private MyJobScheduler myJobScheduler;
+    private AidsJobScheduler aidsJobScheduler;
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -35,10 +35,10 @@ public class DbBootstrapService {
     }
 
     public void scheduleTasks(){
-        List<Task> tasks = dbService.listTasks();
+        List<Task> tasks = dbService.listScheduledTasks();
         tasks.stream()
                 .filter(task -> task.getSchedule()!= null && !task.getSchedule().isEmpty())
-                .forEach(task -> myJobScheduler.schedule(task.getSchedule(), task.getId()));
+                .forEach(task -> aidsJobScheduler.schedule(task.getSchedule(), task.getId()));
     }
 
     public void loadAuthorities() {

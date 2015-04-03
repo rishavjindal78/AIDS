@@ -1,5 +1,6 @@
 package org.shunya.server.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
@@ -13,7 +14,10 @@ import static org.hibernate.annotations.CascadeType.DELETE;
 import static org.hibernate.annotations.CascadeType.SAVE_UPDATE;
 
 @Entity
-@Table(name="USER", uniqueConstraints = {@UniqueConstraint(columnNames = {"username"})})
+@Table(name="USER", uniqueConstraints = {@UniqueConstraint(columnNames = {"username"})}, indexes = {
+        @Index(name = "user_username_index", columnList = "username", unique = true),
+        @Index(name = "user_telegram_index", columnList = "telegramId", unique = true),
+})
 @TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "USER", allocationSize = 1)
 @Cacheable(true)
 public class User implements Serializable{
@@ -30,11 +34,13 @@ public class User implements Serializable{
     private String phone;
     private int telegramId;
     @ManyToMany
-    @LazyCollection(LazyCollectionOption.FALSE)
+    @LazyCollection(LazyCollectionOption.TRUE)
     @JsonManagedReference
+    @JsonIgnore
     private List<Team> teamList;
     @ManyToMany
-    @LazyCollection(LazyCollectionOption.FALSE)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    @JsonIgnore
     private List<Authority> authorities;
     @OneToOne
     @Cascade({SAVE_UPDATE, DELETE})
@@ -70,9 +76,8 @@ public class User implements Serializable{
 
         User agent = (User) o;
 
-        if (id != agent.id) return false;
+        return id == agent.id;
 
-        return true;
     }
 
     @Override

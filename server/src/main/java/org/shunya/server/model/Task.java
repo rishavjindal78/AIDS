@@ -7,6 +7,7 @@ import org.hibernate.annotations.OrderBy;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.*;
 import java.io.Serializable;
@@ -18,7 +19,9 @@ import static org.hibernate.annotations.CascadeType.REMOVE;
 import static org.hibernate.annotations.CascadeType.SAVE_UPDATE;
 
 @Entity
-@Table(name = "TASK")
+@Table(name = "TASK", indexes = {
+        @Index(name = "task_team_index", columnList = "team_id", unique = false)
+})
 @TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "TASK_DATA", allocationSize = 10)
 public class Task implements Serializable {
     private static final long serialVersionUID = 3450975996342231267L;

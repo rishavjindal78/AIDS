@@ -12,7 +12,7 @@ public interface DBService {
 
     List<TaskRun> findRunningTasks();
 
-    List<Task> listTasks();
+    List<Task> listScheduledTasks();
     List<Team> listTeams();
     List<User> listUser();
     List<Authority> listAuthorities();
@@ -55,4 +55,6 @@ public interface DBService {
     void shutdownCompact();
 
     List<Task> listAllTasks();
+
+    void addTeamToUser(User user, Team team);
 }

@@ -47,8 +47,8 @@ public class TestContext {
     }
 
     @Bean
-    public MyJobScheduler myJobScheduler() {
-        return mock(MyJobScheduler.class);
+    public AidsJobScheduler myJobScheduler() {
+        return mock(AidsJobScheduler.class);
     }
 
     @Bean

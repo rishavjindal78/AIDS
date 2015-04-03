@@ -53,7 +53,7 @@ public class ServerController {
     private RestClient restClient;
 
     @Autowired
-    private MyJobScheduler myJobScheduler;
+    private AidsJobScheduler aidsJobScheduler;
     final String[] taskClasses = {"EchoStep", "DiscSpaceStep", "SystemCommandStep", "FileUploadStep", "HttpDownloadStep", "DeclareVariableStep", "UpdateDBStep", "EmailStep", "UnZipStep", "TokenReplaceStep"};
 
     @RequestMapping(value = "test", method = RequestMethod.GET)
@@ -75,7 +75,7 @@ public class ServerController {
     public String agents(@ModelAttribute("model") ModelMap model, Principal principal, @PathVariable("teamId") long teamId) {
         Team team = dbService.findTeamById(teamId);
         request.getSession().setAttribute("SELECTED_TEAM", team);
-        System.out.println("principal = " + principal.getName());
+//        System.out.println("principal = " + principal.getName());
         model.addAttribute("username", principal.getName());
         List<Agent> agentList = dbService.listAgentsByTeam(teamId);
         List<AgentVO> agentVOList = new ArrayList<>(agentList.size());
@@ -623,7 +623,7 @@ public class ServerController {
     @ResponseBody
     @ResponseStatus(HttpStatus.ACCEPTED)
     public List<String> schedulePrediction(@ModelAttribute("model") ModelMap model, @RequestParam("cronString") String cronString) {
-        return myJobScheduler.predict(cronString, 10);
+        return aidsJobScheduler.predict(cronString, 10);
     }
 
     @RequestMapping(value = "shutdown", method = RequestMethod.GET)
