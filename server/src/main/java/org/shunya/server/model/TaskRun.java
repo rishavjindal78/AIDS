@@ -7,6 +7,7 @@ import org.shunya.shared.RunStatus;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.swing.text.Document;
 import javax.xml.bind.annotation.XmlTransient;
@@ -20,8 +21,11 @@ import static org.hibernate.annotations.CascadeType.DELETE;
 import static org.hibernate.annotations.CascadeType.SAVE_UPDATE;
 
 @Entity
-@Table(name = "TASK_RUN")
+@Table(name = "TASK_RUN", indexes = {
+        @Index(name = "task_run_team_index", columnList = "team_id", unique = false)
+})
 @TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "TASK_RUN", allocationSize = 10)
+@Cacheable
 public class TaskRun implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")

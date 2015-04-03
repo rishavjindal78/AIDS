@@ -6,6 +6,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "AUTHORITY", uniqueConstraints = {@UniqueConstraint(columnNames = {"role"})})
 @TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "AUTHORITY", allocationSize = 1)
+@Cacheable
 public class Authority implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "seqGen")

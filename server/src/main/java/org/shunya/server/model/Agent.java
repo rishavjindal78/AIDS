@@ -14,6 +14,7 @@ import static org.hibernate.annotations.CascadeType.SAVE_UPDATE;
 @Entity
 @Table(name="AGENT")
 @TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "AGENT", allocationSize = 10)
+@Cacheable
 public class Agent {
     @Id
     @JsonIgnore
