@@ -22,7 +22,6 @@
         });*/
     });
 </script>
-
     <fieldset>
         <form id="addAgentForm" class="form-horizontal" name="multiAgentVO"
               action="${rc.contextPath}/server/taskStep/addAgent/${model['taskStepId']?string}" method="post">
