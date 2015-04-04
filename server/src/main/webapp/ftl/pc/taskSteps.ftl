@@ -137,9 +137,9 @@
         function addAgent(taskStepId, description) {
             $("#myModalLabelForAgent").text("Step - " + description);
             $.get('${rc.contextPath}/server/team/${model.task.team.id}/taskStep/addAgent/' + taskStepId, function (data) {
-                $('#span_task_agent1').empty();
-                $('#span_task_agent1').html(data);
-                $('#span_task_agent1').focus();
+                $('#span_task_agent').empty();
+                $('#span_task_agent').html(data);
+                $('#span_task_agent').focus();
                 $('#myModalForAgent').modal({
                     keyboard: true
                 });
@@ -150,8 +150,8 @@
             var userOption = confirm("Are you sure to remove this Agent - "+agentId+" ?");
             if (userOption) {
                 $.post('${rc.contextPath}/server/taskStep/removeAgent/' + taskId + '/' + agentId, function (data) {
-                    $('#span_task_agent').empty();
-                    $('#span_task_agent').html(data);
+                    $('#results').empty();
+                    $('#results').html(data);
                 });
             }
         }
@@ -246,7 +246,6 @@
             </tr>
         </#list>
     </table>
-    <span id="span_task_agent"></span>
     <span id="span_edit"></span>
     <br/>
     <span id="results"></span>
@@ -287,7 +286,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h5 class="modal-title text-muted" id="myModalLabelForAgent">Add Agent</h5>
                 </div>
-                <span id="span_task_agent1">
+                <span id="span_task_agent">
                 </span>
             </div>
         </div>

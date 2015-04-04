@@ -5,6 +5,8 @@ import org.shunya.agent.services.TaskProcessor;
 import org.shunya.shared.AbstractStep;
 import org.shunya.shared.StringUtils;
 import org.shunya.shared.TaskContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -20,15 +22,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Logger;
 
 @Controller
 @RequestMapping("/agent")
 public class AgentController {
-    private static final Logger logger = Logger.getLogger(AgentController.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(AgentController.class.getName());
     @Autowired
     private HttpServletRequest request;
 
@@ -49,7 +48,7 @@ public class AgentController {
     @ResponseBody
     @ResponseStatus(value = HttpStatus.ACCEPTED)
     public void ping() {
-        logger.fine(() -> "ping success");
+        logger.debug("ping success");
     }
 
     @RequestMapping(value = "version", method = RequestMethod.GET)
@@ -82,11 +81,11 @@ public class AgentController {
             IOUtils.copyLarge(file.getInputStream(), fileOutputStream);
             fileOutputStream.close();
             String absolutePath = new File(dir, name).getAbsolutePath();
-            logger.info(() -> "File saved at location : " + absolutePath);
+            logger.info("File saved at location : " + absolutePath);
             return absolutePath;
         } catch (Exception e) {
             e.printStackTrace();
-            logger.severe(() -> "Error while saving the file - " + StringUtils.getExceptionStackTrace(e));
+            logger.error("Error while saving the file - " + StringUtils.getExceptionStackTrace(e));
             throw e;
         }
     }

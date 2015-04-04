@@ -1,16 +1,16 @@
 package org.shunya.server.services;
 
-import org.shunya.shared.TaskContext;
 import org.shunya.server.model.Agent;
+import org.shunya.shared.TaskContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.logging.Logger;
-
 @Service
 public class RestClient {
-    private static final Logger logger = Logger.getLogger(RestClient.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(RestClient.class.getName());
     private RestTemplate restTemplate = new RestTemplate();
 
     public boolean ping(Agent agent) {
@@ -40,7 +40,7 @@ public class RestClient {
         headers.set("Accept", "application/json; charset=utf-8");
         HttpEntity httpEntity = new HttpEntity<>(taskContext, headers);
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(agent.getBaseUrl() + "/agent/submitTaskStep", httpEntity, String.class);
-        logger.fine(() -> "TaskStep sent to Agent for execution " + responseEntity.getBody());
+        logger.debug("TaskStep sent to Agent for execution " + responseEntity.getBody());
     }
 
     public String getMemoryLogs(long stepRunId, Agent agent, long start) {
@@ -48,7 +48,7 @@ public class RestClient {
             throw new RuntimeException("No Host Configured for this Agent " + agent.getName());
         ResponseEntity<String> entity = restTemplate.getForEntity(agent.getBaseUrl() + "/agent/getMemoryLogs/{taskRunId}?start={start}", String.class, stepRunId, start);
         String body = entity.getBody();
-        logger.fine(() -> "Logs fetched from the Agent");
+        logger.debug("Logs fetched from the Agent");
         return body;
     }
 

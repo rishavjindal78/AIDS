@@ -1,16 +1,17 @@
 package org.shunya.server;
 
 import config.TestContext;
-//import org.shunya.server.config.WebAppContext;
 import config.WebAppContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.shunya.server.model.Agent;
 import org.shunya.server.services.TaskService;
 import org.shunya.shared.TaskContext;
 import org.shunya.shared.TaskState;
-import org.shunya.server.model.Agent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -22,13 +23,13 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.logging.Logger;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+
+//import org.shunya.server.config.WebAppContext;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -39,7 +40,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
         DirtiesContextTestExecutionListener.class,
         TransactionalTestExecutionListener.class})
 public class AgentControllerTests {
-    Logger logger = Logger.getLogger(AgentControllerTests.class.getName());
+    Logger logger = LoggerFactory.getLogger(AgentControllerTests.class.getName());
 
     private MockMvc mockMvc;
 

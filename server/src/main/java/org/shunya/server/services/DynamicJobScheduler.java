@@ -1,6 +1,8 @@
 package org.shunya.server.services;
 
 import org.shunya.server.ScheduledTaskRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
@@ -15,12 +17,11 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ScheduledFuture;
-import java.util.logging.Logger;
 
 @Service
 public class DynamicJobScheduler implements AidsJobScheduler {
 
-    private static final Logger logger = Logger.getLogger(DynamicJobScheduler.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(DynamicJobScheduler.class.getName());
 
     @Autowired
     @Qualifier("myScheduler")
@@ -41,7 +42,7 @@ public class DynamicJobScheduler implements AidsJobScheduler {
     public void schedule(String cronExpression, long taskId) {
         ScheduledFuture<?> scheduledFuture = scheduler.schedule(new ScheduledTaskRunner(taskId, dbService, taskService), new CronTrigger(cronExpression));
         futureConcurrentMap.putIfAbsent(taskId, scheduledFuture);
-        logger.info(() -> "Task Scheduled - " + taskId);
+        logger.info("Task Scheduled - " + taskId);
     }
 
     @Override
@@ -52,7 +53,7 @@ public class DynamicJobScheduler implements AidsJobScheduler {
                 }
         );
         futureConcurrentMap.remove(taskId);
-        logger.info(() -> "Task UnScheduled - " + taskId);
+        logger.info("Task UnScheduled - " + taskId);
     }
 
     @Override
@@ -68,7 +69,7 @@ public class DynamicJobScheduler implements AidsJobScheduler {
                 seedDate = date;
             }
         } catch (Exception e) {
-            logger.info(() -> "Error in Cron Expression - " + e.getMessage());
+            logger.info("Error in Cron Expression - " + e.getMessage());
             results.add(e.getMessage());
         }
         return results;

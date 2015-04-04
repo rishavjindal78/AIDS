@@ -1,6 +1,8 @@
 package org.shunya.agent.services;
 
 import org.shunya.shared.TaskContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -8,11 +10,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.logging.Logger;
 
 @Service
 public class RestClient {
-    private static final Logger logger = Logger.getLogger(RestClient.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(RestClient.class.getName());
     private RestTemplate restTemplate = new RestTemplate();
 
     public void postResultToServer(TaskContext taskContext) {
@@ -23,7 +24,7 @@ public class RestClient {
         ParameterizedTypeReference<String> typeRef = new ParameterizedTypeReference<String>() {};
         ResponseEntity<String> responseEntity = restTemplate.exchange(taskContext.getCallbackURL(), HttpMethod.POST, httpEntity, typeRef);
         String body = responseEntity.getBody();
-        logger.info(() -> "Posted the Task results back to server - {} " + body+" ID : "+taskContext.getTaskStepRunDTO().getId());
+        logger.info("Posted the Task results back to server - {} " + body+" ID : "+taskContext.getTaskStepRunDTO().getId());
     }
 
     public String authenticateGetCookie(String baseUrl, String user, String password) {

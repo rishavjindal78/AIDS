@@ -183,13 +183,14 @@ public class ServerController {
     public String addAgent(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id, @PathVariable("teamId") long teamId) throws Exception {
         model.addAttribute("agents", dbService.listAgentsByTeam(teamId));
         model.addAttribute("task.id", id);
+        model.addAttribute("selectedAgents", dbService.getTask(id).getAgentList());
         return "addAgent";
     }
 
     @RequestMapping(value = "addAgent/{taskId}", method = RequestMethod.POST)
-    public String addAgentPOST(@ModelAttribute("agent") Agent agent, @PathVariable("taskId") long taskId) throws Exception {
+    public String addAgentPOST(@ModelAttribute("multiAgentVO") MultiAgentVO multiAgentVO, @PathVariable("taskId") long taskId) throws Exception {
         Task task = dbService.getTask(taskId);
-        task.getAgentList().add(dbService.getAgent(agent.getId()));
+        multiAgentVO.getAgents().forEach(agentId -> task.getAgentList().add(dbService.getAgent(agentId)));
         dbService.save(task);
         final String referer = request.getHeader("referer");
         System.out.println("referer = " + referer);

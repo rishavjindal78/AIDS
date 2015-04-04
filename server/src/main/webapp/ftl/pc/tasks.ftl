@@ -58,17 +58,22 @@
             });
         }
 
-        function addAgent(id) {
+        function addAgent(id, description) {
+            $("#myModalLabelForAgent").text("Task - " + description);
             $.get('${rc.getContextPath()}/server/team/${model.team.id}/addAgent/' + id, function (data) {
                 $('#span_task_agent').empty();
                 $('#span_task_agent').html(data);
+                $('#span_task_agent').focus();
+                $('#myModalForAgent').modal({
+                    keyboard: true
+                });
             });
         }
 
         function removeAgent(agentId, taskId) {
             $.post('${rc.contextPath}/server/removeAgent/' + taskId + '/' + agentId, function (data) {
-                $('#span_task_agent').empty();
-                $('#span_task_agent').html(data);
+                $('#results').empty();
+                $('#results').html(data);
             });
         }
 
@@ -178,7 +183,7 @@
                             <ul class="dropdown-menu" role="menu">
                                 <li><a href="${rc.getContextPath()}/server/task/${td.id}">view</a></li>
                                 <li><a href="#" onclick="editTask('${td.id}')">edit</a></li>
-                                <li><a href="#" onclick="addAgent('${td.id}')">add agent</a></li>
+                                <li><a href="#" onclick="addAgent('${td.id}','${td.name!}')">add agent</a></li>
                                 <li><a href="#" onclick="runTask('${rc.getContextPath()}/server/run/${td.id}')">run</a>
                                 </li>
                                 <li><a href="${rc.getContextPath()}/server/taskHistory/${td.id}">history</a></li>
@@ -192,10 +197,21 @@
                 </tr>
             </#list>
         </table>
-        <span id="span_task_agent"></span>
         <span id="span_task_edit"></span>
         <span id="results"></span>
     </div>
-    <#--</div>-->
+    <!-- Modal for add agent -->
+    <div class="modal fade" id="myModalForAgent" tabindex="-1" role="dialog" aria-labelledby="myModalLabelForAgent" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title text-muted" id="myModalLabelForAgent">Add Agent</h4>
+                </div>
+                <span id="span_task_agent">
+                </span>
+            </div>
+        </div>
+    </div>
     </@com.page>
 </#escape>

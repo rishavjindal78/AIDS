@@ -3,12 +3,11 @@ package org.shunya.server;
 import org.shunya.server.model.Task;
 import org.shunya.server.services.DBService;
 import org.shunya.server.services.TaskService;
-
-import java.util.HashMap;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ScheduledTaskRunner implements Runnable {
-    private static final Logger logger = Logger.getLogger(ScheduledTaskRunner.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(ScheduledTaskRunner.class.getName());
 
     private final long taskId;
     private final DBService dbService;
