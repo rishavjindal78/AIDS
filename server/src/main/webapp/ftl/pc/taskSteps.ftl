@@ -110,9 +110,10 @@
 
         function runTask(url) {
             var userComment = $('#userComments').val();
+            var customProperties = $('#customPropertiesTextArea').val();
             if (userComment != null) {
                 $("#results").empty();
-                $.post(url, { comment: userComment}, function (data) {
+                $.post(url, { comment: userComment, properties: customProperties}, function (data) {
                     var result = "";
                     $.each(data, function(index, value){
                        result += '<div class="alert alert-success">Task Submitted Successfully - <a href="../taskRun/view/'+value.id+'" target="_blank">' + value.id + ' - Logs</a></div>';
@@ -255,13 +256,18 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Run Task</h4>
+                    <h4 class="modal-title" id="myModalLabel">Run Task - ${model.task.name!?string}</h4>
                 </div>
                 <div class="modal-body">
                     <form>
                         <div class="form-group">
-                            <label for="recipient-name" class="control-label">User Comments</label>
+                            <label for="recipient-name" class="control-label">Comments</label>
                             <input type="text" class="form-control" id="userComments" placeholder="TaskRun Comments" value="test run">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="customPropertiesTextArea">Custom Properties</label>
+                                <textarea id="customPropertiesTextArea" type="text" class="form-control input-sm" placeholder="Agent properties to override" name="properties" rows="3"></textarea>
                         </div>
                     </form>
                 </div>

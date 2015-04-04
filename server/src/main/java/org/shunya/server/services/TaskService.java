@@ -1,6 +1,5 @@
 package org.shunya.server.services;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.shunya.server.TaskExecutionPlan;
 import org.shunya.server.model.*;
@@ -122,7 +121,10 @@ public class TaskService {
         logger.info("Finished Running System Failures of Agents");
     }
 
-    public TaskRun createTaskRun(String comment, boolean notifyStatus, Principal principal, Task task, Agent agent, boolean singleton) {
+    public TaskRun createTaskRun(String comment, boolean notifyStatus, Principal principal, Task task, Agent agent, boolean singleton, String properties) {
+        HashMap<String, String> propertiesOverride = new HashMap<>();
+        if (properties != null && !properties.isEmpty())
+            propertiesOverride.putAll(Utils.splitToMap(properties, ",", "="));
         TaskRun taskRun = new TaskRun();
         taskRun.setTask(task);
         taskRun.setName(task.getName());
@@ -134,7 +136,7 @@ public class TaskService {
         taskRun.setTeam(task.getTeam());
         taskRun.setAgent(agent);
         dbService.save(taskRun);
-        execute(taskRun, new HashMap<>(), singleton);
+        execute(taskRun, propertiesOverride, singleton);
         return taskRun;
     }
 

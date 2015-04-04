@@ -474,15 +474,17 @@ public class ServerController {
     @ResponseBody
     public List<TaskRun> runTask(@PathVariable("taskId") Long taskId,
                                  @RequestParam(defaultValue = "test", required = false) String comment,
+                                 @RequestParam(defaultValue = "", required = false) String properties,
                                  @RequestParam(defaultValue = "false", required = false) boolean notifyStatus,
                                  Principal principal) {
-        logger.info("Run request for {}, user comments ", taskId, comment);
+        logger.info("Run request for {}, user comments {}", taskId, comment);
+        logger.info("Custom Properties {}", properties);
         Task task = dbService.getTask(taskId);
         List<TaskRun> taskRuns = new ArrayList<>();
         if (!task.getAgentList().isEmpty())
-            task.getAgentList().forEach(agent -> taskRuns.add(taskService.createTaskRun(comment, notifyStatus, principal, task, agent, false)));
+            task.getAgentList().forEach(agent -> taskRuns.add(taskService.createTaskRun(comment, notifyStatus, principal, task, agent, false, properties)));
         else
-            taskRuns.add(taskService.createTaskRun(comment, notifyStatus, principal, task, null, true));
+            taskRuns.add(taskService.createTaskRun(comment, notifyStatus, principal, task, null, true, properties));
         return taskRuns;
     }
 
