@@ -38,8 +38,9 @@
                 <th>#</th>
                 <th>Task Title</th>
                 <th>Comments</th>
-                <th>Updated</th>
+                <th>Task Start Time</th>
                 <th>Duration (hh:mm:ss)</th>
+                <th>Run By</th>
                 <th>Status</th>
                 <th>Operation</th>
             </tr>
@@ -55,6 +56,7 @@
                 <td>${taskHistory.comments!?string}</td>
                 <td><#if taskHistory.startTime??>${taskHistory.startTime?datetime?string("dd MMM, yyyy hh.mm aa")}</#if></td>
                 <td><#if taskHistory.finishTime??>${taskHistory.timeConsumed()}</#if></td>
+                <td>${(taskHistory.runBy.name)!?string}</td>
                 <#if taskHistory.runStatus?string == 'FAILURE'>
                     <td>
                         <button type="button" class="btn btn-sm btn-danger">${taskHistory.runStatus!?string}</button>

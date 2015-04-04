@@ -186,12 +186,15 @@
     </ul>
 
     <#--<legend>Task Details</legend>-->
-    <p><strong>Task Name </strong>: ${model.task.name}</p>
-    <p><strong>Task Description </strong>: ${model.task.description}</p>
+    <p><strong>Task Name </strong>: ${model.task.name!}</p>
+    <p><strong>Task Description </strong>: ${model.task.description!}</p>
+    <p><strong>Task Schedule </strong>: ${model.task.schedule!}</p>
+    <p><strong>Created By </strong>: ${(model.task.author.name)!}</p>
+    <p><#if model.task.dateUpdated??><strong>Updated On</strong>: ${model.task.dateUpdated?datetime?string("dd MMM, yyyy hh.mm aa")}</#if></p>
 
-    <a href="../addTaskStep/${model.task.id?string}" class="btn btn-mini btn-primary">Add Step</a>
+    <a href="../addTaskStep/${model.task.id?string}" class="btn btn-mini btn-primary">Add Task Step</a>
     <#--<a href="#" onclick="execute('../run/${model.task.id?string}')" class="btn btn-mini  btn btn-danger">Run</a>-->
-    <a href="../taskHistory/${model.task.id}" class="btn btn-mini  btn btn-primary">Run History</a>
+    <#--<a href="../taskHistory/${model.task.id}" class="btn btn-mini  btn btn-primary">Run History</a>-->
     <!-- Button trigger modal -->
     <a href="#" onclick="cloneTask('${model.task.id?string}', '${model.task.name!?string}')" class="btn btn-mini  btn btn-warning">Clone Task</a>
     <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal">Execute</button>
