@@ -18,7 +18,7 @@
             $.each(data, function (i, item) {
                 schedules += '<li>' + item + '</li>';
             });
-            $("#serverResults").html('<div class="alert alert-info">Next 10 Scheduled Dates  - <ul>' + schedules + '</ul></div>');
+            $("#serverResults").html('<div class="alert alert-info small">Next 10 Scheduled Dates  - <ul>' + schedules + '</ul></div>');
         });
     }
 </script>
@@ -26,48 +26,50 @@
 <div class="alert alert-warning">
     <fieldset>
         <legend class="text-muted">Edit Task - ${model.task.name!?string}</legend>
-        <form class="form-horizontal" name="user"
-              action="${rc.contextPath}/server/team/${model.team.id}/addTask/${model.task.id!?string}" method="post">
-            <div class="form-group">
-            <#--<label class="col-lg-2 control-label">Amount</label>-->
-                <div class="col-lg-2">
-                    <input type="text" class="form-control" placeholder="ID" name="id" value="${model.task.id!?string}"
-                           readonly>
-                </div>
-                <div class="col-lg-2">
-                    <input type="text" class="form-control" placeholder="Name" name="name"
-                           value="${model.task.name!?string}">
-                </div>
-                <div class="col-lg-4">
-                    <input type="text" class="form-control input" placeholder="Description" name="description"
-                           value="${model.task.description!?string}">
-                </div>
-                <div class="col-lg-2">
-                    <input type="text" class="form-control input" placeholder="Tags" name="tags"
-                           value="${model.task.tags!?string}">
-                </div>
-                <div class="col-lg-6">
-                <#--<label for="agentPropertiesTextArea">Agent Properties</label>-->
-                    <textarea id="agentPropertiesTextArea" type="text" class="form-control input-sm"
-                              placeholder="Agent properties to override" name="taskProperties.properties"
-                              rows="5">${(model.task.taskProperties.properties)!?string}</textarea>
-                </div>
-                <div class="col-lg-4">
-                    <input type="text" id="${model.task.id}_schedule" class="form-control input"
-                           placeholder="Cron Trigger for Schedule" name="schedule"
-                           value="${model.task.schedule!?string}">
-                    <a class="btn-link" onclick="fetchPredictions('${model.task.id}_schedule')">Predictions</a>
-                    <a target="_blank"
-                       href="http://quartz-scheduler.org/documentation/quartz-2.x/tutorials/tutorial-lesson-06">Tutorial-1</a>
-                    <a target="_blank"
-                       href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/scheduling/support/CronSequenceGenerator.html">Tutorial-2</a>
-                    <a target="_blank" href="http://quartz-scheduler.org/api/2.2.0/org/quartz/CronTrigger.html">Tutorial-3</a>
-                    <a target="_blank" href="http://www.cronmaker.com/">Tutorial-4</a>
-                </div>
-                <div class="control-group">
-                    <button type="submit" class="btn btn-primary" id="save">Save</button>
-                    <button class="btn cancel btn-default" id="cancel">Cancel</button>
-                </div>
+        <form name="user" action="${rc.contextPath}/server/team/${model.team.id}/addTask/${model.task.id!?string}" method="post">
+
+            <input type="hidden" class="form-control" placeholder="ID" name="id" value="${model.task.id!?string}" readonly>
+            <div class="form-group" style="width: 80%">
+                <label for="inputTaskName">Task Name</label>
+                <input id="inputTaskName" type="text" class="form-control" placeholder="Name" name="name" value="${model.task.name!?string}">
+            </div>
+
+
+            <div class="form-group" style="width: 80%">
+                <label for="inputTaskDescription">Task Description</label>
+                <input id="inputTaskDescription" type="text" class="form-control input" placeholder="Description" name="description" value="${model.task.description!?string}">
+            </div>
+
+            <div class="form-group" style="width: 80%">
+                <label for="inputTaskTags">Task Tags</label>
+                <input id="inputTaskTags" type="text" class="form-control input" placeholder="Tags" name="tags" value="${model.task.tags!?string}">
+            </div>
+
+            <div class="form-group" style="width: 80%">
+                <label for="taskPropertiesTextArea">Task Properties</label>
+                <textarea id="taskPropertiesTextArea" type="text" class="form-control input-sm"
+                          placeholder="Agent properties to override" name="taskProperties.properties"
+                          rows="5">${(model.task.taskProperties.properties)!?string}</textarea>
+            </div>
+
+            <div class="form-group" style="width: 80%">
+                <label for="${model.task.id}_schedule">Task Cron Schedule</label>
+                <input type="text" id="${model.task.id}_schedule" class="form-control input"
+                       placeholder="Cron Trigger for Schedule" name="schedule"
+                       value="${model.task.schedule!?string}">
+                <a class="btn-link" onclick="fetchPredictions('${model.task.id}_schedule')">Predictions</a>
+                <a target="_blank"
+                   href="http://quartz-scheduler.org/documentation/quartz-2.x/tutorials/tutorial-lesson-06">Tutorial-1</a>
+                <a target="_blank"
+                   href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/scheduling/support/CronSequenceGenerator.html">Tutorial-2</a>
+                <a target="_blank" href="http://quartz-scheduler.org/api/2.2.0/org/quartz/CronTrigger.html">Tutorial-3</a>
+                <a target="_blank" href="http://www.cronmaker.com/">Tutorial-4</a>
+            </div>
+
+            <div class="control-group">
+                <button type="submit" class="btn btn-primary" id="save">Save</button>
+                <button class="btn cancel btn-default" id="cancel">Cancel</button>
+            </div>
             <#--<div class="col-lg-2">
                 <select class="form-control" name="transactionType">
                     <option value="PAY"  <#if 'PAY' == model.expense.transactionType?string?upper_case >selected="selected"</#if>>PAY
@@ -86,7 +88,7 @@
                     </#list>
                 </select>
             </div>-->
-            </div>
+
         <#--<div class="form-group">
             <div class="col-lg-2">
                 <select id="account" class="form-control" name="account.id">

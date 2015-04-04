@@ -103,7 +103,7 @@
             if (userComment != null) {
                 $("#results").empty();
                 $.post("${rc.contextPath}/server/cloneTask/"+taskId, {taskName: userComment}, function (data) {
-                    $("#results").html('<div class="alert alert-success">Task Cloned Successfully - ' + userComment + '</div>');
+                    $("#results").html('<div class="alert alert-success small">Task Cloned Successfully - ' + userComment + '</div>');
                 });
             }
         }
@@ -116,7 +116,7 @@
                 $.post(url, { comment: userComment, properties: customProperties}, function (data) {
                     var result = "";
                     $.each(data, function(index, value){
-                       result += '<div class="alert alert-success">Task Submitted Successfully - <a href="../taskRun/view/'+value.id+'" target="_blank">' + value.id + ' - Logs</a></div>';
+                       result += '<div class="alert alert-success small">Task Submitted Successfully - <a href="../taskRun/view/'+value.id+'" target="_blank">' + value.id + ' - Logs</a></div>';
                     });
                     $("#results").html(result);
                 });
@@ -129,7 +129,7 @@
             if (userComment != null) {
                 $("#results").empty();
                 $.post("${rc.contextPath}/server/runSingleStep/${model.task.id}/"+taskStepId, { comment: userComment}, function (data) {
-                    $("#results").html('<div class="alert alert-success">Task Submitted Successfully - <a href="../taskRun/view/'+data.id+'" target="_blank">Logs</a></div>');
+                    $("#results").html('<div class="alert alert-success small">Task Submitted Successfully - <a href="../taskRun/view/'+data.id+'" target="_blank">Logs</a></div>');
                 });
             }
         }

@@ -3,6 +3,24 @@
 <#escape x as x?html>
     <@com.page activeTab="tasks">
 
+    <style>
+        #ajaxBusy {
+            display: none;
+            opacity: 0.9;
+            /*margin: 0px 0px 0px -50px; /!* left margin is half width of the div, to centre it *!/*/
+            /*padding: 30px 10px 10px 10px;*/
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.6) url(${rc.contextPath}/images/ajax-loader-big.gif) no-repeat center center;
+            border: 1px solid #8597d1;
+            z-index: 5;
+        }
+    </style>
+
     <script type="text/javascript">
         function runTask(url) {
             var userComment = prompt("Please enter comments for the run .. ?", "Test Run");
@@ -11,7 +29,7 @@
                 $.post(url, { comment: userComment}, function (data) {
                     var result = "";
                     $.each(data, function(index, value){
-                        result += '<div class="alert alert-success">Task Submitted Successfully - <a href="../../taskRun/view/'+value.id+'" target="_blank">' + value.id + ' - Logs</a></div>';
+                        result += '<div class="alert alert-success small">Task Submitted Successfully - <a href="../../taskRun/view/'+value.id+'" target="_blank">' + value.id + ' - Logs</a></div>';
                     });
                     $("#results").html(result);
                 });
@@ -25,7 +43,7 @@
                 $("#results").empty();
                 $.post(url, {}, function (data) {
                     $("table#tasksTable tr#table_row_"+taskId).remove();
-                    $("#results").html('<div class="alert alert-success">Task Deleted Successfully - ' + url + '</div>');
+                    $("#results").html('<div class="alert alert-success small">Task Deleted Successfully - ' + url + '</div>');
                 });
             }
         }
@@ -61,6 +79,16 @@
                 $(this).next(".content").slideToggle(200);
             });
         });
+
+        $('body').append('<div id="ajaxBusy"><p id="ajaxBusyMsg">Please wait...</p></div>');
+
+        // AJAX activity indicator bound to ajax start/stop document events
+        $(document).ajaxStart(function () {
+            $('#ajaxBusy').show();
+        }).ajaxStop(function () {
+            $('#ajaxBusy').hide();
+        });
+
     </script>
     <#--<div class="container">-->
     <div class="heading alert alert-info" style="padding: 6px;margin-bottom: 2px;margin-top: 2px;">
@@ -114,7 +142,7 @@
         </fieldset>
     </div>
 
-    <h2 class="sub-header text-muted">Tasks</h2>
+    <h3 class="sub-header text-muted">Team Tasks</h3>
     <div class="table">
         <table id="tasksTable" class="table table-striped">
             <tr>
