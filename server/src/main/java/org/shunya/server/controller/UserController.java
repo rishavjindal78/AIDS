@@ -1,20 +1,20 @@
 package org.shunya.server.controller;
 
 import org.shunya.server.Role;
-import org.shunya.server.model.Authority;
 import org.shunya.server.model.User;
 import org.shunya.server.services.DBService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 import static java.util.Arrays.asList;
 
@@ -30,13 +30,27 @@ public class UserController {
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    @ModelAttribute("user")
+    public User getGreetingObject() {
+        return new User();
+    }
+
     @RequestMapping(value = "register", method = RequestMethod.GET)
-    public String registerUser() {
+    public String registerUser(@ModelAttribute("model") ModelMap model) {
+       /* User user = new User(); // declareing
+        model.addAttribute("user", user); // adding in model*/
         return "registerUser";
     }
 
     @RequestMapping(value = "register", method = RequestMethod.POST)
-    public String registerUser(@ModelAttribute("user") User user) throws Exception {
+    public String registerUser(@ModelAttribute("model") ModelMap model, @ModelAttribute("user") User user, BindingResult result) throws Exception {
+        User userByUsername = dbService.findUserByUsername(user.getUsername());
+        if (userByUsername != null)
+            result.addError(new FieldError("user", "username", "username already exists !"));
+        if (result.hasErrors()) {
+            model.addAttribute("user", user);
+            return "registerUser";
+        }
         user.setAuthorities(asList(dbService.findAuthorityByName(Role.ROLE_USER)));
         user.setEnabled(true);
         user.setPassword(passwordEncoder.encode(user.getPassword()));

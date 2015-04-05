@@ -25,7 +25,7 @@ public class AgentStatusService {
 
     @Scheduled(cron = "0 0/2 * * * ?")
     public void checkStatus() {
-        logger.info("Checking Agent Status");
+        logger.debug("Checking Agent Status");
         List<Agent> agents = dbService.listAgents();
         agents.parallelStream().forEach(agent -> {
             try {

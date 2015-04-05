@@ -102,6 +102,7 @@
         <property name="defaultEncoding" value="utf-8"/>
         <property name="freemarkerSettings">
             <props>
+                <prop key="auto_import"><!--layout.ftl as layout,--> spring.ftl as spring</prop>
                 <prop key="classic_compatible">false</prop>
                 <prop key="arithmetic_engine">conservative</prop>
                 <prop key="date_format">dd-MM-yyyy</prop>
