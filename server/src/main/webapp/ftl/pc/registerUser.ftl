@@ -101,7 +101,7 @@
 
     <#if Session.SPRING_SECURITY_LAST_EXCEPTION?? && Session.SPRING_SECURITY_LAST_EXCEPTION.message?has_content>
         <div><span style='color:red;'>
-            Your login attempt was not successful, try again.<br />
+            <@spring.message "label.loginerror"/> Your login attempt was not successful, try again.<br />
             Reason :   ${Session.SPRING_SECURITY_LAST_EXCEPTION.message}
         </span>
         </div>
