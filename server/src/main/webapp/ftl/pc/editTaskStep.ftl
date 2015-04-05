@@ -16,7 +16,6 @@
 
 <div class="alert alert-warning">
     <fieldset>
-        <legend class="text-muted">${model.stepData.sequence}. Edit TaskStep - ${model.stepData.description!?string}</legend>
         <form id="editTaskStepData" class="form-horizontal" name="taskStepDTO" modelAttribute="taskStepDTO"
               action="../addTaskStep/${model.stepData.id}" method="post">
             <div class="modal-body">
@@ -55,7 +54,7 @@
             </div>
 <#--<hr/>-->
             <div class="form-group">
-                <label for="taskDescriptionId">Output Group</label>
+                <label for="taskDescriptionId">Output Variables Group</label>
                 <table name="outputParamsMap" class="table table-striped table-condensed">
                     <#list model["outputParams"] as fieldProperties>
                         <tr>

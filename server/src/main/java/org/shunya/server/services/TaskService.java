@@ -65,13 +65,13 @@ public class TaskService {
 //    @Scheduled(cron = "20 0/10 * * * ?")
     @Scheduled(cron = "${task.timeout.cron}")
     public void checkTimeoutSystemFailures() {
-        logger.info("Running Timeout System Failures");
+        logger.debug("Running Timeout System Failures");
         taskRunExecutionContext.forEach((taskRun, taskExecutionContext) -> {
             if (LocalDateTime.ofInstant(taskRun.getStartTime().toInstant(), ZoneId.systemDefault()).isBefore(LocalDateTime.now().minusHours(maxSystemFailureTimeInHours))) {
                 logger.warn("System Failures Detected for TaskRun due to timeout - " + taskRun.getName());
                 handleCompletion(taskRun, taskExecutionContext, RunStatus.FAILURE);
                 taskExecutionContext.getCurrentlyRunningTaskStepRuns().remove(taskRun);
-                logger.warn("Task Kicked due to System Failures, TaskRun - " + taskRun.getName());
+                logger.warn("Task Kicked Out due to System Failures, TaskRun - " + taskRun.getName());
             }
         });
     }
@@ -79,7 +79,7 @@ public class TaskService {
 //    @Scheduled(cron = "0 */3 * * * ?")
     @Scheduled(cron = "${agent.failure.cron}")
     public void checkAgentDiedSystemFailures() {
-        logger.info("Running System Failures of Agents");
+        logger.debug("Running System Failures of Agents");
         taskRunExecutionContext.forEach((taskRun, taskExecutionContext) -> {
             List<TaskStepRun> currentlyRunningTaskStepRuns = taskExecutionContext.getCurrentlyRunningTaskStepRuns();
             if (currentlyRunningTaskStepRuns != null)
@@ -118,7 +118,7 @@ public class TaskService {
                     }
                 });
         });
-        logger.info("Finished Running System Failures of Agents");
+        logger.debug("Finished Running System Failures of Agents");
     }
 
     public TaskRun createTaskRun(String comment, boolean notifyStatus, Principal principal, Task task, Agent agent, boolean singleton, String properties) {
@@ -298,12 +298,12 @@ public class TaskService {
 
     @PostConstruct
     public void start() {
-        System.out.println("serverPort = " + serverPort);
+        logger.warn("serverPort = " + serverPort);
     }
 
     @PreDestroy
     public void dispose() {
-        logger.info("Destroying the Task Service context");
+        logger.warn("Destroying the Task Service context");
     }
 
     private void delegateStepToAgents(List<TaskStepRun> taskStepRunList, TaskRun taskRun, Integer sequence) {

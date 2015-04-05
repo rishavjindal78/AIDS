@@ -4,21 +4,7 @@
     <@com.page activeTab="tasks">
 
     <style>
-        #ajaxBusy {
-            display: none;
-            opacity: 0.9;
-            /*margin: 0px 0px 0px -50px; /!* left margin is half width of the div, to centre it *!/*/
-            /*padding: 30px 10px 10px 10px;*/
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            background: rgba(0, 0, 0, 0.6) url(${rc.contextPath}/images/ajax-loader-big.gif) no-repeat center center;
-            border: 1px solid #8597d1;
-            z-index: 5;
-        }
+
     </style>
 
     <script type="text/javascript">
@@ -55,6 +41,9 @@
                 $('#span_task_edit').empty();
                 $('#span_task_edit').html(data);
                 scrollToElement('#span_task_edit', 1200);
+                /*$('html, body').animate({
+                    scrollTop: $("#span_edit").offset().top
+                }, 1000);*/
             });
         }
 
@@ -84,16 +73,6 @@
                 $(this).next(".content").slideToggle(200);
             });
         });
-
-        $('body').append('<div id="ajaxBusy"><p id="ajaxBusyMsg">Please wait...</p></div>');
-
-        // AJAX activity indicator bound to ajax start/stop document events
-        $(document).ajaxStart(function () {
-            $('#ajaxBusy').show();
-        }).ajaxStop(function () {
-            $('#ajaxBusy').hide();
-        });
-
     </script>
     <#--<div class="container">-->
     <div class="heading alert alert-info" style="padding: 6px;margin-bottom: 2px;margin-top: 2px;">

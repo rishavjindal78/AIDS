@@ -2,65 +2,10 @@
 <#import "common-macro.ftl" as comMacro>
 <#escape x as x?html>
     <@com.page activeTab="tasks">
-    <style>
-        /*.taskStepEdit {
-            color: red;
-            margin: 5px;
-            cursor: pointer;
-        }
-
-        .taskStepEdit:hover {
-            background: yellow;
-        }*/
-
-        #ajaxBusy {
-            display: none;
-            opacity: 0.9;
-            /*margin: 0px 0px 0px -50px; /!* left margin is half width of the div, to centre it *!/*/
-            /*padding: 30px 10px 10px 10px;*/
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            background: rgba(0,0,0,0.6) url(${rc.contextPath}/images/ajax-loader-big.gif) no-repeat center center;
-            border: 1px solid #8597d1;
-            z-index: 5;
-        }
-
-
-    </style>
+    <style> </style>
 
     <script type="text/javascript">
         $(document).ready(function () {
-            $('body').append('<div id="ajaxBusy"><p id="ajaxBusyMsg">Please wait...</p></div>');
-
-            $(".taskStepEdit").click(function () {
-               /* $('.taskstep_row').removeClass('alert-warning');
-                $.get('../edit/' + this.id, function (data) {
-                    $('#span_edit').empty();
-                    $('#span_edit').html(data);
-                    $('#span_edit').focus();
-//                    var target = "#" + this.getAttribute('data-target');
-                    $('html, body').animate({
-                        scrollTop: $("#span_edit").offset().top
-                    }, 1000);
-                });*/
-
-                $("#myModalLabelForEditTaskStep").text("Edit TaskStep");
-                $('.taskstep_row').removeClass('alert-warning');
-                $('#taskstep_row'+this.id).addClass('alert-warning');
-                $.get('../edit/' + this.id, function (data) {
-                    $('#span_edit_task_step').empty();
-                    $('#span_edit_task_step').html(data);
-                    $('#span_edit_task_step').focus();
-                    $('#myModalForEditTaskStep').modal({
-                        keyboard: true
-                    });
-                });
-            });
-
             $(".cancel").click(function () {
                 alert('button clicked external');
                 $(this).slideUp();
@@ -105,11 +50,6 @@
                     $.get('${rc.contextPath}/server/addTaskStep/${model.task.id}?taskClass=' + selectedClass, function (data) {
                         $('#span_task_step').empty();
                         $('#span_task_step').html(data);
-
-//                    $('#span_task_step').focus();
-                        /*$('#myModalLabelForTaskStep').modal({
-                            keyboard: true
-                        });*/
                     });
                 }
             });
@@ -117,7 +57,6 @@
 
         function cloneTask(taskId, taskName) {
             var userComment = prompt("Please provide the new task name - ", taskName + " - clone");
-//            var userOption = confirm("Are you sure to Clone this Task ?");
             if (userComment != null) {
                 $("#results").empty();
                 $.post("${rc.contextPath}/server/cloneTask/" + taskId, {taskName: userComment}, function (data) {
@@ -159,13 +98,26 @@
                 $.get('${rc.contextPath}/server/addTaskStep/${model.task.id}?taskClass=' + selectedClass, function (data) {
                     $('#span_task_step').empty();
                     $('#span_task_step').html(data);
-
                     $('#span_task_step').focus();
                     $('#myModalToListTaskClasses').modal({
                         keyboard: true
                     });
                 });
             }
+        }
+
+        function editTaskStep(taskStepId, description) {
+            $("#myModalLabelForEditTaskStep").text("Edit TaskStep - " + description);
+            $('.taskstep_row').removeClass('alert-warning');
+            $('#taskstep_row' + taskStepId).addClass('alert-warning');
+            $.get('../edit/' + taskStepId, function (data) {
+                $('#span_edit_task_step').empty();
+                $('#span_edit_task_step').html(data);
+                $('#span_edit_task_step').focus();
+                $('#myModalForEditTaskStep').modal({
+                    keyboard: true
+                });
+            });
         }
 
         function addAgent(taskStepId, description) {
@@ -198,13 +150,6 @@
                 });
             }
         }
-
-        // AJAX activity indicator bound to ajax start/stop document events
-        $(document).ajaxStart(function () {
-            $('#ajaxBusy').show();
-        }).ajaxStop(function () {
-            $('#ajaxBusy').hide();
-        });
     </script>
 
     <br/>
@@ -245,7 +190,8 @@
         </tr>
         <#list model.task.stepDataList as taskStep>
             <tr id="taskstep_row_${taskStep.id}" class="taskstep_row">
-                <td width="5%">${taskStep.sequence?string}</td>
+                <td width="5%">${taskStep.sequence?string}&nbsp;<a href="#" onclick="editTaskStep('${taskStep.id}', '${taskStep.description!?string}')"><span
+                        class="glyphicon glyphicon-edit"/></a></td>
                 <td width="12%">${taskStep.taskClass?string}</td>
                 <td width="30%">${taskStep.description!?string}</td>
                 <td width="5%"><input class="activeCheckBox" type="checkbox" id="${taskStep.id}"
@@ -269,7 +215,7 @@
                                 data-toggle="dropdown" aria-expanded="false"> Action <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a class="taskStepEdit" id="${taskStep.id?string}">Edit</a></li>
+                            <li><a href="#" onclick="editTaskStep('${taskStep.id}', '${taskStep.description!?string}')">Edit Step</a></li>
                             <li><a href="#" onclick="addAgent('${taskStep.id}', '${taskStep.description!?string}')">Add Agent</a></li>
                             <li><a href="#" onclick="executeStep('${taskStep.id}')">Execute Step</a></li>
                             <li class="divider"></li>

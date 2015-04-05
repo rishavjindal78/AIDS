@@ -1,7 +1,7 @@
 package org.shunya.shared.taskSteps;
 
-import org.shunya.shared.StringUtils;
 import org.shunya.shared.AbstractStep;
+import org.shunya.shared.StringUtils;
 import org.shunya.shared.annotation.InputParam;
 import org.shunya.shared.annotation.PunterTask;
 import org.shunya.shared.utils.DevEmailService;
@@ -13,17 +13,17 @@ import java.util.logging.Level;
 
 @PunterTask(author = "munishc", name = "EmailTask", description = "Email Task", documentation = "src/main/resources/docs/EmailTask.html")
 public class EmailStep extends AbstractStep {
-    @InputParam(required = true, displayName = "To Address", description = "comma separated to addresses")
+    @InputParam(required = false, displayName = "To Address", description = "comma separated to addresses")
     private String toAddress;
-    @InputParam(required = true, displayName = "CC Address", description = "comma separated CC addresses")
+    @InputParam(required = false, displayName = "CC Address", description = "comma separated CC addresses")
     private String ccAddress;
     @InputParam(required = true, displayName = "Email Subject", description = "Subject of Email")
     private String subject;
-    @InputParam(required = true, displayName = "From Address", description = "from Address")
+    @InputParam(required = false, displayName = "From Address", description = "from Address")
     private String fromAddress;
     @InputParam(required = true, displayName = "Email Body", type = "textarea", description = "html body")
     private String body;
-    @InputParam(required = true, displayName = "Comma Separated File Paths", description = "Comma Separated File Names")
+    @InputParam(required = false, displayName = "Comma Separated File Paths", description = "Comma Separated File Names")
     private String attachments;
     @InputParam(required = false, displayName = "Username", description = "Username if Auth is required")
     private String username;
