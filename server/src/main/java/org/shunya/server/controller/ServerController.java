@@ -293,6 +293,7 @@ public class ServerController {
 //        task.setStepDataList(task.getStepDataList().stream().sorted(Comparator.comparing(TaskStepData::getSequence)).collect(toList()));
         final String referer = request.getHeader("referer");
         model.addAttribute("task", task);
+        model.addAttribute("taskClasses", taskClasses);
         model.addAttribute("referer", referer);
         return "taskSteps";
     }
@@ -369,7 +370,7 @@ public class ServerController {
     }
 
     @RequestMapping(value = "/addTaskStep/{taskId}", method = RequestMethod.GET)
-    public String viewTaskSteps(@ModelAttribute("model") ModelMap model, @PathVariable("taskId") long taskId, @RequestParam(value = "taskClass", required = false, defaultValue = "EchoStep") String taskClass) throws Exception {
+    public String addTaskStep(@ModelAttribute("model") ModelMap model, @PathVariable("taskId") long taskId, @RequestParam(value = "taskClass", required = false, defaultValue = "EchoStep") String taskClass) throws Exception {
         model.addAttribute("taskId", taskId);
         if (taskClass == null || taskClass.isEmpty())
             taskClass = taskClasses[0];

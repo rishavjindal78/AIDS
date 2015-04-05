@@ -33,15 +33,6 @@
     </style>
 
     <script type="text/javascript">
-
-   /*     $(document).bind("ajaxSend", function(){
-            alert('start');
-            $(".busyindicatorClass").addClass('busyindicatorClass');
-        }).bind("ajaxComplete", function(){
-            alert('complete');
-            $(".busyindicatorClass").removeClass('busyindicatorClass');
-        });*/
-
         $(document).ready(function () {
             $('body').append('<div id="ajaxBusy"><p id="ajaxBusyMsg">Please wait...</p></div>');
 
@@ -68,8 +59,8 @@
                 $.ajax({
                     url: '../updateTaskStep',
                     type: 'POST',
-                    data: { id: $(this).attr("id"), active: $(this).is(":checked") },
-                    success: function(data) {
+                    data: {id: $(this).attr("id"), active: $(this).is(":checked")},
+                    success: function (data) {
 //                        location.reload();
                     }
                 });
@@ -79,20 +70,36 @@
                 $.ajax({
                     url: '../updateTaskStep2',
                     type: 'POST',
-                    data: { id: $(this).attr("id"), ignoreFailure: $(this).is(":checked") },
+                    data: {id: $(this).attr("id"), ignoreFailure: $(this).is(":checked")},
                     success: function (data) {
 //                        location.reload();
                     }
                 });
             });
 
-            $('#select_all').change(function() {
+            $('#select_all').change(function () {
                 alert("select all checked");
                 var checkboxes = $(this).closest('form').find(':checkbox');
-                if($(this).is(':checked')) {
+                if ($(this).is(':checked')) {
                     checkboxes.prop('checked', true);
                 } else {
                     checkboxes.prop('checked', false);
+                }
+            });
+
+            $("#taskClassSelect").change(function () {
+                var selectedClass = $('#taskClassSelect').val();
+                if (selectedClass != null) {
+                    $("#myModalLabel").text("TaskStep - " + selectedClass);
+                    $.get('${rc.contextPath}/server/addTaskStep/${model.task.id}?taskClass=' + selectedClass, function (data) {
+                        $('#span_task_step').empty();
+                        $('#span_task_step').html(data);
+
+//                    $('#span_task_step').focus();
+                        /*$('#myModalLabelForTaskStep').modal({
+                            keyboard: true
+                        });*/
+                    });
                 }
             });
         });
@@ -102,7 +109,7 @@
 //            var userOption = confirm("Are you sure to Clone this Task ?");
             if (userComment != null) {
                 $("#results").empty();
-                $.post("${rc.contextPath}/server/cloneTask/"+taskId, {taskName: userComment}, function (data) {
+                $.post("${rc.contextPath}/server/cloneTask/" + taskId, {taskName: userComment}, function (data) {
                     $("#results").html('<div class="alert alert-success small">Task Cloned Successfully - ' + userComment + '</div>');
                 });
             }
@@ -113,10 +120,10 @@
             var customProperties = $('#customPropertiesTextArea').val();
             if (userComment != null) {
                 $("#results").empty();
-                $.post(url, { comment: userComment, properties: customProperties}, function (data) {
+                $.post(url, {comment: userComment, properties: customProperties}, function (data) {
                     var result = "";
-                    $.each(data, function(index, value){
-                       result += '<div class="alert alert-success small">Task Submitted Successfully - <a href="../taskRun/view/'+value.id+'" target="_blank">' + value.id + ' - Logs</a></div>';
+                    $.each(data, function (index, value) {
+                        result += '<div class="alert alert-success small">Task Submitted Successfully - <a href="../taskRun/view/' + value.id + '" target="_blank">' + value.id + ' - Logs</a></div>';
                     });
                     $("#results").html(result);
                 });
@@ -128,8 +135,24 @@
             var userComment = prompt("Please enter comments for the step run .. ?", "Test Step Run");
             if (userComment != null) {
                 $("#results").empty();
-                $.post("${rc.contextPath}/server/runSingleStep/${model.task.id}/"+taskStepId, { comment: userComment}, function (data) {
-                    $("#results").html('<div class="alert alert-success small">Task Submitted Successfully - <a href="../taskRun/view/'+data.id+'" target="_blank">Logs</a></div>');
+                $.post("${rc.contextPath}/server/runSingleStep/${model.task.id}/" + taskStepId, {comment: userComment}, function (data) {
+                    $("#results").html('<div class="alert alert-success small">Task Submitted Successfully - <a href="../taskRun/view/' + data.id + '" target="_blank">Logs</a></div>');
+                });
+            }
+        }
+
+        function addTaskStep(){
+            var selectedClass = $('#taskClassSelect').val();
+            if (selectedClass != null) {
+                $("#myModalLabel").text("TaskStep - " + selectedClass);
+                $.get('${rc.contextPath}/server/addTaskStep/${model.task.id}?taskClass=' + selectedClass, function (data) {
+                    $('#span_task_step').empty();
+                    $('#span_task_step').html(data);
+
+                    $('#span_task_step').focus();
+                    $('#myModalToListTaskClasses').modal({
+                        keyboard: true
+                    });
                 });
             }
         }
@@ -147,7 +170,7 @@
         }
 
         function removeAgent(agentId, taskId) {
-            var userOption = confirm("Are you sure to remove this Agent - "+agentId+" ?");
+            var userOption = confirm("Are you sure to remove this Agent - " + agentId + " ?");
             if (userOption) {
                 $.post('${rc.contextPath}/server/taskStep/removeAgent/' + taskId + '/' + agentId, function (data) {
                     $('#results').empty();
@@ -193,7 +216,7 @@
     <p><strong>Created By </strong>: ${(model.task.author.name)!}</p>
     <p><#if model.task.dateUpdated??><strong>Updated On</strong>: ${model.task.dateUpdated?datetime?string("dd MMM, yyyy hh.mm aa")}</#if></p>
 
-    <a href="../addTaskStep/${model.task.id?string}" class="btn btn-mini btn-primary">Add Task Step</a>
+    <button type="button" class="btn btn-mini btn-primary" onclick="addTaskStep()">Add Task Step</button>
     <#--<a href="#" onclick="execute('../run/${model.task.id?string}')" class="btn btn-mini  btn btn-danger">Run</a>-->
     <#--<a href="../taskHistory/${model.task.id}" class="btn btn-mini  btn btn-primary">Run History</a>-->
     <!-- Button trigger modal -->
@@ -231,7 +254,7 @@
                 </td>
                 <td width="12%">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-primary dropdown-toggle"
+                        <button type="button" class="btn btn-sm btn-default dropdown-toggle"
                                 data-toggle="dropdown" aria-expanded="false"> Action <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
@@ -273,6 +296,32 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" onclick="runTask('../run/${model.task.id?string}')">Run Task</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for selecting new Task Step Class -->
+    <div class="modal fade" id="myModalToListTaskClasses" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="alert alert-warning">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Add Task Step</h4>
+
+                        <div class="form-group">
+                            <select id="taskClassSelect" class="form-control" name="taskClass">
+                                <#list model["taskClasses"] as taskClass>
+                                    <option value="${taskClass}">${taskClass}</option>
+                                </#list>
+                            </select>
+                        </div>
+                    </div>
+                <span id="span_task_step">
+                </span>
                 </div>
             </div>
         </div>
