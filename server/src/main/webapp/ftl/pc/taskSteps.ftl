@@ -248,6 +248,10 @@
                             <label for="customPropertiesTextArea">Custom Properties</label>
                                 <textarea id="customPropertiesTextArea" type="text" class="form-control input-sm" placeholder="Agent properties to override" name="properties" rows="3"></textarea>
                         </div>
+                        <div class="form-group">
+                            <label>Logging</label>
+                            <input type="range" size="2" name="satisfaction" min="1" max="3" value="3">
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">

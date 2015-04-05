@@ -14,10 +14,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -42,7 +43,7 @@ public class DBCleanUpService {
     //    @Scheduled(cron = "0 0/2 * * * ?")
     @Scheduled(cron = "${cleanOldTaskHistory.cron.expression}")
     public void cleanOldTaskHistory() {
-        logger.info("Running TaskRun Cleanup Job for Max Age - " + maxTaskRunAge);
+        logger.debug("Running TaskRun Cleanup Job for Max Age - " + maxTaskRunAge);
         List<TaskRun> taskHistoryByAge = dbService.findTaskHistoryByAge(maxTaskRunAge);
         taskHistoryByAge.forEach(taskRun -> dbService.deleteTaskRun(taskRun.getId()));
         logger.info("Job TaskRun Cleanup completed for Max Age - " + maxTaskRunAge + ", deleted entries - " + taskHistoryByAge.size());
@@ -51,7 +52,7 @@ public class DBCleanUpService {
     //    @Scheduled(cron = "0 0/2 * * * ?")
     @PostConstruct
     public void synchronizeTasksWhenServerIsRestarted() {
-        logger.info("Running TaskRun Synchronization after server startup");
+        logger.debug("Running TaskRun Synchronization after server startup");
         List<TaskRun> runningTasks = dbService.findRunningTasks();
         runningTasks.forEach(taskRun -> {
             if (!taskService.isTaskRunning(taskRun)) {
@@ -73,7 +74,7 @@ public class DBCleanUpService {
 
     @Scheduled(cron = "${backupTasks.cron.expression}")
     public void backUpTasks() {
-        logger.info("running daily backup all the Tasks into aids home - " + aids_home);
+        logger.debug("running daily backup all the Tasks into aids home - " + aids_home);
         List<Task> tasks = dbService.listAllTasks();
         tasks.forEach(task -> {
             Task taskToSave = dbService.getTask(task.getId());

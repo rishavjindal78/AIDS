@@ -37,6 +37,13 @@
             });
         }
 
+        function deleteDocument(docId) {
+            var option = confirm("Are you sure to delete the Document : " + docId + " ?");
+            if (option == true) {
+                document.getElementById("documentDeleteForm_" + docId).submit();
+            }
+        }
+
     </script>
 
     <BR>
@@ -83,7 +90,7 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label"></label>
                     <input type="submit" class="btn btn-primary" value="Save"/>
-                    <button class="btn cancel btn-default" id="cancel">Cancel</button>
+                    <button type="reset" class="btn cancel btn-default" id="cancel">Cancel</button>
                 </div>
             </form>
         </fieldset>
@@ -104,11 +111,9 @@
                             ]<BR>
                             Total downloads : ${doc.downloads!''}
                             <BR>
-                            <button class="btn btn-xs" href="${rc.contextPath}/documents/download/${doc.id}">Download</button>
-                            <form action="${rc.contextPath}/documents/team/${Session['SELECTED_TEAM'].id}/delete/${doc.id}" method="POST"><input type="submit"
-                                                                                                         class="btn btn-xs"
-                                                                                                         value="Delete"
-                                                                                                         onclick="return confirm('Please click ok to confirm ?')"/>
+                            <a class="btn btn-xs" href="${rc.contextPath}/documents/download/${doc.id}">Download</a>
+                            <form id="documentDeleteForm_${doc.id}" action="${rc.contextPath}/documents/team/${Session['SELECTED_TEAM'].id}/delete/${doc.id}" method="POST">
+                                <input type="submit" class="btn btn-xs" value="Delete" onclick="return confirm('Please click ok to confirm ?')"/>
                             </form>
                         </p>
                     </div>
@@ -122,6 +127,7 @@
                         <ul class="dropdown-menu" role="menu">
                             <li><a href="${rc.contextPath}/documents/download/${doc.id}">Download</a></li>
                             <li><a href="#" onclick="editDocument('${doc.id}')">Edit</a></li>
+                            <li><a href="#" onclick="deleteDocument('${doc.id}')">Delete</a></li>
                             <#--<li class="divider"></li>-->
                             <#--<li><a href="${rc.getContextPath()}/server/delete/${td.id}">Delete</a></li>-->
                         </ul>
