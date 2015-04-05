@@ -223,8 +223,8 @@
         </table>
         <span id="results"></span>
     </div>
-    <!-- Modal for add agent -->
 
+    <!-- Modal for add agent -->
     <div class="modal fade" id="myModalForAgent" tabindex="-1" role="dialog" aria-labelledby="myModalLabelForAgent" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

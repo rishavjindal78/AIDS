@@ -34,22 +34,24 @@
                     </div>
 
                     <div class="form-group">
-                        <table name="inputParamsMap" class="table">
+                        <label>Input Variables Group</label>
+                        <table name="inputParamsMap" class="table table-striped table-condensed">
                             <#list model["inputParams"] as fieldProperties>
                                 <tr>
                                 <#--<td><label for="input${fieldProperties.displayName?string}" class="col-lg-3 control-label">${fieldProperties.displayName?string}</label></td>-->
                                     <td hidden="true">${fieldProperties.displayName?string}</td>
                                     <td>
                                         <#if fieldProperties.type == 'textarea'>
-                                            <label for="input${fieldProperties.displayName?string}">${fieldProperties.displayName?string}</label>
-                                        <textarea id="input${fieldProperties.displayName?string}" class="form-control"
+                                            <label for="input${fieldProperties.displayName?string}">${fieldProperties_index+1}. ${fieldProperties.displayName?string}</label>
+                                            <textarea id="input${fieldProperties.displayName?string}" class="form-control"
                                                   name="inputParamsMap['${fieldProperties.name?string}']"
                                                   placeholder="${fieldProperties.name?string}" rows="10"/></textarea>
                                         <#elseif fieldProperties.type == 'date'>
 
                                         <#else>
-                                            <label for="input${fieldProperties.displayName?string}">${fieldProperties.displayName?string}</label>
-                                            <input id="input${fieldProperties.displayName?string}" class="form-control" type="text" name="inputParamsMap['${fieldProperties.name?string}']" placeholder="${fieldProperties.name?string}"/>
+                                            <label for="input${fieldProperties.displayName?string}">${fieldProperties_index+1}. ${fieldProperties.displayName?string}</label>
+                                            <input id="input${fieldProperties.displayName?string}" class="form-control" type="${fieldProperties.type?string}" name="inputParamsMap['${fieldProperties.name?string}']" placeholder="${fieldProperties.name?string}"
+                                            <#if fieldProperties.required?? && fieldProperties.required?string=="true">required</#if> />
                                         </#if>
                                     </td>
                                 </tr>
@@ -58,15 +60,16 @@
                     </div>
 
                     <div class="form-group">
-                        <table name="outputParamsMap" class="table">
+                        <label>Output Variables Group</label>
+                        <table name="outputParamsMap" class="table table-striped table-condensed">
                             <#list model["outputParams"] as fieldProperties>
                                 <tr>
                                     <td hidden="">${fieldProperties.displayName?string}</td>
-                                    <td><label
-                                            for="outputParamsMap['${fieldProperties.name?string}']">${fieldProperties.displayName?string}</label><input
-                                            type="text" class="form-control"
-                                            name="outputParamsMap['${fieldProperties.name?string}']"
-                                            placeholder="${fieldProperties.name?string}"/></td>
+                                    <td>
+                                        <label for="outputParamsMap['${fieldProperties.name?string}']">${fieldProperties_index+1}. ${fieldProperties.displayName?string}</label>
+                                        <input type="text" class="form-control" name="outputParamsMap['${fieldProperties.name?string}']"
+                                            placeholder="${fieldProperties.name?string}"/>
+                                    </td>
                                 </tr>
                             </#list>
                         </table>

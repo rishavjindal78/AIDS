@@ -37,8 +37,7 @@
             $('body').append('<div id="ajaxBusy"><p id="ajaxBusyMsg">Please wait...</p></div>');
 
             $(".taskStepEdit").click(function () {
-                $('.taskstep_row').removeClass('alert-warning');
-                $('#taskstep_row_' + this.id).addClass('alert-warning');
+               /* $('.taskstep_row').removeClass('alert-warning');
                 $.get('../edit/' + this.id, function (data) {
                     $('#span_edit').empty();
                     $('#span_edit').html(data);
@@ -47,6 +46,18 @@
                     $('html, body').animate({
                         scrollTop: $("#span_edit").offset().top
                     }, 1000);
+                });*/
+
+                $("#myModalLabelForEditTaskStep").text("Edit TaskStep");
+                $('.taskstep_row').removeClass('alert-warning');
+                $('#taskstep_row'+this.id).addClass('alert-warning');
+                $.get('../edit/' + this.id, function (data) {
+                    $('#span_edit_task_step').empty();
+                    $('#span_edit_task_step').html(data);
+                    $('#span_edit_task_step').focus();
+                    $('#myModalForEditTaskStep').modal({
+                        keyboard: true
+                    });
                 });
             });
 
@@ -337,6 +348,21 @@
                 </div>
                 <span id="span_task_agent">
                 </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for edit TaskStep -->
+    <div class="modal fade" id="myModalForEditTaskStep" tabindex="-1" role="dialog" aria-labelledby="myModalLabelForEditTaskStep" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="alert alert-warning">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title text-muted" id="myModalLabelForEditTaskStep">Edit Task Step</h4>
+                    </div>
+                    <span id="span_edit_task_step" />
+                </div>
             </div>
         </div>
     </div>

@@ -1,8 +1,8 @@
 package org.shunya.shared.taskSteps;
 
 import org.apache.commons.io.IOUtils;
-import org.shunya.shared.StringUtils;
 import org.shunya.shared.AbstractStep;
+import org.shunya.shared.StringUtils;
 import org.shunya.shared.annotation.InputParam;
 import org.shunya.shared.annotation.OutputParam;
 import org.shunya.shared.annotation.PunterTask;
@@ -16,16 +16,16 @@ import java.util.logging.Level;
 
 @PunterTask(author = "munishc", name = "HttpGetTask", description = "Plays HTTP GET Request on the given URL.", documentation = "src/main/resources/docs/TextSamplerDemoHelp.html")
 public class HttpDownloadStep extends AbstractStep {
-    @InputParam(required = false, displayName = "Http Url", description = "enter httpUrl here")
+    @InputParam(required = false, type = "url", displayName = "Http Url", description = "enter httpUrl here")
     private String httpUrl;
-    @InputParam(required = false, displayName = "Https Url", description = "enter httpsUrl here")
+    @InputParam(required = false, type = "url", displayName = "Https Url", description = "enter httpsUrl here")
     private String httpsUrl;
     @InputParam(required = true, displayName = "Local Path", description = "Local Folder Path")
     private String localPath;
-    @InputParam(required = false, displayName = "File Name", description = "file name")
+    @InputParam(required = true, displayName = "File Name", description = "file name")
     private String fileName;
 
-    @OutputParam
+    @OutputParam(displayName = "Http Response")
     private String httpResponse;
 
     @Override

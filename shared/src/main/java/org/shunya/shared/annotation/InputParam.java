@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @XmlTransient
 public @interface InputParam{
     String bind() default "";
-    String type() default "input";
+    String type() default "text";
     String description() default "";
     String displayName() default "";
     boolean required() default false;

@@ -1,8 +1,8 @@
 package org.shunya.shared.taskSteps;
 
 
-import org.shunya.shared.StringUtils;
 import org.shunya.shared.AbstractStep;
+import org.shunya.shared.StringUtils;
 import org.shunya.shared.annotation.InputParam;
 import org.shunya.shared.annotation.PunterTask;
 import org.shunya.shared.utils.RestClient;
@@ -17,11 +17,11 @@ import static java.util.Arrays.asList;
 public class FileUploadStep extends AbstractStep {
     @InputParam(required = true, displayName = "Server Address", description = "enter your httpUrl here http://localhost:8080/upload/")
     private String server;
-    @InputParam(required = false, displayName = "Local File Path", description = "Path of the file to upload e:/test.mp3")
+    @InputParam(required = true, displayName = "Local File Path", description = "Path of the file to upload e:/test.mp3")
     private String filePath;
-    @InputParam(required = false, displayName = "Target File Name", description = "Target Name of the file")
+    @InputParam(required = true, displayName = "Target File Name", description = "Target Name of the file")
     private String name;
-    @InputParam(required = false, displayName = "Target Folder", description = "Target Path for the file", substitute = false)
+    @InputParam(required = true, displayName = "Target Folder", description = "Target Path for the file", substitute = false)
     private String remotePath;
     private RestClient restClient = new RestClient();
 

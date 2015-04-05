@@ -3,7 +3,6 @@
     $(document).ready(function () {
         $(".cancel").click(function (e) {
             $('#taskstep_row_'+${model.stepData.id!?string}).removeClass('alert-warning');
-            $('#span_edit').empty();
             e.preventDefault();
             e.stopPropagation();
 //            $(this).parent().parent().parent().remove();
@@ -20,53 +19,33 @@
         <legend class="text-muted">${model.stepData.sequence}. Edit TaskStep - ${model.stepData.description!?string}</legend>
         <form id="editTaskStepData" class="form-horizontal" name="taskStepDTO" modelAttribute="taskStepDTO"
               action="../addTaskStep/${model.stepData.id}" method="post">
+            <div class="modal-body">
+                <input type="hidden" id="taskDataId" class="form-control" name="taskId" value="${model.stepData.task.id}" readonly="true">
+                <input type="hidden" readonly="true" class="form-control" name="className" value="${model.stepData.taskClass}">
             <div class="form-group">
-                <label for="taskDataId" class="col-lg-2 control-label">TaskData Id</label>
-
-                <div class="col-lg-10">
-                    <input type="text" id="taskDataId" class="form-control" name="taskId" value="${model.stepData.task.id}"
-                           readonly="true">
-                </div>
+                <label for="taskSequence">Execution #</label>
+                <input id="taskSequence" type="text" class="form-control" name="sequence" value="${model.stepData.sequence}" required pattern="\d+">
             </div>
 
             <div class="form-group">
-                <label for="classNameId" class="col-lg-2 control-label">ClassName</label>
-
-                <div class="col-lg-10">
-                    <input id="classNameId" type="text" readonly="true" class="form-control" name="className"
-                           value="${model.stepData.taskClass}">
-                </div>
+                <label for="taskDescriptionId">Description</label>
+                <input id="taskDescriptionId" type="text" class="form-control" name="description" value="${model.stepData.description!?string}">
             </div>
 
             <div class="form-group">
-                <label for="taskSequence" class="col-lg-2 control-label">Execution #</label>
-
-                <div class="col-lg-10">
-                    <input id="taskSequence" type="text" class="form-control" name="sequence" value="${model.stepData.sequence}" required pattern="\d+">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="taskDescriptionId" class="col-lg-2 control-label">Description</label>
-
-                <div class="col-lg-10">
-                    <input id="taskDescriptionId" type="text" class="form-control" name="description" value="${model.stepData.description!?string}">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <table name="inputParamsMap" class="table">
+                <label for="taskDescriptionId">Input Variables Group</label>
+                <table name="inputParamsMap" class="table table-striped table-condensed">
                     <#list model["inputParams"] as fieldProperties>
                         <tr>
-                            <td hidden="true">${fieldProperties.displayName!?string}</td>
+                            <td hidden="true">${fieldProperties_index+1}. ${fieldProperties.displayName!?string}</td>
                             <td>
                                 <#if fieldProperties.type == 'textarea'>
-                                    <label for="inputParamsMap['${fieldProperties.name?string}']">${fieldProperties.displayName!fieldProperties.name!?string}</label>
+                                    <label for="inputParamsMap['${fieldProperties.name?string}']">${fieldProperties_index+1}. ${fieldProperties.displayName!fieldProperties.name!?string}</label>
                                     <textarea class="form-control" id="inputParamsMap['${fieldProperties.name?string}']" name="inputParamsMap['${fieldProperties.name?string}']" placeholder="Enter text ..." rows="10">${fieldProperties.value?string}</textarea>
                                 <#elseif fieldProperties.type == 'date'>
 
                                  <#else>
-                                    <label for="inputParamsMap['${fieldProperties.name?string}']">${fieldProperties.displayName!fieldProperties.name!?string}</label>
+                                    <label for="inputParamsMap['${fieldProperties.name?string}']">${fieldProperties_index+1}. ${fieldProperties.displayName!fieldProperties.name!?string}</label>
                                     <input type="text" id="inputParamsMap['${fieldProperties.name?string}']" class="form-control" name="inputParamsMap['${fieldProperties.name?string}']" value="${fieldProperties.value?string}"/>
                                 </#if>
                             </td>
@@ -74,9 +53,10 @@
                     </#list>
                 </table>
             </div>
-<#--<hr>-->
+<#--<hr/>-->
             <div class="form-group">
-                <table name="outputParamsMap" class="table">
+                <label for="taskDescriptionId">Output Group</label>
+                <table name="outputParamsMap" class="table table-striped table-condensed">
                     <#list model["outputParams"] as fieldProperties>
                         <tr>
                             <td hidden="true">${fieldProperties.displayName!?string}</td>
@@ -89,9 +69,11 @@
                     </#list>
                 </table>
             </div>
-            <div class="control-group">
-                <button type="submit" class="btn btn-primary" id="save">Save</button>
-                <button class="btn cancel btn-default" id="cancel">Cancel</button>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
             </div>
         </form>
     </fieldset>
