@@ -47,6 +47,8 @@ public class UserController {
         User userByUsername = dbService.findUserByUsername(user.getUsername());
         if (userByUsername != null)
             result.addError(new FieldError("user", "username", "username already exists !"));
+        if(user.getPassword().length() < 2)
+            result.addError(new FieldError("user", "password", "password is too small !"));
         if (result.hasErrors()) {
             model.addAttribute("user", user);
             return "registerUser";

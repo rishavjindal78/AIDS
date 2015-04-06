@@ -1,4 +1,6 @@
 <#import "/spring.ftl" as spring />
+<#assign xhtmlCompliant = true in spring>
+<#assign htmlEscape = true in spring>
 <#escape x as x?html>
 <html>
 <head>
@@ -10,7 +12,8 @@
 </head>
 <body onload="document.login_form.username.focus();">
     <@spring.bind "user" />
-    <#if spring.status.error>
+    <@spring.showErrors '*', 'errors' />
+    <#--<#if spring.status.error>
     <div class="errors">
         There were problems with the data you entered:
         <ul>
@@ -21,9 +24,9 @@
     </div>
     <#else>
     <div class="errors">
-        <#--There are no errors.-->
+        &lt;#&ndash;There are no errors.&ndash;&gt;
     </div>
-    </#if>
+    </#if>-->
 
 <div class="container">
     <fieldset>
@@ -44,7 +47,9 @@
             <div class="form-group">
                 <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
                 <div class="col-sm-4">
-                    <input type="password" name='password' class="form-control" id="inputPassword3" placeholder="Password" required>
+                    <#--<input type="password" name='password' class="form-control" id="inputPassword3" placeholder="Password" required>-->
+                    <@spring.formPasswordInput  "user.password", "class='form-control' placeholder='@124544kjkj' required"/>
+                    <@spring.showErrors "<br>" "color:red;"/>
                 </div>
             </div>
             <div class="form-group">
@@ -91,21 +96,14 @@
 
 
 
-   <#-- <#if spring.status.error>
+    <#if spring.status.error>
         <ul>
             <#list spring.status.errors.globalErrors as error>
                 <li>${error.defaultMessage}</li>
             </#list>
         </ul>
-    </#if>-->
-
-    <#if Session.SPRING_SECURITY_LAST_EXCEPTION?? && Session.SPRING_SECURITY_LAST_EXCEPTION.message?has_content>
-        <div><span style='color:red;'>
-            <@spring.message "label.loginerror"/> Your login attempt was not successful, try again.<br />
-            Reason :   ${Session.SPRING_SECURITY_LAST_EXCEPTION.message}
-        </span>
-        </div>
     </#if>
+
 </div>
 </body>
 </html>
