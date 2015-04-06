@@ -8,6 +8,8 @@
     </style>
 
     <script type="text/javascript">
+        useAjaxBusyWait();
+
         function runTask(url) {
             var userComment = prompt("Please enter comments for the run .. ?", "Test Run");
             if (userComment != null) {

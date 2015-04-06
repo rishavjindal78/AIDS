@@ -5,6 +5,7 @@
     <style> </style>
 
     <script type="text/javascript">
+        useAjaxBusyWait();
         $(document).ready(function () {
             $(".cancel").click(function () {
                 alert('button clicked external');
@@ -190,7 +191,7 @@
         </tr>
         <#list model.task.stepDataList as taskStep>
             <tr id="taskstep_row_${taskStep.id}" class="taskstep_row">
-                <td width="5%">${taskStep.sequence?string}&nbsp;<a href="#" onclick="editTaskStep('${taskStep.id}', '${taskStep.description!?string}')"><span
+                <td width="5%">${taskStep.sequence?string}&nbsp;<a href="javascript:void(0);" onclick="editTaskStep('${taskStep.id}', '${taskStep.description!?string}')"><span
                         class="glyphicon glyphicon-edit"/></a></td>
                 <td width="12%">${taskStep.taskClass?string}</td>
                 <td width="30%">${taskStep.description!?string}</td>
@@ -215,9 +216,9 @@
                                 data-toggle="dropdown" aria-expanded="false"> Action <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="#" onclick="editTaskStep('${taskStep.id}', '${taskStep.description!?string}')">Edit Step</a></li>
-                            <li><a href="#" onclick="addAgent('${taskStep.id}', '${taskStep.description!?string}')">Add Agent</a></li>
-                            <li><a href="#" onclick="executeStep('${taskStep.id}')">Execute Step</a></li>
+                            <li><a href="javascript:void(0);" onclick="editTaskStep('${taskStep.id}', '${taskStep.description!?string}')">Edit Step</a></li>
+                            <li><a href="javascript:void(0);" onclick="addAgent('${taskStep.id}', '${taskStep.description!?string}')">Add Agent</a></li>
+                            <li><a href="javascript:void(0);" onclick="executeStep('${taskStep.id}')">Execute Step</a></li>
                             <li class="divider"></li>
                             <li><a class="" href="#" onclick="removeStep('${taskStep.id}','${taskStep.description!?string}')">Delete Step</a></li>
                         </ul>
