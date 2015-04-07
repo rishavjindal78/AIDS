@@ -25,10 +25,9 @@ public class MultiUnZipStep extends AbstractStep {
 
     @Override
     public boolean run() {
-        List<String> tuples = asList(inputOutputTuples.split("[\r\n]"));
-        if(tuples.isEmpty()){
+        if(inputOutputTuples==null || inputOutputTuples.isEmpty())
             throw new InvalidStepInputException("There is no input specified for MultiUnzip Step");
-        }
+        List<String> tuples = asList(inputOutputTuples.split("[\r\n]"));
         AtomicBoolean result = new AtomicBoolean(true);
         tuples.parallelStream().forEach(tuple -> {
             String[] split = tuple.split("[;=,]");

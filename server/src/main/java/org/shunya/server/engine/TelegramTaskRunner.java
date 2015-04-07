@@ -9,7 +9,10 @@ import org.shunya.server.services.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class TelegramTaskRunner {
     private static final Logger logger = LoggerFactory.getLogger(TelegramTaskRunner.class);
@@ -107,7 +110,7 @@ public class TelegramTaskRunner {
                     logger.warn("exception getting user info", e);
                 }
                 logger.info("Properties to override for - " + valuesToOverride);
-                taskService.execute(taskRun, valuesToOverride, true);
+                taskService.execute(taskRun, valuesToOverride, true, 4);
                 return "Command Sent to Server - " + task.getName();
             } else {
                 return "Chat Channel is not part of Team - " + task.getTeam().getName();

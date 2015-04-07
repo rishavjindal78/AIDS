@@ -18,6 +18,7 @@ public class TaskExecutionContext {
     private boolean taskStatus = true;
     private boolean abortOnFirstFailure = true;
     private boolean cancelled = false;
+    private int loggingLevel = 4;
 
     public TaskExecutionContext(Task task) {
         this.task = task;
@@ -73,5 +74,13 @@ public class TaskExecutionContext {
 
     public List<TaskStepRun> getCurrentlyRunningTaskStepRuns() {
         return currentlyRunningTaskStepRuns;
+    }
+
+    public int getLoggingLevel() {
+        return loggingLevel;
+    }
+
+    public void setLoggingLevel(int loggingLevel) {
+        this.loggingLevel = loggingLevel;
     }
 }

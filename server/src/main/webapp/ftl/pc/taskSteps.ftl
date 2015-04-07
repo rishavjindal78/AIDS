@@ -69,9 +69,10 @@
         function runTask(url) {
             var userComment = $('#userComments').val();
             var customProperties = $('#customPropertiesTextArea').val();
+            var taskRunLoggingLevel = $('#taskRunLoggingLevel').val();
             if (userComment != null) {
                 $("#results").empty();
-                $.post(url, {comment: userComment, properties: customProperties}, function (data) {
+                $.post(url, {comment: userComment, properties: customProperties, loggingLevel:taskRunLoggingLevel}, function (data) {
                     var result = "";
                     $.each(data, function (index, value) {
                         result += '<div class="alert alert-success small">Task Submitted Successfully - <a href="../taskRun/view/' + value.id + '" target="_blank">' + value.id + ' - Logs</a></div>';
@@ -250,8 +251,8 @@
                                 <textarea id="customPropertiesTextArea" type="text" class="form-control input-sm" placeholder="Agent properties to override" name="properties" rows="3"></textarea>
                         </div>
                         <div class="form-group">
-                            <label>Logging</label>
-                            <input type="range" size="2" name="satisfaction" min="1" max="3" value="3">
+                            <label>Logging Level</label>
+                            <input type="range" size="2" id ="taskRunLoggingLevel" name="loggingLevel" min="1" max="4" value="3">
                         </div>
                     </form>
                 </div>

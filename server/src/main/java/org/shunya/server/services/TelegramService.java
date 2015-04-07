@@ -235,7 +235,7 @@ public class TelegramService implements StatusObserver {
             if (user != null) {
                 taskRun.setRunBy(user);
             }
-            taskService.execute(taskRun, new HashMap<>(), true);
+            taskService.execute(taskRun, new HashMap<>(), true, 4);
             sendMessage(peerState, "Command Sent to Server - " + task.getName());
         } catch (Exception e) {
             e.printStackTrace();

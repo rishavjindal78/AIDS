@@ -20,7 +20,7 @@ public class SystemCommandStep extends AbstractStep {
     public String systemCommand;
     @InputParam(required = false, displayName = "Success Message", type = "text", description = "Import terminated successfully")
     public String successMessage;
-    @InputParam(required = false, displayName = "Wait For Terminate", type = "text", description = "Should this step wait for the forked Process termination or not ?")
+    @InputParam(required = false, displayName = "Wait For Terminate", type = "checkbox", description = "Should this step wait for the forked Process termination or not ?")
     public boolean waitForTerminate = true;
 
     private Process child;

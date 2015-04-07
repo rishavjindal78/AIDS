@@ -1,10 +1,6 @@
 package org.shunya.agent.services;
 
-import org.shunya.shared.AbstractStep;
-import org.shunya.shared.TaskContext;
-import org.shunya.shared.TaskStepDTO;
-import org.shunya.shared.RunState;
-import org.shunya.shared.RunStatus;
+import org.shunya.shared.*;
 import org.shunya.shared.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +38,7 @@ public class TaskProcessor {
             TaskStepDTO taskStepDTO = taskContext.getStepDTO();
             taskContext.getTaskStepRunDTO().setStartTime(new Date());
             AbstractStep taskStep = AbstractStep.getTask(taskStepDTO);
+            taskStep.setLoggingLevel(taskContext.getLoggingLevel());
             taskStep.setTaskStepData(taskStepDTO);
             taskStep.setSessionMap(taskContext.getSessionMap());
             cache.put(taskContext.getTaskStepRunDTO().getId(), taskStep);

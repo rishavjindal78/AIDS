@@ -11,6 +11,7 @@ public class TaskContext {
     private String baseUrl;
     private String username;
     private String password;
+    private int loggingLevel = 4;
 
     public TaskStepRunDTO getTaskStepRunDTO() {
         return taskStepRunDTO;
@@ -74,5 +75,13 @@ public class TaskContext {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getLoggingLevel() {
+        return loggingLevel;
+    }
+
+    public void setLoggingLevel(int loggingLevel) {
+        this.loggingLevel = loggingLevel;
     }
 }

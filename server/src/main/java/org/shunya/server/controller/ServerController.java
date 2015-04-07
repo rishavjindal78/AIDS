@@ -54,7 +54,7 @@ public class ServerController {
 
     @Autowired
     private AidsJobScheduler aidsJobScheduler;
-    final String[] taskClasses = {"EchoStep", "DiscSpaceStep", "SystemCommandStep", "FileUploadStep", "HttpDownloadStep", "DeclareVariableStep", "UpdateDBStep", "EmailStep", "UnZipStep", "TokenReplaceStep"};
+    final String[] taskClasses = {"EchoStep", "DiscSpaceStep", "SystemCommandStep", "FileUploadStep", "HttpDownloadStep", "DeclareVariableStep", "UpdateDBStep", "EmailStep", "UnZipStep", "MultiUnZipStep", "TokenReplaceStep"};
 
     @RequestMapping(value = "test", method = RequestMethod.GET)
     public String test(@ModelAttribute("model") ModelMap model) {
@@ -366,6 +366,8 @@ public class ServerController {
         FieldPropertiesMap outPropertiesMap = FieldPropertiesMap.convertXmlToObject(stepData.getOutputParams());
         model.addAttribute("inputParams", inPropertiesMap.values());
         model.addAttribute("outputParams", outPropertiesMap.values());
+        Class<?> task = Class.forName("org.shunya.shared.taskSteps." + stepData.getTaskClass());
+        model.addAttribute("taskMetadata", AbstractStep.getTaksStepMetaData(task));
         return "editTaskStep";
     }
 
@@ -376,7 +378,7 @@ public class ServerController {
             taskClass = taskClasses[0];
         //TODO - Add Task Registry for managing task classes
         Class<?> task = Class.forName("org.shunya.shared.taskSteps." + taskClass);
-        FieldPropertiesMap inPropertiesMap = AbstractStep.listInputParams(task, Collections.<String, String>emptyMap());
+        FieldPropertiesMap inPropertiesMap = AbstractStep.listInputParams(task, task.newInstance());
         FieldPropertiesMap outPropertiesMap = AbstractStep.listOutputParams(task, Collections.<String, String>emptyMap());
         model.addAttribute("selectedClass", taskClass);
         model.addAttribute("taskClasses", taskClasses);
@@ -479,6 +481,7 @@ public class ServerController {
     public List<TaskRun> runTask(@PathVariable("taskId") Long taskId,
                                  @RequestParam(defaultValue = "test", required = false) String comment,
                                  @RequestParam(defaultValue = "", required = false) String properties,
+                                 @RequestParam(defaultValue = "3", required = false) int loggingLevel,
                                  @RequestParam(defaultValue = "false", required = false) boolean notifyStatus,
                                  Principal principal) {
         logger.info("Run request for {}, user comments {}", taskId, comment);
@@ -486,9 +489,9 @@ public class ServerController {
         Task task = dbService.getTask(taskId);
         List<TaskRun> taskRuns = new ArrayList<>();
         if (!task.getAgentList().isEmpty())
-            task.getAgentList().forEach(agent -> taskRuns.add(taskService.createTaskRun(comment, notifyStatus, principal, task, agent, false, properties)));
+            task.getAgentList().forEach(agent -> taskRuns.add(taskService.createTaskRun(comment, notifyStatus, principal, task, agent, false, properties, loggingLevel)));
         else
-            taskRuns.add(taskService.createTaskRun(comment, notifyStatus, principal, task, null, true, properties));
+            taskRuns.add(taskService.createTaskRun(comment, notifyStatus, principal, task, null, true, properties, loggingLevel));
         return taskRuns;
     }
 
@@ -501,6 +504,7 @@ public class ServerController {
                                          @RequestParam(defaultValue = "false", required = false) boolean notifyStatus,
                                          Principal principal, @PathVariable("taskStepId") long taskStepId) {
         logger.info("Run request for {}, user comments ", taskId, comment);
+        //TODO implement logging level taken from UI
         Task task = dbService.getTask(taskId);
         task.getStepDataList().forEach(taskStep -> {
             if (taskStep.getId() != taskStepId)
@@ -517,7 +521,7 @@ public class ServerController {
         taskRun.setRunBy(dbService.findUserByUsername(principal.getName()));
         taskRun.setTeam(task.getTeam());
         dbService.save(taskRun);
-        taskService.execute(taskRun, new HashMap<>(), true);
+        taskService.execute(taskRun, new HashMap<>(), true, 4);
         return taskRun;
     }
 

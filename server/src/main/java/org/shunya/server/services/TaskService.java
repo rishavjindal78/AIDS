@@ -121,7 +121,7 @@ public class TaskService {
         logger.debug("Finished Running System Failures of Agents");
     }
 
-    public TaskRun createTaskRun(String comment, boolean notifyStatus, Principal principal, Task task, Agent agent, boolean singleton, String properties) {
+    public TaskRun createTaskRun(String comment, boolean notifyStatus, Principal principal, Task task, Agent agent, boolean singleton, String properties, int loggingLevel) {
         HashMap<String, String> propertiesOverride = new HashMap<>();
         if (properties != null && !properties.isEmpty())
             propertiesOverride.putAll(Utils.splitToMap(properties, ",", "="));
@@ -136,7 +136,7 @@ public class TaskService {
         taskRun.setTeam(task.getTeam());
         taskRun.setAgent(agent);
         dbService.save(taskRun);
-        execute(taskRun, propertiesOverride, singleton);
+        execute(taskRun, propertiesOverride, singleton, loggingLevel);
         return taskRun;
     }
 
@@ -148,7 +148,7 @@ public class TaskService {
     // if task has start but not completed - then execute rest of steps
     // if all task steps has completed, then do the cleanup
     @Async
-    public void execute(TaskRun taskRun, Map<String, String> propertiesOverride, boolean singleton) {
+    public void execute(TaskRun taskRun, Map<String, String> propertiesOverride, boolean singleton, int loggingLevel) {
         if (singleton && currentlyRunningTasks.contains(taskRun.getTask().getId())) {
             statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Another instance of this Task is already running, cancelling execution - " + taskRun.getName());
             logger.info("Another instance of this Task is already running, cancelling execution - ", taskRun.getName());
@@ -173,6 +173,7 @@ public class TaskService {
             taskRun.setRunState(RunState.RUNNING);
             taskRun.setRunStatus(RunStatus.RUNNING);
             dbService.save(taskRun);
+            executionContext.setLoggingLevel(loggingLevel);
             executionContext.getSessionMap().putAll(loadAgentNames(taskRun.getTeam().getId()));
             executionContext.getSessionMap().putAll(loadProperties(taskRun.getTeam().getTeamProperties()));
             if (taskRun.getRunBy() != null)
@@ -327,6 +328,7 @@ public class TaskService {
                     executionContext.getSessionMap().putAll(loadProperties(taskRun.getTask().getTaskProperties()));
                     executionContext.getSessionMap().putAll(loadProperties(taskStepRun.getAgent().getAgentProperties()));
                     executionContext.getSessionMap().putAll(taskRunExecutionContext.get(taskRun).getPropertiesOverride());
+                    executionContext.setLoggingLevel(taskRunExecutionContext.get(taskRun).getLoggingLevel());
                     logger.info("executionContext.getSessionMap() = " + executionContext.getSessionMap());
                     taskStepRun.setRunState(RunState.RUNNING);
                     taskStepRun.setRunStatus(RunStatus.RUNNING);

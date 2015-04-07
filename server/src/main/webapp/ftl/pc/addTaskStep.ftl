@@ -1,3 +1,4 @@
+<#import "/spring.ftl" as spring />
 <#escape x as x?html>
 <script type="text/javascript">
 </script>
@@ -48,6 +49,10 @@
                                                   placeholder="${fieldProperties.name?string}" rows="10"/></textarea>
                                         <#elseif fieldProperties.type == 'date'>
 
+                                        <#elseif fieldProperties.type == 'checkbox'>
+                                            <label for="input${fieldProperties.displayName?string}">${fieldProperties_index+1}. ${fieldProperties.displayName?string}</label>
+                                            <input type="checkbox" id="input${fieldProperties.displayName?string}" name="inputParamsMap['${fieldProperties.name?string}']"
+                                                   <#if fieldProperties.value?? && fieldProperties.value?string=="true">checked="true"</#if>>
                                         <#else>
                                             <label for="input${fieldProperties.displayName?string}">${fieldProperties_index+1}. ${fieldProperties.displayName?string}</label>
                                             <input id="input${fieldProperties.displayName?string}" class="form-control" type="${fieldProperties.type?string}" name="inputParamsMap['${fieldProperties.name?string}']" placeholder="${fieldProperties.name?string}"
@@ -59,6 +64,7 @@
                         </table>
                     </div>
 
+                    <#if (model["outputParams"]?size > 0) >
                     <div class="form-group">
                         <label>Output Variables Group</label>
                         <table name="outputParamsMap" class="table table-striped table-condensed">
@@ -74,6 +80,7 @@
                             </#list>
                         </table>
                     </div>
+                    </#if>
 
                 </div>
                 <div class="modal-footer">

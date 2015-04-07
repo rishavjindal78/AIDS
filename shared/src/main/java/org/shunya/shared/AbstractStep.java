@@ -7,7 +7,10 @@ import org.shunya.shared.annotation.PunterTask;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -66,11 +69,24 @@ public abstract class AbstractStep {
         LOGGER.get().setUseParentHandlers(false);
     }
 
-    private void setLoggingLevel(Logger taskLogger) {
+    public void setLoggingLevel(int customLevel) {
         try {
-            taskLogger.setLevel(loggingLevel);
+            switch (customLevel) {
+                case 0:
+                    LOGGER.get().setLevel(Level.SEVERE);
+                    break;
+                case 1:
+                    LOGGER.get().setLevel(Level.WARNING);
+                    break;
+                case 2:
+                    LOGGER.get().setLevel(Level.INFO);
+                    break;
+                default:
+                    LOGGER.get().setLevel(Level.FINE);
+                    break;
+            }
         } catch (Exception e) {
-            taskLogger.setLevel(Level.INFO);
+            LOGGER.get().setLevel(Level.FINE);
         }
     }
 
@@ -83,9 +99,31 @@ public abstract class AbstractStep {
         Map<String, FieldProperties> fieldPropertiesMap = new HashMap<>();
         for (Field field : fields) {
             if (field.isAnnotationPresent(InputParam.class)) {
+                field.setAccessible(true);
                 InputParam ann = field.getAnnotation(InputParam.class);
 //				System.out.println(ann.required()==true?"*"+field.getName():""+field.getName());
                 fieldPropertiesMap.put(field.getName(), new FieldProperties(field.getName(), ann.displayName(), values.get(field.getName()), ann.description(), ann.required(), ann.type()));
+            }
+        }
+        return new FieldPropertiesMap(fieldPropertiesMap);
+    }
+
+    public static FieldPropertiesMap listInputParams(Class<? extends Object> task, Object obj) {
+        Field[] fields = task.getDeclaredFields();
+        Map<String, FieldProperties> fieldPropertiesMap = new HashMap<>();
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(InputParam.class)) {
+                field.setAccessible(true);
+                InputParam ann = field.getAnnotation(InputParam.class);
+//				System.out.println(ann.required()==true?"*"+field.getName():""+field.getName());
+                String initialValue = null;
+                try {
+                    initialValue = field.get(obj).toString();
+                } catch (Exception e) {
+//                    e.printStackTrace();
+                }
+
+                fieldPropertiesMap.put(field.getName(), new FieldProperties(field.getName(), ann.displayName(), initialValue, ann.description(), ann.required(), ann.type()));
             }
         }
         return new FieldPropertiesMap(fieldPropertiesMap);
@@ -120,6 +158,8 @@ public abstract class AbstractStep {
     public abstract boolean run();
 
     public boolean execute() throws Exception {
+        LOGGER.get().info("input Params for Job = " + getTaskStepData().getInputParamsMap());
+        LOGGER.get().info("output Params for Job = " + getTaskStepData().getOutputParamsMap());
         substituteParams();
         boolean status = run();
         substituteResult();
@@ -166,6 +206,8 @@ public abstract class AbstractStep {
                                 double tmp = Double.parseDouble(fieldValue);
                                 field.set(this, tmp);
                             } else if (field.getType().getSimpleName().equals("boolean")) {
+                                if (fieldValue.equalsIgnoreCase("on"))
+                                    fieldValue = "true";
                                 boolean tmp = Boolean.parseBoolean(fieldValue);
                                 field.set(this, tmp);
                             }

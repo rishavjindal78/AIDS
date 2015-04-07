@@ -43,6 +43,10 @@
                                     <textarea class="form-control" id="inputParamsMap['${fieldProperties.name?string}']" name="inputParamsMap['${fieldProperties.name?string}']" placeholder="Enter text ..." rows="10">${fieldProperties.value?string}</textarea>
                                 <#elseif fieldProperties.type == 'date'>
 
+                                <#elseif fieldProperties.type == 'checkbox'>
+                                    <label for="input${fieldProperties.displayName?string}">${fieldProperties_index+1}. ${fieldProperties.displayName?string}</label>
+                                    <input type="checkbox" id="input${fieldProperties.displayName?string}" name="inputParamsMap['${fieldProperties.name?string}']"
+                                           <#if fieldProperties.value?? && (fieldProperties.value?string=="true" || fieldProperties.value?string=="on")>checked="true"</#if>>
                                  <#else>
                                     <label for="inputParamsMap['${fieldProperties.name?string}']">${fieldProperties_index+1}. ${fieldProperties.displayName!fieldProperties.name!?string}</label>
                                     <input type="text" id="inputParamsMap['${fieldProperties.name?string}']" class="form-control" name="inputParamsMap['${fieldProperties.name?string}']" value="${fieldProperties.value?string}"/>
@@ -53,24 +57,30 @@
                 </table>
             </div>
 <#--<hr/>-->
-            <div class="form-group">
-                <label for="taskDescriptionId">Output Variables Group</label>
-                <table name="outputParamsMap" class="table table-striped table-condensed">
-                    <#list model["outputParams"] as fieldProperties>
-                        <tr>
-                            <td hidden="true">${fieldProperties.displayName!?string}</td>
-                            <td>
-                                <label for="outputParamsMap['${fieldProperties.name?string}']">${fieldProperties.name!?string}</label>
-                                <input id="outputParamsMap['${fieldProperties.name?string}']" type="text" class="form-control" name="outputParamsMap['${fieldProperties.name?string}']"
-                                       value="${fieldProperties.value?string}"/>
-                            </td>
-                        </tr>
-                    </#list>
-                </table>
-            </div>
+                <#if (model["outputParams"]?size > 0) >
+                    <div class="form-group">
+                        <label for="taskDescriptionId">Output Variables Group</label>
+                        <table name="outputParamsMap" class="table table-striped table-condensed">
+                            <#list model["outputParams"] as fieldProperties>
+                                <tr>
+                                    <td hidden="true">${fieldProperties.displayName!?string}</td>
+                                    <td>
+                                        <label for="outputParamsMap['${fieldProperties.name?string}']">${fieldProperties.name!?string}</label>
+                                        <input id="outputParamsMap['${fieldProperties.name?string}']" type="text"
+                                               class="form-control"
+                                               name="outputParamsMap['${fieldProperties.name?string}']"
+                                               value="${fieldProperties.value?string}"/>
+                                    </td>
+                                </tr>
+                            </#list>
+                        </table>
+                    </div>
+                </#if>
             </div>
 
             <div class="modal-footer">
+                <a href="${rc.contextPath}/topicHelp/${model.taskMetadata.documentation()}" class="btn btn-default" target="_blank"><span
+                        class="glyphicon glyphicon-question-sign"/></a>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button type="submit" class="btn btn-primary">Save</button>
             </div>

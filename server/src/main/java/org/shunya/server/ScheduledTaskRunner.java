@@ -24,9 +24,9 @@ public class ScheduledTaskRunner implements Runnable {
         logger.info("Executing scheduled Task - " + taskId);
         Task task = dbService.getTask(taskId);
         if (!task.getAgentList().isEmpty())
-            task.getAgentList().forEach(agent -> taskService.createTaskRun("User Scheduled Execution", true, null, task, agent, false,""));
+            task.getAgentList().forEach(agent -> taskService.createTaskRun("User Scheduled Execution", true, null, task, agent, false,"", 4));
         else {
-            taskService.createTaskRun("User Scheduled Execution", true, null, task, null, true, "");
+            taskService.createTaskRun("User Scheduled Execution", false, null, task, null, true, "", 4);
         }
     }
 }
