@@ -21,6 +21,7 @@
         <security:intercept-url pattern="/bootstrap/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <security:intercept-url pattern="/js/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <security:intercept-url pattern="/images/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+        <security:intercept-url pattern="/help/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 
         <security:intercept-url pattern="/**" access="ROLE_USER, ROLE_ADMIN" />
         <!--<security:csrf disabled="true"/>-->

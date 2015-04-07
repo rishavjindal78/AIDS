@@ -45,8 +45,10 @@ public class DBCleanUpService {
     public void cleanOldTaskHistory() {
         logger.debug("Running TaskRun Cleanup Job for Max Age - " + maxTaskRunAge);
         List<TaskRun> taskHistoryByAge = dbService.findTaskHistoryByAge(maxTaskRunAge);
-        taskHistoryByAge.forEach(taskRun -> dbService.deleteTaskRun(taskRun.getId()));
-        logger.info("Job TaskRun Cleanup completed for Max Age - " + maxTaskRunAge + ", deleted entries - " + taskHistoryByAge.size());
+        if(!taskHistoryByAge.isEmpty()) {
+            taskHistoryByAge.forEach(taskRun -> dbService.deleteTaskRun(taskRun.getId()));
+            logger.info("Job TaskRun Cleanup completed for Max Age - " + maxTaskRunAge + ", deleted entries - " + taskHistoryByAge.size());
+        }
     }
 
     //    @Scheduled(cron = "0 0/2 * * * ?")

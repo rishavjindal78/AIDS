@@ -2,6 +2,7 @@ package org.shunya.shared;
 
 import org.shunya.shared.annotation.InputParam;
 import org.shunya.shared.annotation.OutputParam;
+import org.shunya.shared.annotation.PunterTask;
 
 import java.lang.reflect.Field;
 import java.text.ParseException;
@@ -71,6 +72,10 @@ public abstract class AbstractStep {
         } catch (Exception e) {
             taskLogger.setLevel(Level.INFO);
         }
+    }
+
+    public static PunterTask getTaksStepMetaData(Class<? extends Object> task) {
+        return task.getAnnotation(PunterTask.class);
     }
 
     public static FieldPropertiesMap listInputParams(Class<? extends Object> task, Map<String, String> values) {

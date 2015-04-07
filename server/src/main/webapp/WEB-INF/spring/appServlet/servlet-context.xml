@@ -33,6 +33,7 @@
     <!--<mvc:resources mapping="/resources/**" location="/resources/" />-->
     <mvc:resources mapping="/bootstrap/**" location="/resources/bootstrap/" />
     <mvc:resources mapping="/js/**" location="/resources/js/" cache-period="315569"/>
+    <mvc:resources mapping="/help/**" location="/resources/help/" cache-period="315569"/>
     <mvc:resources mapping="/images/**" location="/resources/images/" />
 
     <bean id="messageSource"

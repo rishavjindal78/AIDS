@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@PunterTask(author = "munishc", name = "SystemCommandTask", description = "Runs System Command on Windows Machine", documentation = "src/main/resources/docs/SystemCommandTask.html")
+@PunterTask(author = "munishc", name = "SystemCommandTask", description = "Runs Batch Command on Windows Machine", documentation = "SystemCommandTaskStep.markdown")
 public class SystemCommandStep extends AbstractStep {
     @InputParam(required = true, displayName = "Windows Batch Commands", type = "textarea", description = "any systemCommand separated by newline")
     public String systemCommand;
@@ -82,7 +82,7 @@ public class SystemCommandStep extends AbstractStep {
         return status.get();
     }
 
-    private void startOutputAndErrorReadThreads(InputStream processOutputStream, InputStream processErrorStream, Logger logger) throws AssertionMessageException, Exception {
+    private void startOutputAndErrorReadThreads(InputStream processOutputStream, InputStream processErrorStream, Logger logger) throws Exception {
         StringBuffer commandOutputBuffer = new StringBuffer();
         AsynchronousStreamReader asynchronousCommandOutputReaderThread = new AsynchronousStreamReader(processOutputStream, commandOutputBuffer, new MyLogDevice(logger), "OUTPUT");
         asynchronousCommandOutputReaderThread.start();

@@ -375,12 +375,14 @@ public class ServerController {
         if (taskClass == null || taskClass.isEmpty())
             taskClass = taskClasses[0];
         //TODO - Add Task Registry for managing task classes
-        FieldPropertiesMap inPropertiesMap = AbstractStep.listInputParams(Class.forName("org.shunya.shared.taskSteps." + taskClass), Collections.<String, String>emptyMap());
-        FieldPropertiesMap outPropertiesMap = AbstractStep.listOutputParams(Class.forName("org.shunya.shared.taskSteps." + taskClass), Collections.<String, String>emptyMap());
+        Class<?> task = Class.forName("org.shunya.shared.taskSteps." + taskClass);
+        FieldPropertiesMap inPropertiesMap = AbstractStep.listInputParams(task, Collections.<String, String>emptyMap());
+        FieldPropertiesMap outPropertiesMap = AbstractStep.listOutputParams(task, Collections.<String, String>emptyMap());
         model.addAttribute("selectedClass", taskClass);
         model.addAttribute("taskClasses", taskClasses);
         model.addAttribute("inputParams", inPropertiesMap.values());
         model.addAttribute("outputParams", outPropertiesMap.values());
+        model.addAttribute("taskMetadata", AbstractStep.getTaksStepMetaData(task));
         model.addAttribute("referer", request.getHeader("referer"));
         return "addTaskStep";
     }

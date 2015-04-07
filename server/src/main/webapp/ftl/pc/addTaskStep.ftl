@@ -78,6 +78,8 @@
                 </div>
                 <div class="modal-footer">
                     <div class="control-group">
+                        <a href="${rc.contextPath}/topicHelp/${model.taskMetadata.documentation()}" class="btn btn-default" target="_blank"><span
+                                class="glyphicon glyphicon-question-sign"/></a>
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary" id="addTaskStepSubmitButton">Save</button>
                     </div>
