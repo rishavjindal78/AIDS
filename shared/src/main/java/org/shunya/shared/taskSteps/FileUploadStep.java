@@ -13,9 +13,9 @@ import java.util.logging.Logger;
 
 import static java.util.Arrays.asList;
 
-@PunterTask(author = "munishc", name = "FileUploadTask", description = "Transfers file from one agent to another", documentation = "src/main/resources/docs/TextSamplerDemoHelp.html")
+@PunterTask(author = "munishc", name = "FileUploadTask", description = "Transfers file from one agent to another", documentation = "FileUploadTaskStep.markdown")
 public class FileUploadStep extends AbstractStep {
-    @InputParam(required = true, displayName = "Server Address", description = "enter your httpUrl here http://localhost:8080/upload/")
+    @InputParam(required = true, displayName = "Target Agent Address", description = "enter your target server httpUrl here http://localhost:8080/upload/")
     private String server;
     @InputParam(required = true, displayName = "Local File Path", description = "Path of the file to upload e:/test.mp3")
     private String filePath;

@@ -30,15 +30,17 @@ public class MultiUnZipStep extends AbstractStep {
         List<String> tuples = asList(inputOutputTuples.split("[\r\n]"));
         AtomicBoolean result = new AtomicBoolean(true);
         tuples.parallelStream().forEach(tuple -> {
-            String[] split = tuple.split("[;=,]");
-            if(split.length != 2){
-                throw new InvalidStepInputException("Each row must consists of <zipFile>=<outputDir> pair ?");
+            if(!tuple.trim().isEmpty()) {
+                String[] split = tuple.split("[;=,]");
+                if (split.length != 2) {
+                    throw new InvalidStepInputException("Each row must consists of <zipFile>=<outputDir> pair ?");
+                }
+                String zipFile = split[0];
+                String outputDir = split[1];
+                LOGGER.get().log(Level.INFO, "unzipping File " + zipFile + " to location - " + outputDir);
+                boolean fileResult = extractFolder(zipFile, outputDir, recursive);
+                result.set(result.get() & fileResult);
             }
-            String zipFile = split[0];
-            String outputDir = split[1];
-            LOGGER.get().log(Level.INFO, "unzipping File " + zipFile + " to location - " + outputDir);
-            boolean fileResult = extractFolder(zipFile, outputDir, recursive);
-            result.set(result.get() & fileResult);
         });
         LOGGER.get().log(Level.INFO, "MultiUnzip Step is Complete now.");
         return result.get();

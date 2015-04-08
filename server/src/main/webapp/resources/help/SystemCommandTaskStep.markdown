@@ -15,7 +15,13 @@ line separated list of windows batch commands, exit will be called by the system
     
 4. To run a asynchronous long running task (agent will not wait for the termination of program)    
     ```start c:/server.bat```
-   
+
+5. Delete files and Folders from a given location
+       cd /D E:\AIDS_HOME\conf\formats
+       rmdir /S /Q aids-server-8.7.0.0-SNAPSHOT
+       del /F /Q aids-agent-8.7.0.0-SNAPSHOT.zip
+
+       
    Also set ```wait for termination``` field to ```false```
 
 
