@@ -40,6 +40,7 @@
             if (userInput) {
                 $("#results").empty();
                 $.post('${rc.contextPath}/server/agent/checkStatus', {}, function (data) {
+                    location.reload();
                     $("#results").html('<div class="alert alert-success small">Agent Status Check Triggered, please refresh the page after few seconds.</div>');
                 });
             }

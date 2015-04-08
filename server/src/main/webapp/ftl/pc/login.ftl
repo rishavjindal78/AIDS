@@ -9,21 +9,21 @@
     <#--<script src="${rc.contextPath}/bootstrap/js/bootstrap.min.js" type="text/jsx"></script>-->
 </head>
 <body onload="document.login_form.j_username.focus();">
+
 <div class="container">
+    <h3 class="text-muted">Autonomous Integrated Deployment Software</h3>
+    <hr style="width: 50%; margin-left: 0%;"/>
     <form name="login_form" class="form-horizontal" role="form" action="${rc.contextPath}/j_spring_security_check"
           method="POST">
-        <h3 class="text-muted">Autonomous Integrated Deployment Software</h3>
-        <br/>
-
         <div class="form-group">
-            <label for="inputEmail3" class="col-sm-2 control-label">Username</label>
+            <label for="inputEmail3" class="col-sm-1 control-label">Username</label>
 
             <div class="col-sm-4">
                 <input type="text" name='j_username' class="form-control" id="inputEmail3" placeholder="Username">
             </div>
         </div>
         <div class="form-group">
-            <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+            <label for="inputPassword3" class="col-sm-1 control-label">Password</label>
 
             <div class="col-sm-4">
                 <input type="password" name='j_password' class="form-control" id="inputPassword3"
@@ -31,7 +31,7 @@
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="col-sm-offset-1 col-sm-10">
                 <div class="checkbox">
                     <label>
                         <input type="checkbox" name="_spring_security_remember_me"> Remember me
@@ -40,7 +40,7 @@
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="col-sm-offset-1 col-sm-10">
                 <button type="submit" name="submit" class="btn btn-primary">Sign in</button>
                 <a class="btn btn-link" type="button" href="${rc.contextPath}/user/register">Register Here</a>
                 <a class="btn btn-link" type="button" href="${rc.contextPath}/user/reset">Forgot Password</a>
