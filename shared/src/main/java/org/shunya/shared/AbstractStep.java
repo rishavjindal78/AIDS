@@ -72,17 +72,17 @@ public abstract class AbstractStep {
     public void setLoggingLevel(int customLevel) {
         try {
             switch (customLevel) {
-                case 0:
-                    LOGGER.get().setLevel(Level.SEVERE);
-                    break;
                 case 1:
-                    LOGGER.get().setLevel(Level.WARNING);
+                    loggingLevel = Level.SEVERE;
                     break;
                 case 2:
-                    LOGGER.get().setLevel(Level.INFO);
+                    loggingLevel = Level.WARNING;
+                    break;
+                case 3:
+                    loggingLevel = Level.INFO;
                     break;
                 default:
-                    LOGGER.get().setLevel(Level.FINE);
+                    loggingLevel = Level.FINE;
                     break;
             }
         } catch (Exception e) {
