@@ -406,7 +406,11 @@ public class TaskService {
     }
 
     private void publishTaskRunStatus(TaskRun taskRun) {
-        int newCacheId = taskRunExecutionContext.get(taskRun).getAndIncrementCacheId();
+        final TaskExecutionContext taskExecutionContext = taskRunExecutionContext.get(taskRun);
+        int newCacheId = 111111;
+        if(taskExecutionContext!=null) {
+            newCacheId = taskExecutionContext.getAndIncrementCacheId();
+        }
         if (taskRunStatusSubscribers.get(taskRun) != null && taskRunStatusSubscribers.get(taskRun).size() > 0) {
             try {
                 taskRun = dbService.getTaskRun(taskRun.getId());

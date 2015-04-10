@@ -1,5 +1,6 @@
 package org.shunya.server.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.shunya.server.Role;
@@ -320,6 +321,28 @@ public class ServerController {
         }
     }
 
+    @RequestMapping(value = "export/agents", method = RequestMethod.GET)
+    public void downloadAgentsAsJson(@ModelAttribute("model") ModelMap model, HttpServletResponse response) {
+        try {
+            final List<Agent> agents = dbService.listAgents();
+            ObjectMapper mapper = new ObjectMapper();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            mapper.writeValue(baos, agents);
+//            response.setContentType("application/json");
+            response.setContentType("application/force-download");
+            response.setContentLength(baos.size());
+            //response.setContentLength(-1);
+            response.setHeader("Content-Transfer-Encoding", "binary");
+            String headerKey = "Content-Disposition";
+            String headerValue = String.format("attachment; filename=\"%s\"", "aids-agents" + ".json");
+            response.setHeader(headerKey, headerValue);
+            IOUtils.copy(new ByteArrayInputStream(baos.toByteArray()), response.getOutputStream());
+            response.flushBuffer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @RequestMapping(value = "view/task/{id}", method = RequestMethod.GET)
     public void viewTaskAsJson(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id, HttpServletResponse response) {
         try {
@@ -354,6 +377,21 @@ public class ServerController {
         dbService.save(task);
         System.out.println("task = " + task);
         return "redirect:tasks";
+    }
+
+    @RequestMapping(value = "team/{teamId}/agentsUpload", method = RequestMethod.POST)
+    public String importAgentsAsJson(@RequestParam MultipartFile file, ModelMap model, @PathVariable("teamId") long teamId, Principal principal) throws IOException {
+        model.addAttribute("message", "File '" + file.getOriginalFilename() + "' uploaded successfully");
+        //2. Convert JSON to Java object
+        ObjectMapper mapper = new ObjectMapper();
+        List<Agent> agents = mapper.readValue(file.getInputStream(), new TypeReference<List<Agent>>() { });
+        agents.forEach(agent -> {
+            agent.setCreatedBy(dbService.findUserByUsername(principal.getName()));
+            agent.setTeam(dbService.findTeamById(teamId));
+            dbService.save(agent);
+            logger.info("agent imported successfully = " + agent.getName());
+        });
+        return "redirect:agents";
     }
 
     @RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)

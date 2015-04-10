@@ -7,6 +7,10 @@
             color: red;
             background-color: #000000;
         }
+
+        .verticalLine {
+            border-left: thick solid #ff0000;
+        }
     </style>
     <script type="text/javascript">
         useAjaxBusyWait();
@@ -151,12 +155,33 @@
             <button type="reset" class="btn btn-default">Reset</button>
         </form>
     </div>
-    <h3 class="sub-header text-muted">Configured Agents</h3>
+    <div class="heading alert alert-info" style="padding: 6px;margin-bottom: 2px; margin-top: 2px;">
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> <strong>Import Agents</strong>
+    </div>
+    <div class="content">
+        <fieldset>
+            <form class="form-horizontal" name="upload"
+                  action="${rc.contextPath}/server/team/${Session['SELECTED_TEAM'].id}/agentsUpload"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                <div class="form-group">
+                    <div class="col-sm-6">
+                        <input id="documentFileId" type="file" name="file" placeholder="FilePath" class="form-sm"/>
+                    </div>
+                    <input type="submit" class="btn btn-primary" value="Save"/>
+                    <button class="btn cancel btn-default" id="cancel">Cancel</button>
+                </div>
+            </form>
+        </fieldset>
+    </div>
+
+    <h3 class="sub-header text-muted">Team Agents </h3>
 
     <div class="table">
         <table id="agentsTable" class="table table-striped">
             <tr>
-                <th width="5%">#</th>
+                <th width="5%"># <a href="../../export/agents"><span class="glyphicon glyphicon-download-alt"/></a></th>
                 <th width="20%">Agent Name</th>
                 <th width="30%">Description</th>
                 <th width="25%">Base URL</th>

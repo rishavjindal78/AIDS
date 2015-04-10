@@ -1,13 +1,13 @@
 <#import "/spring.ftl" as spring />
 <#macro page title="" activeTab="">
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <#if activeTab!="">
         <meta name="activeTab" content="${activeTab?string}"/></#if>
     <#if title!=""><title>${title?html}</title></#if>
     <link rel="Shortcut Icon" href="/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <#--<link href="${rc.getContextPath()}/bootstrap/css/bootstrap.min.css" rel="stylesheet">-->
 <#--<link href="${rc.getContextPath()}/bootstrap/css/navbar-fixed-top.css" rel="stylesheet">-->
