@@ -70,9 +70,10 @@
             var userComment = $('#userComments').val();
             var customProperties = $('#customPropertiesTextArea').val();
             var taskRunLoggingLevel = $('#taskRunLoggingLevel').val();
+            var taskRunNotifyStatus = $('#taskRunNotifyStatus').is(":checked");
             if (userComment != null) {
                 $("#results").empty();
-                $.post(url, {comment: userComment, properties: customProperties, loggingLevel:taskRunLoggingLevel}, function (data) {
+                $.post(url, {comment: userComment, properties: customProperties, loggingLevel:taskRunLoggingLevel, notifyStatus:taskRunNotifyStatus}, function (data) {
                     var result = "";
                     $.each(data, function (index, value) {
                         result += '<div class="alert alert-success small">Task Submitted Successfully - <a href="../taskRun/view/' + value.id + '" target="_blank">' + value.id + ' - Logs</a></div>';
@@ -235,6 +236,7 @@
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
+                <div class="alert alert-info">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">Run Task - ${model.task.name!?string}</h4>
@@ -254,11 +256,17 @@
                             <label>Logging Level</label>
                             <input type="range" size="2" id ="taskRunLoggingLevel" name="loggingLevel" min="1" max="4" value="3">
                         </div>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="notifyStatus" id="taskRunNotifyStatus"> Notify Status ?
+                            </label>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" onclick="runTask('../run/${model.task.id?string}')">Run Task</button>
+                </div>
                 </div>
             </div>
         </div>

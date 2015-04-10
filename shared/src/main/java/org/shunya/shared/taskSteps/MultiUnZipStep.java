@@ -89,13 +89,13 @@ public class MultiUnZipStep extends AbstractStep {
             }
             return true;
         } catch (IOException ex) {
-            LOGGER.get().log(Level.SEVERE, "Error in zip file extraction - ", ex);
+            LOGGER.get().log(Level.SEVERE, "Error occurred in zip file extraction - ", ex);
         }
         return false;
     }
 
     public static void main(String[] args) throws IOException {
         MultiUnZipStep unZipStep = new MultiUnZipStep();
-        unZipStep.extractFolder("C:\\TDM\\dist\\tdm-dist-8.3.0.2-SNAPSHOT.zip", "C:\\TDM\\dist\\tdm-dist-8.3.0.2-SNAPSHOT", false);
+        unZipStep.extractFolder("C:\\Test.zip", "C:\\Test", false);
     }
 }
