@@ -38,6 +38,7 @@ public class TaskProcessor {
             TaskStepDTO taskStepDTO = taskContext.getStepDTO();
             taskContext.getTaskStepRunDTO().setStartTime(new Date());
             AbstractStep taskStep = AbstractStep.getTask(taskStepDTO);
+            logger.info("Setting logging level to - " + taskContext.getLoggingLevel());
             taskStep.setLoggingLevel(taskContext.getLoggingLevel());
             taskStep.setTaskStepData(taskStepDTO);
             taskStep.setSessionMap(taskContext.getSessionMap());
@@ -62,7 +63,11 @@ public class TaskProcessor {
                     taskContext.getTaskStepRunDTO().setRunState(RunState.COMPLETED);
                     taskStep.afterTaskFinish();
                     postProcess();
-                    try{restClient.postResultToServer(taskContext);}catch (Exception e){logger.error("Severe error connecting to the server", e);}
+                    try {
+                        restClient.postResultToServer(taskContext);
+                    } catch (Exception e) {
+                        logger.error("Severe error connecting to the server", e);
+                    }
                     cache.remove(taskContext.getTaskStepRunDTO().getId());
                 }
             });

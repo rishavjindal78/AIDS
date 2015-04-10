@@ -36,7 +36,7 @@ public class FieldPropertiesMap {
         Map<String, FieldProperties> propertiesMap = new HashMap<>();
         if (propMap != null) {
             for (String fieldName : propMap.keySet()) {
-                propertiesMap.put(fieldName, new FieldProperties(fieldName, fieldName, propMap.get(fieldName), "", false, "input"));
+                propertiesMap.put(fieldName, new FieldProperties(fieldName, fieldName, propMap.get(fieldName), "", false, "input", ""));
             }
         }
         return new FieldPropertiesMap(propertiesMap);

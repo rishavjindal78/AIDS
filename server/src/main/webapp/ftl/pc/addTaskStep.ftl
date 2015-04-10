@@ -43,12 +43,15 @@
                                     <td hidden="true">${fieldProperties.displayName?string}</td>
                                     <td>
                                         <#if fieldProperties.type == 'textarea'>
-                                            <label for="input${fieldProperties.displayName?string}">${fieldProperties_index+1}. ${fieldProperties.displayName?string}</label>
-                                            <textarea id="input${fieldProperties.displayName?string}" class="form-control"
+                                            <label for="input${fieldProperties.name?string}">${fieldProperties_index+1}. ${fieldProperties.displayName?string}</label>
+                                            <textarea id="input${fieldProperties.name?string}" class="form-control"
                                                   name="inputParamsMap['${fieldProperties.name?string}']"
                                                   placeholder="${fieldProperties.name?string}" rows="10"/></textarea>
                                         <#elseif fieldProperties.type == 'date'>
-
+                                        <#elseif fieldProperties.type == 'range'>
+                                            <label for="input${fieldProperties.name?string}">${fieldProperties_index+1}. ${fieldProperties.displayName?string}</label>
+                                            <input type="range" id="input${fieldProperties.name?string}" name="inputParamsMap['${fieldProperties.name?string}']"
+                                                   <#if fieldProperties.misc??>${fieldProperties.misc?string}</#if>>
                                         <#elseif fieldProperties.type == 'checkbox'>
                                             <label for="input${fieldProperties.displayName?string}">${fieldProperties_index+1}. ${fieldProperties.displayName?string}</label>
                                             <input type="checkbox" id="input${fieldProperties.displayName?string}" name="inputParamsMap['${fieldProperties.name?string}']"

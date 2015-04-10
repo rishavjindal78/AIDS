@@ -12,7 +12,8 @@ import java.io.Serializable;
         "description",
         "required",
         "type",
-        "displayName"
+        "displayName",
+        "misc"
 })
 public class FieldProperties implements Serializable {
     private String name;
@@ -21,18 +22,20 @@ public class FieldProperties implements Serializable {
     private String description;
     private boolean required;
     private String type;
+    private String misc;
 
     public FieldProperties() {
         //required by JAXB
     }
 
-    public FieldProperties(String name,String displayName, String value,String description, boolean required, String type) {
+    public FieldProperties(String name,String displayName, String value,String description, boolean required, String type, String misc) {
         this.name = name;
         this.displayName=displayName;
         this.value = value;
         this.description = description;
         this.required = required;
         this.type = type;
+        this.misc = misc;
     }
 
     public String getValue() {
@@ -89,9 +92,8 @@ public class FieldProperties implements Serializable {
 
         FieldProperties that = (FieldProperties) o;
 
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        return !(name != null ? !name.equals(that.name) : that.name != null);
 
-        return true;
     }
 
     @Override
@@ -105,5 +107,13 @@ public class FieldProperties implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getMisc() {
+        return misc;
+    }
+
+    public void setMisc(String misc) {
+        this.misc = misc;
     }
 }

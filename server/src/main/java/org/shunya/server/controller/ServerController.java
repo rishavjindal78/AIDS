@@ -54,7 +54,7 @@ public class ServerController {
 
     @Autowired
     private AidsJobScheduler aidsJobScheduler;
-    final String[] taskClasses = {"EchoStep", "DiscSpaceStep", "SystemCommandStep", "FileUploadStep", "HttpDownloadStep", "DeclareVariableStep", "UpdateDBStep", "EmailStep", "UnZipStep", "MultiUnZipStep", "TokenReplaceStep"};
+    final String[] taskClasses = {"EchoStep", "DiscSpaceStep", "SystemCommandStep", "FileUploadStep", "HttpDownloadStep", "DeclareVariableStep", "UpdateDBStep", "EmailStep", "UnZipStep", "MultiUnZipStep", "ZipStep", "TokenReplaceStep"};
 
     @RequestMapping(value = "test", method = RequestMethod.GET)
     public String test(@ModelAttribute("model") ModelMap model) {

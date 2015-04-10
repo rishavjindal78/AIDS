@@ -14,6 +14,7 @@ public @interface InputParam{
     String type() default "text";
     String description() default "";
     String displayName() default "";
+    String misc() default "";
     boolean required() default false;
     boolean substitute() default true;
 }

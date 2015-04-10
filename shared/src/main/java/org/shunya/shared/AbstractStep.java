@@ -65,6 +65,7 @@ public abstract class AbstractStep {
         cHandler.setFormatter(new SimpleFormatter());
         cHandler.setLevel(Level.ALL);
         LOGGER.get().addHandler(mHandler);
+        LOGGER.get().setLevel(loggingLevel);
 //        LOGGER.get().addHandler(cHandler);
         LOGGER.get().setUseParentHandlers(false);
     }
@@ -102,7 +103,7 @@ public abstract class AbstractStep {
                 field.setAccessible(true);
                 InputParam ann = field.getAnnotation(InputParam.class);
 //				System.out.println(ann.required()==true?"*"+field.getName():""+field.getName());
-                fieldPropertiesMap.put(field.getName(), new FieldProperties(field.getName(), ann.displayName(), values.get(field.getName()), ann.description(), ann.required(), ann.type()));
+                fieldPropertiesMap.put(field.getName(), new FieldProperties(field.getName(), ann.displayName(), values.get(field.getName()), ann.description(), ann.required(), ann.type(), ann.misc()));
             }
         }
         return new FieldPropertiesMap(fieldPropertiesMap);
@@ -123,7 +124,7 @@ public abstract class AbstractStep {
 //                    e.printStackTrace();
                 }
 
-                fieldPropertiesMap.put(field.getName(), new FieldProperties(field.getName(), ann.displayName(), initialValue, ann.description(), ann.required(), ann.type()));
+                fieldPropertiesMap.put(field.getName(), new FieldProperties(field.getName(), ann.displayName(), initialValue, ann.description(), ann.required(), ann.type(), ann.misc()));
             }
         }
         return new FieldPropertiesMap(fieldPropertiesMap);
@@ -136,7 +137,7 @@ public abstract class AbstractStep {
         for (Field field : fields) {
             if (field.isAnnotationPresent(OutputParam.class)) {
                 OutputParam ann = field.getAnnotation(OutputParam.class);
-                fieldPropertiesMap.put(field.getName(), new FieldProperties(field.getName(), ann.displayName(), values.get(field.getName()), "", false, ann.type()));
+                fieldPropertiesMap.put(field.getName(), new FieldProperties(field.getName(), ann.displayName(), values.get(field.getName()), "", false, ann.type(), ""));
             }
         }
         return new FieldPropertiesMap(fieldPropertiesMap);
