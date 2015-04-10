@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TaskExecutionContext {
+    private final AtomicInteger cacheId = new AtomicInteger(0);
     private final Task task;
     //    private TreeMap<Integer, List<TaskStep>> sequenceTaskSteps = new TreeMap<>();
     private List<TaskStepRun> currentlyRunningTaskStepRuns;
@@ -34,6 +36,14 @@ public class TaskExecutionContext {
 
     public void addTaskStepRun(Integer sequence, List<TaskStepRun> values){
         sequenceTaskStepRuns.put(sequence, values);
+    }
+
+    public int getCacheId(){
+        return cacheId.get();
+    }
+
+    public int getAndIncrementCacheId(){
+        return cacheId.incrementAndGet();
     }
 
     public Task getTask() {

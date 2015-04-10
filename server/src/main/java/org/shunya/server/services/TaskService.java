@@ -62,21 +62,22 @@ public class TaskService {
 
     private int maxSystemFailureTimeInHours = 3;
 
-//    @Scheduled(cron = "20 0/10 * * * ?")
+    //    @Scheduled(cron = "20 0/10 * * * ?")
     @Scheduled(cron = "${task.timeout.cron}")
     public void checkTimeoutSystemFailures() {
         logger.debug("Running Timeout System Failures");
         taskRunExecutionContext.forEach((taskRun, taskExecutionContext) -> {
             if (LocalDateTime.ofInstant(taskRun.getStartTime().toInstant(), ZoneId.systemDefault()).isBefore(LocalDateTime.now().minusHours(maxSystemFailureTimeInHours))) {
                 logger.warn("System Failures Detected for TaskRun due to timeout - " + taskRun.getName());
-                handleCompletion(taskRun, taskExecutionContext, RunStatus.FAILURE);
+                saveTaskRun(taskRun, taskExecutionContext, RunStatus.FAILURE);
                 taskExecutionContext.getCurrentlyRunningTaskStepRuns().remove(taskRun);
+                clearCotext(taskRun);
                 logger.warn("Task Kicked Out due to System Failures, TaskRun - " + taskRun.getName());
             }
         });
     }
 
-//    @Scheduled(cron = "0 */3 * * * ?")
+    //    @Scheduled(cron = "0 */3 * * * ?")
     @Scheduled(cron = "${agent.failure.cron}")
     public void checkAgentDiedSystemFailures() {
         logger.debug("Running System Failures of Agents");
@@ -131,8 +132,8 @@ public class TaskService {
         taskRun.setStartTime(new Date());
         taskRun.setComments(comment);
         taskRun.setNotifyStatus(notifyStatus);
-        if(principal!=null)
-        taskRun.setRunBy(dbService.findUserByUsername(principal.getName()));
+        if (principal != null)
+            taskRun.setRunBy(dbService.findUserByUsername(principal.getName()));
         taskRun.setTeam(task.getTeam());
         taskRun.setAgent(agent);
         dbService.save(taskRun);
@@ -184,7 +185,8 @@ public class TaskService {
             }
             delegateStepToAgents(entry.getValue(), taskRun, entry.getKey());
         } else {
-            handleCompletion(taskRun, executionContext, RunStatus.NOT_RUN);
+            saveTaskRun(taskRun, executionContext, RunStatus.NOT_RUN);
+            clearCotext(taskRun);
             logger.info("Task has no steps, completing it now");
         }
     }
@@ -193,8 +195,7 @@ public class TaskService {
         currentlyRunningTasks.add(taskRun.getTask().getId());
     }
 
-    protected void handleCompletion(TaskRun taskRun, TaskExecutionContext taskExecutionPlan, RunStatus runStatus) {
-        saveTaskRun(taskRun, taskExecutionPlan, runStatus);
+    private void clearCotext(TaskRun taskRun) {
         taskRunExecutionContext.remove(taskRun);
         currentlyRunningTasks.remove(taskRun.getTask().getId());
     }
@@ -236,15 +237,17 @@ public class TaskService {
         if (executionContext.getCurrentlyRunningTaskStepRuns().isEmpty()) {
             if (!executionContext.isTaskStatus() && executionContext.isAbortOnFirstFailure()) {
                 logger.info("Aborting Task Execution after first failure, State = Complete, step failed = " + taskStepRun.getTaskStep().getName());
-                handleCompletion(taskRun, executionContext, RunStatus.FAILURE);
+                saveTaskRun(taskRun, executionContext, RunStatus.FAILURE);
                 statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Aborting Task Execution after first failure, State = Complete");
                 publishTaskRunStatus(taskRun);
+                clearCotext(taskRun);
                 return;
             } else if (executionContext.isCancelled()) {
                 logger.info("Aborting Task Execution due to User Cancellation, State = Cancelled");
-                handleCompletion(taskRun, executionContext, RunStatus.CANCELLED);
+                saveTaskRun(taskRun, executionContext, RunStatus.CANCELLED);
                 statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Aborting Task Execution due to User Cancellation, State = Cancelled");
                 publishTaskRunStatus(taskRun);
+                clearCotext(taskRun);
                 return;
             }
             processNextStep(taskRun, executionContext);
@@ -280,10 +283,11 @@ public class TaskService {
             delegateStepToAgents(entry.getValue(), taskRun, entry.getKey());
         } else {
             executionContext.getCurrentlyRunningTaskStepRuns().remove(taskRun);
-            handleCompletion(taskRun, executionContext, RunStatus.SUCCESS);
+            saveTaskRun(taskRun, executionContext, RunStatus.SUCCESS);
             logger.info("Task has no further steps, " + taskRun.getName() + " Completed with status - " + taskRun.getRunStatus());
             statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), true, "Task - " + taskRun.getName() + ", " + taskRun.getComments() + " Completed, Status - " + taskRun.getRunStatus());
             publishTaskRunStatus(taskRun);
+            clearCotext(taskRun);
         }
     }
 
@@ -402,9 +406,11 @@ public class TaskService {
     }
 
     private void publishTaskRunStatus(TaskRun taskRun) {
+        int newCacheId = taskRunExecutionContext.get(taskRun).getAndIncrementCacheId();
         if (taskRunStatusSubscribers.get(taskRun) != null && taskRunStatusSubscribers.get(taskRun).size() > 0) {
             try {
                 taskRun = dbService.getTaskRun(taskRun.getId());
+                taskRun.setCacheId(newCacheId);
                 String jsonResults = getTaskRunAsJson(taskRun);
                 List<DeferredResult> processed = new ArrayList<>();
                 synchronized (taskRunStatusSubscribers.get(taskRun)) {
@@ -435,6 +441,7 @@ public class TaskService {
             if (!deferredResults.isEmpty()) {
                 synchronized (taskRunStatusSubscribers.get(taskRun)) {
                     taskRun = dbService.getTaskRun(taskRun.getId());
+                    taskRun.setCacheId(getCacheId(taskRun));
                     if (taskRun.getRunState() == RunState.COMPLETED) {
                         try {
                             String jsonResult = getTaskRunAsJson(taskRun);
@@ -454,7 +461,12 @@ public class TaskService {
         });
     }
 
-    public void registerForTaskRunStatus(TaskRun taskRun, DeferredResult<String> deferredResult) {
+    public int getCacheId(TaskRun taskRun) {
+        TaskExecutionContext taskExecutionContext = taskRunExecutionContext.get(taskRun);
+        return taskExecutionContext != null ? taskExecutionContext.getCacheId() : 0;
+    }
+
+    public void registerForTaskRunStatus(TaskRun taskRun, long cacheId, DeferredResult<String> deferredResult) {
         taskRunStatusSubscribers.computeIfAbsent(taskRun, taskRun1 -> new Vector<>()).add(deferredResult);
     }
 }

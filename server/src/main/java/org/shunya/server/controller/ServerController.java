@@ -611,14 +611,16 @@ public class ServerController {
                                                  HttpServletResponse response) throws IOException, InterruptedException {
         DeferredResult<String> deferredResult = new DeferredResult<>();
         TaskRun taskRun = dbService.getTaskRun(taskRunId);
-        if (taskRun != null && (taskRun.getRunState() == RunState.COMPLETED || cacheId == 0)) {
+        int serverCacheId = taskService.getCacheId(taskRun);
+        if (taskRun != null && (taskRun.getRunState() == RunState.COMPLETED || cacheId == 0 || cacheId < serverCacheId)) {
+            taskRun.setCacheId(serverCacheId);
             ObjectMapper mapper = new ObjectMapper();
 //            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             mapper.writeValue(baos, taskRun);
             deferredResult.setResult(baos.toString());
         } else {
-            taskService.registerForTaskRunStatus(taskRun, deferredResult);
+            taskService.registerForTaskRunStatus(taskRun, cacheId, deferredResult);
         }
         return deferredResult;
     }
