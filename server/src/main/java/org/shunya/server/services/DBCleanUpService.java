@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+
 @Service
 public class DBCleanUpService {
     private static final Logger logger = LoggerFactory.getLogger(DBCleanUpService.class.getName());
@@ -45,7 +47,7 @@ public class DBCleanUpService {
     public void cleanOldTaskHistory() {
         logger.debug("Running TaskRun Cleanup Job for Max Age - " + maxTaskRunAge);
         List<TaskRun> taskHistoryByAge = dbService.findTaskHistoryByAge(maxTaskRunAge);
-        if(!taskHistoryByAge.isEmpty()) {
+        if (!taskHistoryByAge.isEmpty()) {
             taskHistoryByAge.forEach(taskRun -> dbService.deleteTaskRun(taskRun.getId()));
             logger.info("Job TaskRun Cleanup completed for Max Age - " + maxTaskRunAge + ", deleted entries - " + taskHistoryByAge.size());
         }
@@ -89,7 +91,7 @@ public class DBCleanUpService {
                     ObjectMapper mapper = new ObjectMapper();
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     try (FileWriter fileWriter = new FileWriter(targetFile)) {
-                        mapper.writerWithDefaultPrettyPrinter().writeValue(baos, taskToSave);
+                        mapper.writerWithDefaultPrettyPrinter().writeValue(baos, asList(taskToSave));
                         IOUtils.write(baos.toByteArray(), fileWriter);
                     } catch (IOException e) {
                         e.printStackTrace();

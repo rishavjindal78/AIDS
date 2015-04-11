@@ -305,7 +305,7 @@ public class ServerController {
             Task task = dbService.getTask(id);
             ObjectMapper mapper = new ObjectMapper();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            mapper.writeValue(baos, task);
+            mapper.writeValue(baos, asList(task));
 //            response.setContentType("application/json");
             response.setContentType("application/force-download");
             response.setContentLength(baos.size());
@@ -343,6 +343,28 @@ public class ServerController {
         }
     }
 
+    @RequestMapping(value = "export/tasks", method = RequestMethod.GET)
+    public void downloadTasksAsJson(@ModelAttribute("model") ModelMap model, HttpServletResponse response) {
+        try {
+            final List<Task> tasks = dbService.listAllTasks();
+            ObjectMapper mapper = new ObjectMapper();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            mapper.writeValue(baos, tasks);
+//            response.setContentType("application/json");
+            response.setContentType("application/force-download");
+            response.setContentLength(baos.size());
+            //response.setContentLength(-1);
+            response.setHeader("Content-Transfer-Encoding", "binary");
+            String headerKey = "Content-Disposition";
+            String headerValue = String.format("attachment; filename=\"%s\"", "aids-tasks" + ".json");
+            response.setHeader(headerKey, headerValue);
+            IOUtils.copy(new ByteArrayInputStream(baos.toByteArray()), response.getOutputStream());
+            response.flushBuffer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @RequestMapping(value = "view/task/{id}", method = RequestMethod.GET)
     public void viewTaskAsJson(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id, HttpServletResponse response) {
         try {
@@ -367,22 +389,23 @@ public class ServerController {
         model.addAttribute("message", "File '" + file.getOriginalFilename() + "' uploaded successfully");
         //2. Convert JSON to Java object
         ObjectMapper mapper = new ObjectMapper();
-        Task task = mapper.readValue(file.getInputStream(), Task.class);
-        task.setAuthor(dbService.findUserByUsername(principal.getName()));
-        task.setTeam(dbService.findTeamById(teamId));
-        List<TaskStep> stepDataList = task.getStepDataList();
-        for (TaskStep taskStep : stepDataList) {
-            taskStep.setTask(task);
-        }
-        dbService.save(task);
-        System.out.println("task = " + task);
+        List<Task> tasks = mapper.readValue(file.getInputStream(), new TypeReference<List<Task>>() {});
+        tasks.forEach(task -> {
+            task.setAuthor(dbService.findUserByUsername(principal.getName()));
+            task.setTeam(dbService.findTeamById(teamId));
+            List<TaskStep> stepDataList = task.getStepDataList();
+            for (TaskStep taskStep : stepDataList) {
+                taskStep.setTask(task);
+            }
+            dbService.save(task);
+            System.out.println("task = " + task);
+        });
         return "redirect:tasks";
     }
 
     @RequestMapping(value = "team/{teamId}/agentsUpload", method = RequestMethod.POST)
     public String importAgentsAsJson(@RequestParam MultipartFile file, ModelMap model, @PathVariable("teamId") long teamId, Principal principal) throws IOException {
         model.addAttribute("message", "File '" + file.getOriginalFilename() + "' uploaded successfully");
-        //2. Convert JSON to Java object
         ObjectMapper mapper = new ObjectMapper();
         List<Agent> agents = mapper.readValue(file.getInputStream(), new TypeReference<List<Agent>>() { });
         agents.forEach(agent -> {
