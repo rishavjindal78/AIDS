@@ -10,6 +10,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -25,6 +26,7 @@ public class MultiUnZipStep extends AbstractStep {
 
     @Override
     public boolean run() {
+        Logger logger = LOGGER.get();
         if(inputOutputTuples==null || inputOutputTuples.isEmpty())
             throw new InvalidStepInputException("There is no input specified for MultiUnzip Step");
         List<String> tuples = asList(inputOutputTuples.split("[\r\n]"));
@@ -37,12 +39,12 @@ public class MultiUnZipStep extends AbstractStep {
                 }
                 String zipFile = split[0];
                 String outputDir = split[1];
-                LOGGER.get().log(Level.INFO, "unzipping File " + zipFile + " to location - " + outputDir);
+                logger.log(Level.INFO, "unzipping File " + zipFile + " to location - " + outputDir);
                 boolean fileResult = extractFolder(zipFile, outputDir, recursive);
                 result.set(result.get() & fileResult);
             }
         });
-        LOGGER.get().log(Level.INFO, "MultiUnzip Step is Complete now.");
+        logger.log(Level.INFO, "MultiUnzip Step is Complete now.");
         return result.get();
     }
 
