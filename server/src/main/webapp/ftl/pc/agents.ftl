@@ -160,18 +160,17 @@
     </div>
     <div class="content">
         <fieldset>
-            <form class="form-horizontal" name="upload"
+            <form name="upload"
                   action="${rc.contextPath}/server/team/${Session['SELECTED_TEAM'].id}/agentsUpload"
                   method="post"
                   enctype="multipart/form-data">
 
                 <div class="form-group">
-                    <div class="col-sm-6">
-                        <input id="documentFileId" type="file" name="file" placeholder="FilePath" class="form-sm"/>
-                    </div>
-                    <input type="submit" class="btn btn-primary" value="Save"/>
-                    <button class="btn cancel btn-default" id="cancel">Cancel</button>
+                    <label for="documentFileId">Agents Json Input</label>
+                    <input type="file" id="documentFileId" name="file">
+                    <p class="help-block">Upload agents json file.</p>
                 </div>
+                <button type="submit" class="btn btn-default">Submit</button>
             </form>
         </fieldset>
     </div>

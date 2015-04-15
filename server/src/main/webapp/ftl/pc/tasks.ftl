@@ -108,22 +108,21 @@
     </div>
 
     <div class="heading alert alert-info" style="padding: 6px;margin-bottom: 2px; margin-top: 2px;">
-        <strong>Import Task</strong>
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span><strong> Import Task</strong>
     </div>
     <div class="content">
         <fieldset>
-            <form class="form-horizontal" name="upload"
+            <form  name="upload"
                   action="${rc.contextPath}/server/team/${Session['SELECTED_TEAM'].id}/taskUpload"
                   method="post"
                   enctype="multipart/form-data">
 
                 <div class="form-group">
-                    <div class="col-sm-6">
-                        <input id="documentFileId" type="file" name="file" placeholder="FilePath" class="form-sm"/>
-                    </div>
-                    <input type="submit" class="btn btn-primary" value="Save"/>
-                    <button class="btn cancel btn-default" id="cancel">Cancel</button>
+                    <label for="documentFileId">Tasks Json Input</label>
+                    <input type="file" id="documentFileId" name="file">
+                    <p class="help-block">Upload tasks json file.</p>
                 </div>
+                <button type="submit" class="btn btn-default">Submit</button>
             </form>
         </fieldset>
     </div>
@@ -132,7 +131,7 @@
     <div class="table">
         <table id="tasksTable" class="table table-striped">
             <tr>
-                <th width="5%">#</th>
+                <th width="5%"># <a href="../../export/tasks"><span class="glyphicon glyphicon-download-alt"/></a></th>
                 <th width="25%">Name</th>
                 <th width="30%">Description</th>
                 <th width="15%">Schedule</th>
