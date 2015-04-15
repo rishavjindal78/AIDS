@@ -35,6 +35,13 @@ public abstract class AbstractStep {
             return logger;
         }
     };
+    private Logger logger;
+    public synchronized Logger getLogger(){
+        if(logger == null){
+            logger = LOGGER.get();
+        }
+        return logger;
+    }
 
     public void interrupt() {
         //  TODO override in the task step implementation

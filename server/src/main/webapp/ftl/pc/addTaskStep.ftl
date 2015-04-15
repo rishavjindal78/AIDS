@@ -53,12 +53,12 @@
                                             <input type="range" id="input${fieldProperties.name?string}" name="inputParamsMap['${fieldProperties.name?string}']"
                                                    <#if fieldProperties.misc??>${fieldProperties.misc?string}</#if>>
                                         <#elseif fieldProperties.type == 'checkbox'>
-                                            <label for="input${fieldProperties.displayName?string}">${fieldProperties_index+1}. ${fieldProperties.displayName?string}</label>
-                                            <input type="checkbox" id="input${fieldProperties.displayName?string}" name="inputParamsMap['${fieldProperties.name?string}']"
+                                            <label for="input${fieldProperties.name?string}">${fieldProperties_index+1}. ${fieldProperties.displayName?string}</label>
+                                            <input type="checkbox" id="input${fieldProperties.name?string}" name="inputParamsMap['${fieldProperties.name?string}']"
                                                    <#if fieldProperties.value?? && fieldProperties.value?string=="true">checked="true"</#if>>
                                         <#else>
-                                            <label for="input${fieldProperties.displayName?string}">${fieldProperties_index+1}. ${fieldProperties.displayName?string}</label>
-                                            <input id="input${fieldProperties.displayName?string}" class="form-control" type="${fieldProperties.type?string}" name="inputParamsMap['${fieldProperties.name?string}']" placeholder="${fieldProperties.name?string}"
+                                            <label for="input${fieldProperties.name?string}">${fieldProperties_index+1}. ${fieldProperties.displayName?string}</label>
+                                            <input id="input${fieldProperties.name?string}" class="form-control" type="${fieldProperties.type?string}" name="inputParamsMap['${fieldProperties.name?string}']" placeholder="${fieldProperties.name?string}"
                                             <#if fieldProperties.required?? && fieldProperties.required?string=="true">required</#if> />
                                         </#if>
                                     </td>

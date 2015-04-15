@@ -26,7 +26,6 @@ public class MultiUnZipStep extends AbstractStep {
 
     @Override
     public boolean run() {
-        Logger logger = LOGGER.get();
         if(inputOutputTuples==null || inputOutputTuples.isEmpty())
             throw new InvalidStepInputException("There is no input specified for MultiUnzip Step");
         List<String> tuples = asList(inputOutputTuples.split("[\r\n]"));
@@ -39,12 +38,12 @@ public class MultiUnZipStep extends AbstractStep {
                 }
                 String zipFile = split[0];
                 String outputDir = split[1];
-                logger.log(Level.INFO, "unzipping File " + zipFile + " to location - " + outputDir);
+                getLogger().log(Level.INFO, "unzipping File " + zipFile + " to location - " + outputDir);
                 boolean fileResult = extractFolder(zipFile, outputDir, recursive);
                 result.set(result.get() & fileResult);
             }
         });
-        logger.log(Level.INFO, "MultiUnzip Step is Complete now.");
+        getLogger().log(Level.INFO, "MultiUnzip Step is Complete now.");
         return result.get();
     }
 

@@ -55,7 +55,7 @@ public class ServerController {
 
     @Autowired
     private AidsJobScheduler aidsJobScheduler;
-    final String[] taskClasses = {"EchoStep", "DiscSpaceStep", "SystemCommandStep", "FileUploadStep", "HttpDownloadStep", "DeclareVariableStep", "UpdateDBStep", "EmailStep", "UnZipStep", "MultiUnZipStep", "ZipStep", "TokenReplaceStep"};
+    final String[] taskClasses = {"EchoStep", "DiscSpaceStep", "SystemCommandStep", "FileUploadStep", "HttpDownloadStep", "MultiHttpDownloadStep", "DeclareVariableStep", "UpdateDBStep", "EmailStep", "UnZipStep", "MultiUnZipStep", "ZipStep", "TokenReplaceStep"};
 
     @RequestMapping(value = "test", method = RequestMethod.GET)
     public String test(@ModelAttribute("model") ModelMap model) {
@@ -389,7 +389,8 @@ public class ServerController {
         model.addAttribute("message", "File '" + file.getOriginalFilename() + "' uploaded successfully");
         //2. Convert JSON to Java object
         ObjectMapper mapper = new ObjectMapper();
-        List<Task> tasks = mapper.readValue(file.getInputStream(), new TypeReference<List<Task>>() {});
+        List<Task> tasks = mapper.readValue(file.getInputStream(), new TypeReference<List<Task>>() {
+        });
         tasks.forEach(task -> {
             task.setAuthor(dbService.findUserByUsername(principal.getName()));
             task.setTeam(dbService.findTeamById(teamId));
@@ -407,7 +408,8 @@ public class ServerController {
     public String importAgentsAsJson(@RequestParam MultipartFile file, ModelMap model, @PathVariable("teamId") long teamId, Principal principal) throws IOException {
         model.addAttribute("message", "File '" + file.getOriginalFilename() + "' uploaded successfully");
         ObjectMapper mapper = new ObjectMapper();
-        List<Agent> agents = mapper.readValue(file.getInputStream(), new TypeReference<List<Agent>>() { });
+        List<Agent> agents = mapper.readValue(file.getInputStream(), new TypeReference<List<Agent>>() {
+        });
         agents.forEach(agent -> {
             agent.setCreatedBy(dbService.findUserByUsername(principal.getName()));
             agent.setTeam(dbService.findTeamById(teamId));
