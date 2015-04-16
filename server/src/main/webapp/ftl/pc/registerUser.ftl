@@ -55,25 +55,29 @@
             <div class="form-group">
                 <label for="inputEmail3" class="col-sm-2 control-label">Name</label>
                 <div class="col-sm-4">
-                    <input type="text" name='name' class="form-control" id="inputEmail3" placeholder="name" required>
+                    <@spring.formInput  "user.name", "type='text' class='form-control' placeholder='Full Name' required"/>
+                    <@spring.showErrors "<br>" "color:red;"/>
                 </div>
             </div>
             <div class="form-group">
                 <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
                 <div class="col-sm-4">
-                    <input type="email" name='email' class="form-control" id="inputEmail3" placeholder="Email">
+                    <@spring.formInput  "user.email", "type='email' class='form-control' placeholder='Email Address'"/>
+                    <@spring.showErrors "<br>" "color:red;"/>
                 </div>
             </div>
             <div class="form-group">
                 <label for="TelegramId" class="col-sm-2 control-label">TelegramId</label>
                 <div class="col-sm-4">
-                    <input type="text" name='telegramId' class="form-control" id="TelegramId" placeholder="TelegramId" required>
+                    <@spring.formInput  "user.telegramId", "type='text' class='form-control' placeholder='TelegramId' required"/>
+                    <@spring.showErrors "<br>" "color:red;"/>
                 </div>
             </div>
             <div class="form-group">
                 <label for="phone" class="col-sm-2 control-label">Phone #</label>
                 <div class="col-sm-4">
-                    <input type="text" name='phone' class="form-control" id="phone" placeholder="Phone Number" required>
+                    <@spring.formInput  "user.phone", "type='text' class='form-control' placeholder='Phone Number'"/>
+                    <@spring.showErrors "<br>" "color:red;"/>
                 </div>
             </div>
             <div class="form-group">

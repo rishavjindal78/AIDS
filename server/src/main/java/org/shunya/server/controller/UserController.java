@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import static java.util.Arrays.asList;
 
@@ -43,11 +44,11 @@ public class UserController {
     }
 
     @RequestMapping(value = "register", method = RequestMethod.POST)
-    public String registerUser(@ModelAttribute("model") ModelMap model, @ModelAttribute("user") User user, BindingResult result) throws Exception {
+    public String registerUser(@ModelAttribute("model") ModelMap model, @ModelAttribute("user") @Valid User user, BindingResult result) throws Exception {
         User userByUsername = dbService.findUserByUsername(user.getUsername());
         if (userByUsername != null)
-            result.addError(new FieldError("user", "username", "username already exists !"));
-        if(user.getPassword().length() < 2)
+            result.addError(new FieldError("user", "username", "username already exists ! " + user.getUsername()));
+        if (user.getPassword().length() < 2)
             result.addError(new FieldError("user", "password", "password is too small !"));
         if (result.hasErrors()) {
             model.addAttribute("user", user);
