@@ -1,9 +1,9 @@
 Run the below commands to install the Telegram related jars into local project repo
 
-mvn install:install-file -DlocalRepositoryPath=C:\Data\aids\server\lib -DcreateChecksum=true -Dpackaging=jar -Dfile=C:\Data\aids\server\lib\mtproto.jar -DgroupId=org.telegram -DartifactId=mtproto -Dversion=1.0
+mvn install:install-file -DlocalRepositoryPath=C:\Data\aids\server\repo -DcreateChecksum=true -Dpackaging=jar -Dfile=C:\Data\aids\server\lib\mtproto.jar -DgroupId=org.telegram -DartifactId=mtproto -Dversion=1.0
 
-mvn install:install-file -DlocalRepositoryPath=C:\Data\aids\server\lib -DcreateChecksum=true -Dpackaging=jar -Dfile=C:\Data\aids\server\lib\telegram-api.jar -DgroupId=org.telegram -DartifactId=telegram-api -Dversion=1.0
+mvn install:install-file -DlocalRepositoryPath=C:\Data\aids\server\repo -DcreateChecksum=true -Dpackaging=jar -Dfile=C:\Data\aids\server\lib\telegram-api.jar -DgroupId=org.telegram -DartifactId=telegram-api -Dversion=1.0
 
-mvn install:install-file -DlocalRepositoryPath=C:\Data\aids\server\lib -DcreateChecksum=true -Dpackaging=jar -Dfile=C:\Data\aids\server\lib\tl-api.jar -DgroupId=org.telegram -DartifactId=tl-api -Dversion=11
+mvn install:install-file -DlocalRepositoryPath=C:\Data\aids\server\repo -DcreateChecksum=true -Dpackaging=jar -Dfile=C:\Data\aids\server\lib\tl-api.jar -DgroupId=org.telegram -DartifactId=tl-api -Dversion=11
 
-mvn install:install-file -DlocalRepositoryPath=C:\Data\aids\server\lib -DcreateChecksum=true -Dpackaging=jar -Dfile=C:\Data\aids\server\lib\tl-core.jar -DgroupId=org.telegram -DartifactId=tl-core -Dversion=1.0
+mvn install:install-file -DlocalRepositoryPath=C:\Data\aids\server\repo -DcreateChecksum=true -Dpackaging=jar -Dfile=C:\Data\aids\server\lib\tl-core.jar -DgroupId=org.telegram -DartifactId=tl-core -Dversion=1.0

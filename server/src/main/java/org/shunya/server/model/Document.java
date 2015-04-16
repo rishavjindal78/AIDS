@@ -1,13 +1,16 @@
 package org.shunya.server.model;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import javax.persistence.*;
 import java.util.Date;
 
+import static org.hibernate.annotations.CascadeType.*;
+
 @Entity(name = "db_document")
-@TableGenerator(name="seqGen",table="ID_GEN",pkColumnName="GEN_KEY",valueColumnName="GEN_VALUE",pkColumnValue="SEQ_ID",allocationSize=1)
-@SecondaryTable(name = "db_document_lob", pkJoinColumns = {
-        @PrimaryKeyJoinColumn(name = "ID", referencedColumnName = "ID")
-})
+@TableGenerator(name = "seqGen", table = "ID_GEN", pkColumnName = "GEN_KEY", valueColumnName = "GEN_VALUE", pkColumnValue = "DOCUMENT_ID", allocationSize = 1)
 public class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -18,13 +21,14 @@ public class Document {
     private Date uploadDate;
     private DocumentStorage storage = DocumentStorage.DB;
     private String localPath;
-    @Lob
     private String description;
     private boolean deprecated = false;
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(columnDefinition = "blob(15M)", table = "db_document_lob")
-    private byte[] content;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @Cascade({SAVE_UPDATE, DELETE, ALL, REMOVE})
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private AttachmentContent attachmentContent;
+
     private long length;
     private String md5;
     private String tags;
@@ -124,14 +128,6 @@ public class Document {
         this.deprecated = deprecated;
     }
 
-    public byte[] getContent() {
-        return content;
-    }
-
-    public void setContent(byte[] content) {
-        this.content = content;
-    }
-
     public String getMd5() {
         return md5;
     }
@@ -162,5 +158,13 @@ public class Document {
 
     public void setAuthor(User author) {
         this.author = author;
+    }
+
+    public AttachmentContent getAttachmentContent() {
+        return attachmentContent;
+    }
+
+    public void setAttachmentContent(AttachmentContent attachmentContent) {
+        this.attachmentContent = attachmentContent;
     }
 }

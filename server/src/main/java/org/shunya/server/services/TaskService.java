@@ -151,6 +151,8 @@ public class TaskService {
     @Async
     public void execute(TaskRun taskRun, Map<String, String> propertiesOverride, boolean singleton, int loggingLevel) {
         if (singleton && currentlyRunningTasks.contains(taskRun.getTask().getId())) {
+            logger.info("These Tasks are currently running - " + currentlyRunningTasks);
+            logger.info("Currently running TaskRuns - " + taskRunExecutionContext.keySet());
             statusObserver.notifyStatus(taskRun.getTeam().getTelegramId(), taskRun.isNotifyStatus(), "Another instance of this Task is already running, cancelling execution - " + taskRun.getName());
             logger.info("Another instance of this Task is already running, cancelling execution - ", taskRun.getName());
             return;
@@ -207,6 +209,8 @@ public class TaskService {
             List<TaskStepRun> taskStepRuns = taskExecutionPlan.getCurrentlyRunningTaskStepRuns();
             new ArrayList<>(taskStepRuns).forEach(taskStepRun -> restClient.interruptTaskStep(taskStepRun.getId(), taskStepRun.getAgent()));
             return true;
+        } else {
+            logger.warn("No Instance of TaskRun found for cancellation - " + taskRun.getId());
         }
         return false;
     }
@@ -215,6 +219,10 @@ public class TaskService {
 //    Making this method async may cause race condition when agent submits results
     public void consumeStepResult(TaskContext taskContext) {
         TaskStepRun taskStepRun = dbService.getTaskStepRun(taskContext.getTaskStepRunDTO().getId());
+        if(taskStepRun == null){
+            logger.warn("Got Results from Agent for non-existing TaskStepRun, not consuming it - " + taskContext.getTaskStepRunDTO().getId());
+            return;
+        }
         currentlyRunningStepContext.remove(taskStepRun);
         taskStepRun.setStartTime(taskContext.getTaskStepRunDTO().getStartTime());
         taskStepRun.setFinishTime(taskContext.getTaskStepRunDTO().getFinishTime());
@@ -408,7 +416,7 @@ public class TaskService {
     private void publishTaskRunStatus(TaskRun taskRun) {
         final TaskExecutionContext taskExecutionContext = taskRunExecutionContext.get(taskRun);
         int newCacheId = 111111;
-        if(taskExecutionContext!=null) {
+        if (taskExecutionContext != null) {
             newCacheId = taskExecutionContext.getAndIncrementCacheId();
         }
         if (taskRunStatusSubscribers.get(taskRun) != null && taskRunStatusSubscribers.get(taskRun).size() > 0) {

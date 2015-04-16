@@ -30,8 +30,7 @@ public class SystemCommandStep extends AbstractStep {
     public void interrupt() {
         if (child != null) {
             child.destroy();
-            if (logger != null)
-                logger.warning(() -> "Process destroyed by the user.");
+            getLogger().warning(() -> "Process destroyed by the user.");
         }
     }
 
@@ -49,7 +48,7 @@ public class SystemCommandStep extends AbstractStep {
             /*final ProcessBuilder pb = new ProcessBuilder("cmd", "/k");
             pb.redirectErrorStream(true);
             final Process child = pb.start();*/
-            logger = LOGGER.get();
+            logger = getLogger();
             Thread captureProcessStreams = new Thread(() -> {
                 try {
                     startOutputAndErrorReadThreads(child.getInputStream(), child.getErrorStream(), logger);
@@ -70,7 +69,7 @@ public class SystemCommandStep extends AbstractStep {
 //            out.write("exit\r\n".getBytes());
 //            out.flush();
             out.close();
-            captureProcessStreams.join();
+//            captureProcessStreams.join();
             if (waitForTerminate) {
                 logger.log(Level.FINE, "Waiting for the process to terminate");
                 child.waitFor();

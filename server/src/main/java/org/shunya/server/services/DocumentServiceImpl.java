@@ -23,8 +23,8 @@ public class DocumentServiceImpl extends GenericServiceImpl<Document, Long> impl
     @Override
     public Document findById(Long id) {
         final Document byId = documentDao.findById(id);
-        if (byId.getContent() != null)
-            Hibernate.initialize(byId.getContent());
+        if (byId.getAttachmentContent() != null)
+            Hibernate.initialize(byId.getAttachmentContent());
         return byId;
     }
 

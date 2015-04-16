@@ -8,12 +8,12 @@ import org.shunya.shared.annotation.PunterTask;
 import org.shunya.shared.utils.InvalidStepInputException;
 
 import javax.net.ssl.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URL;
 import java.security.cert.X509Certificate;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;

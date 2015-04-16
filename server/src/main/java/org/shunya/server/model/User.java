@@ -15,7 +15,7 @@ import static org.hibernate.annotations.CascadeType.DELETE;
 import static org.hibernate.annotations.CascadeType.SAVE_UPDATE;
 
 @Entity
-@Table(name="USER", uniqueConstraints = {@UniqueConstraint(columnNames = {"username"})}, indexes = {
+@Table(name="AIDS_USER", uniqueConstraints = {@UniqueConstraint(columnNames = {"username"})}, indexes = {
         @Index(name = "user_username_index", columnList = "username", unique = true),
         @Index(name = "user_telegram_index", columnList = "telegramId", unique = false),
 })

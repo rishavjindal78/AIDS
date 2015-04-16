@@ -14,7 +14,8 @@
         <security:intercept-url pattern="/user/login*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <security:intercept-url pattern="/user/register*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <security:intercept-url pattern="/user/reset*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
-        <security:intercept-url pattern="/documents/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+        <security:intercept-url pattern="/documents/download/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+        <security:intercept-url pattern="/documents/files/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
         <security:intercept-url pattern="/server/submitTaskStepResults*" access="ROLE_AGENT" />
         <security:intercept-url pattern="/server/logoutSuccess*" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 
@@ -52,9 +53,9 @@
             <security:password-encoder ref="encoder" />
             <security:jdbc-user-service data-source-ref="dataSource"
                                users-by-username-query=
-                                       "select username, password, enabled from USER where username=?"
+                                       "select username, password, enabled from AIDS_USER where username=?"
                                authorities-by-username-query=
-                                       "select username, role from USER a, AUTHORITY B, USER_AUTHORITY c where a.id=c.user_id and b.id=c.authorities_id and username=?" />
+                                       "select username, role from AIDS_USER a, AUTHORITY B, AIDS_USER_AUTHORITY c where a.id=c.aids_user_id and b.id=c.authorities_id and username=?" />
         </security:authentication-provider>
     </security:authentication-manager>
 

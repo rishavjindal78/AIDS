@@ -19,7 +19,7 @@ public interface DBService {
     void deleteTaskStep(long id);
     void deleteAgent(long id);
     void deleteTask(long id);
-    void deleteTaskRun(long id);
+    boolean deleteTaskRun(long id);
     void deleteTaskStepRun(long id);
     void save(Agent agent);
     void save(Task task);

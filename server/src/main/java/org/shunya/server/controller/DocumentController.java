@@ -1,6 +1,7 @@
 package org.shunya.server.controller;
 
 import org.apache.commons.io.IOUtils;
+import org.shunya.server.model.AttachmentContent;
 import org.shunya.server.model.Document;
 import org.shunya.server.model.DocumentStorage;
 import org.shunya.server.services.DBService;
@@ -85,7 +86,7 @@ public class DocumentController {
         document.setUploadDate(new Date());
         document.setAuthor(dbService.findUserByUsername(principal.getName()));
         document.setTeam(dbService.findTeamById(teamId));
-        if (file.getFile().getSize() > 10 * 1024 * 1024) {
+        if (file.getFile().getSize() > 1 * 1024 * 1024) {
             //store it in FS
             if (!Paths.get(uploadFolder).toFile().exists())
                 Paths.get(uploadFolder).toFile().mkdirs();
@@ -96,8 +97,10 @@ public class DocumentController {
             file.getFile().getInputStream().close();
         } else {
             //store it in DB
+            AttachmentContent attachmentContent = new AttachmentContent();
+            attachmentContent.setContent(file.getFile().getBytes());
             document.setStorage(DocumentStorage.DB);
-            document.setContent(file.getFile().getBytes());
+            document.setAttachmentContent(attachmentContent);
         }
         documentService.save(document);
         return "redirect:search";
@@ -124,8 +127,10 @@ public class DocumentController {
             file.getFile().getInputStream().close();
         } else {
             //store it in DB
+            AttachmentContent attachmentContent = new AttachmentContent();
+            attachmentContent.setContent(file.getFile().getBytes());
             document.setStorage(DocumentStorage.DB);
-            document.setContent(file.getFile().getBytes());
+            document.setAttachmentContent(attachmentContent);
         }
         documentService.save(document);
         return "redirect:../search";
@@ -148,7 +153,7 @@ public class DocumentController {
             response.setHeader("Content-Length", String.valueOf(byId.getLength()));
             response.setContentType("application/octet-stream");
             if (byId.getStorage() == DocumentStorage.DB) {
-                response.getOutputStream().write(byId.getContent());
+                response.getOutputStream().write(byId.getAttachmentContent().getContent());
             } else {
                 FileInputStream fileInputStream = new FileInputStream(byId.getLocalPath());
                 IOUtils.copy(fileInputStream, response.getOutputStream());

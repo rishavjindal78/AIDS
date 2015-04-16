@@ -11,6 +11,7 @@
                 <value>classpath*:aids.properties</value>
                 <value>file:///${AIDS_HOME}/aids.properties</value>
                 <value>classpath*:**/database.properties</value>
+                <value>file:///${AIDS_HOME}/database.properties</value>
                 <value>classpath*:**/${env:qa}.properties</value>
             </list>
         </property>
@@ -18,8 +19,10 @@
         <property name="ignoreResourceNotFound" value="true"/>
     </bean>
 
-    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    <!--<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSize" value="1000000000"/>
+    </bean>-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
     </bean>
 
     <import resource="DataSources.xml"/>
