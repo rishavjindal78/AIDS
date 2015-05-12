@@ -16,10 +16,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -116,7 +114,7 @@ public class DocumentController {
         document.setTags(file.getTags());
         document.setLength(file.getFile().getSize());
         document.setUploadDate(new Date());
-        if (file.getFile().getSize() > 10 * 1024 * 1024) {
+        if (file.getFile().getSize() > 1 * 1024 * 1024) {
             //store it in FS
             if (!Paths.get(uploadFolder).toFile().exists())
                 Paths.get(uploadFolder).toFile().mkdirs();
