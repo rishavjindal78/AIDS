@@ -79,7 +79,7 @@
                         result += '<div class="alert alert-success small">Task Submitted Successfully - <a href="../taskRun/view/' + value.id + '" target="_blank">' + value.id + ' - Logs</a></div>';
                     });
                     $("#results").html(result);
-                });
+                }).error(function(data) {alert('Internal Server Error'+data);});
                 $('#myModal').modal('hide');
             }
         }

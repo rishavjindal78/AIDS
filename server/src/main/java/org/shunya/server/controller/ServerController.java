@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -31,6 +32,7 @@ import java.security.Principal;
 import java.util.*;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static org.shunya.shared.FieldPropertiesMap.convertObjectToXml;
 
 @Controller
@@ -289,8 +291,13 @@ public class ServerController {
     }
 
     @RequestMapping(value = "task/{id}", method = RequestMethod.GET)
-    public String viewTaskDetails(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id, final HttpServletRequest request) {
+    public String viewTaskDetails(@ModelAttribute("model") ModelMap model, @PathVariable("id") long id, final HttpServletRequest request, Principal principal) {
         Task task = dbService.getTask(id);
+        final User user = dbService.findUserByUsername(principal.getName());
+        final List<Long> authorisedTeams = user.getTeamList().stream().map(Team::getId).collect(toList());
+        if (!authorisedTeams.contains(task.getTeam().getId())) {
+            throw new AccessDeniedException("User " + user.getName() + " is not authorised for this content");
+        }
 //        task.setStepDataList(task.getStepDataList().stream().sorted(Comparator.comparing(TaskStepData::getSequence)).collect(toList()));
         final String referer = request.getHeader("referer");
         model.addAttribute("task", task);
@@ -547,9 +554,15 @@ public class ServerController {
                                  @RequestParam(defaultValue = "3", required = false) int loggingLevel,
                                  @RequestParam(defaultValue = "false", required = false) boolean notifyStatus,
                                  Principal principal) {
+
         logger.info("Run request for {}, user comments {}", taskId, comment);
         logger.info("Custom Properties {}", properties);
         Task task = dbService.getTask(taskId);
+        final User user = dbService.findUserByUsername(principal.getName());
+        final List<Long> authorisedTeams = user.getTeamList().stream().map(Team::getId).collect(toList());
+        if (!authorisedTeams.contains(task.getTeam().getId())) {
+            throw new AccessDeniedException("User " + user.getName() + " is not allowed to run task from Team : " + task.getTeam().getName());
+        }
         List<TaskRun> taskRuns = new ArrayList<>();
         if (!task.getAgentList().isEmpty())
             task.getAgentList().forEach(agent -> taskRuns.add(taskService.createTaskRun(comment, notifyStatus, principal, task, agent, false, properties, loggingLevel)));

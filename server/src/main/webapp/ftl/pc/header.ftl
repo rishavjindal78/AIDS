@@ -38,17 +38,13 @@
             <@security.authorize ifAllGranted="ROLE_USER">
                 <li id="agents"><a href="${rc.getContextPath()}/server/team/${Session['SELECTED_TEAM'].id}/agents">Agents</a>
                 </li>
-                <li id="tasks"><a
-                        href='<@spring.url "/server/team/${Session['SELECTED_TEAM'].id}/tasks" />'>Tasks</a>
+                <li id="tasks"><a href='<@spring.url "/server/team/${Session['SELECTED_TEAM'].id}/tasks" />'>Tasks</a>
                 </li>
-                <li id="history"><a
-                        href='<@spring.url "/server/team/${Session['SELECTED_TEAM'].id}/taskHistory" />'>Activity</a>
+                <li id="history"><a href='<@spring.url "/server/team/${Session['SELECTED_TEAM'].id}/taskHistory" />'>Activity</a>
                 </li>
-                <li id="documents"><a
-                        href='<@spring.url "/documents/team/${Session['SELECTED_TEAM'].id}/search" />'>Docs</a>
+                <li id="documents"><a href='<@spring.url "/documents/team/${Session['SELECTED_TEAM'].id}/search" />'>Docs</a>
                 </li>
-                <li id="settings"><a
-                        href='<@spring.url "/server/team/${Session['SELECTED_TEAM'].id}/settings" />'>Settings</a>
+                <li id="settings"><a href='<@spring.url "/server/team/${Session['SELECTED_TEAM'].id}/settings" />'>Settings</a>
                 </li>
             </@security.authorize>
             <@security.authorize ifAllGranted="ROLE_ADMIN">

@@ -1,0 +1,3 @@
+Implement CSRF security token.
+Check if the user's team is same as he claims, otherwise throw accessdenied exception.
+Provide Task to run Http Post with JSON.
